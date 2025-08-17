@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %} {% endblock %}</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <script src="static/js/base.js" defer></script>
+</head>
+<body>
+    <!-- 네비게이션 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-link">
+                <div class="nav-logo">
+                    <i class="fas fa-paw"></i>
+                    <span>MyPet's Voice</span>
+                </div>
+            </a>
+            
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="nav-menu" id="nav-menu">
+                <a href="#" class="nav-link">너의 일기장</a>
+                <a href="#" class="nav-link">커뮤니티</a>
+                <a href="#" class="nav-link">플레이스</a>
+                <a href="#" class="nav-link">투어스팟</a>
+                <a href="#" class="nav-link">데일리케어</a>
+                <a href="#" class="nav-link">마이페이지</a>
+            </div>
+
+            <!-- 날씨 api 가져와서 렌더링 -->
+
+            
+            <div class="nav-user">
+                <button class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> 로그인
+                </button>
+                <button class="btn btn-outline">
+                    회원가입
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 메인 컨테이너 -->
+     {% block content %}
+     {% endblock %}
+
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-paw"></i>
+                        <span>MyPet's Voice</span>
+                    </div>
+                    <p class="footer-description">
+                        반려동물과의 특별한 소통을 위한 AI 플랫폼
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" onclick="alert('Instagram 링크 (데모)')"><i class="fab fa-instagram"></i></a>
+                        <a href="#" onclick="alert('Facebook 링크 (데모)')"><i class="fab fa-facebook"></i></a>
+                        <a href="#" onclick="alert('Twitter 링크 (데모)')"><i class="fab fa-twitter"></i></a>
+                        <a href="#" onclick="alert('YouTube 링크 (데모)')"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>서비스</h4>
+                    <ul>
+                        <li><a href="#" onclick="showSection('chat')">AI 채팅</a></li>
+                        <li><a href="#" onclick="showSection('diary')">반려동물 일기</a></li>
+                        <li><a href="#" onclick="showSection('community')">커뮤니티</a></li>
+                        <li><a href="#" onclick="showSection('place')">플레이스</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>고객지원</h4>
+                    <ul>
+                        <li><a href="#" onclick="alert('공지사항 (데모)')">공지사항</a></li>
+                        <li><a href="#" onclick="alert('FAQ (데모)')">자주 묻는 질문</a></li>
+                        <li><a href="#" onclick="alert('문의하기 (데모)')">문의하기</a></li>
+                        <li><a href="#" onclick="alert('이용가이드 (데모)')">이용가이드</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>정보</h4>
+                    <ul>
+                        <li><a href="#" onclick="alert('회사소개 (데모)')">회사소개</a></li>
+                        <li><a href="#" onclick="alert('이용약관 (데모)')">이용약관</a></li>
+                        <li><a href="#" onclick="alert('개인정보처리방침 (데모)')">개인정보처리방침</a></li>
+                        <li><a href="#" onclick="alert('사업자정보 (데모)')">사업자정보</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2025 MyPet's Voice. All rights reserved.</p>
+                </div>
+                <div class="footer-contact">
+                    <p>문의: contact@mypetsvoice.com | 대표번호: 02-1234-5678</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

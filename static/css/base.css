@@ -1,0 +1,862 @@
+/* 기본 스타일 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 버튼 스타일 */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #ff5252;
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: #ff6b6b;
+    border: 2px solid #ff6b6b;
+}
+
+.btn-outline:hover {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.btn-large {
+    padding: 15px 30px;
+    font-size: 16px;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* 네비게이션 */
+.navbar {
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #ff6b6b;
+}
+
+.nav-logo:hover {
+    color: #ff6b6b;
+    background-color: transparent;
+}
+
+.nav-logo i {
+    margin-right: 8px;
+    font-size: 28px;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 15px;
+    flex-wrap: nowrap;
+}
+
+.nav-link {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 10px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.nav-menu .nav-link:hover,
+.nav-menu .nav-link.active {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.nav-link:has(.nav-logo):hover {
+    background-color: transparent;
+    color: inherit;
+}
+
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.nav-user {
+    position: relative;
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.user-profile:hover {
+    background-color: #f5f5f5;
+}
+
+.user-profile img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    min-width: 150px;
+    display: none;
+    z-index: 1001;
+}
+
+.user-menu.active {
+    display: block;
+}
+
+.user-menu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.user-menu a:hover {
+    background-color: #f5f5f5;
+}
+
+/* 메인 컨테이너 */
+.main-container {
+    min-height: calc(100vh - 70px);
+}
+
+.section {
+    display: none;
+    padding: 40px 0;
+}
+
+.section.active {
+    display: block;
+}
+
+/* 데모 알림 */
+.demo-notice {
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* 채팅 섹션 */
+.chat-container {
+    max-width: 800px;
+    margin: 0 auto;
+    height: calc(100vh - 150px);
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.chat-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.pet-selector select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+}
+
+.message {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.message.user {
+    flex-direction: row-reverse;
+}
+
+.message-bubble {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    word-wrap: break-word;
+}
+
+.message.user .message-bubble {
+    background-color: #ff6b6b;
+    color: white;
+    border-bottom-right-radius: 6px;
+}
+
+.message.pet .message-bubble {
+    background-color: white;
+    color: #333;
+    border: 1px solid #ddd;
+    border-bottom-left-radius: 6px;
+}
+
+.message-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.chat-input-container {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    background-color: white;
+}
+
+.chat-input {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    font-size: 14px;
+    outline: none;
+}
+
+.chat-input input:focus {
+    border-color: #ff6b6b;
+}
+
+.chat-input button {
+    width: 45px;
+    height: 45px;
+    border: none;
+    background-color: #ff6b6b;
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.chat-input button:hover {
+    background-color: #ff5252;
+}
+
+/* 일기 섹션 */
+.diary-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.diary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.diary-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.view-toggle {
+    display: flex;
+    border: 2px solid #ff6b6b;
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+.view-btn {
+    padding: 8px 20px;
+    border: none;
+    background-color: transparent;
+    color: #ff6b6b;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-btn.active {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.diary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.diary-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.diary-card:hover {
+    transform: translateY(-5px);
+}
+
+.diary-image {
+    width: 100%;
+    height: 200px;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+}
+
+.diary-content {
+    padding: 20px;
+}
+
+.diary-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: #666;
+}
+
+.diary-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.diary-preview {
+    color: #666;
+    line-height: 1.4;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.diary-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.diary-pet {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.diary-pet-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #ff6b6b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+}
+
+.diary-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    color: #666;
+}
+
+/* 마이페이지 섹션 */
+.mypage-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 40px;
+}
+
+.mypage-sidebar {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    overflow: hidden;
+    height: fit-content;
+}
+
+.profile-card {
+    padding: 30px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-image {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.image-upload {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    background-color: #ff6b6b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.profile-card h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.profile-card p {
+    color: #666;
+    font-size: 14px;
+}
+
+.menu-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border: none;
+    background-color: transparent;
+    color: #666;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.menu-item:hover,
+.menu-item.active {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.menu-item i {
+    font-size: 16px;
+    width: 20px;
+}
+
+.mypage-content {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 30px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.pets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.pet-card-mypage {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.pet-card-mypage:hover {
+    transform: translateY(-3px);
+}
+
+.pet-card-mypage img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.pet-card-mypage h4 {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.pet-card-mypage p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.pet-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.pet-actions button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.pet-edit {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.pet-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* 폼 스타일 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #ff6b6b;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* 푸터 */
+.footer {
+    background-color: #2c3e50;
+    color: white;
+    margin-top: 60px;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px 20px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+.footer-section h4 {
+    color: #ff6b6b;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #ff6b6b;
+    margin-bottom: 15px;
+}
+
+.footer-logo i {
+    margin-right: 8px;
+    font-size: 28px;
+}
+
+.footer-description {
+    color: #bdc3c7;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.footer-social {
+    display: flex;
+    gap: 10px;
+}
+
+.footer-social a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #34495e;
+    color: white;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.footer-social a:hover {
+    background-color: #ff6b6b;
+    transform: translateY(-2px);
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 8px;
+}
+
+.footer-section ul li a {
+    color: #bdc3c7;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-section ul li a:hover {
+    color: #ff6b6b;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid #34495e;
+    font-size: 14px;
+    color: #bdc3c7;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: white;
+        flex-direction: column;
+        gap: 0;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        border-radius: 0 0 12px 12px;
+        padding: 20px;
+        z-index: 1000;
+    }
+    
+    .nav-menu.active {
+        display: flex;
+    }
+    
+    .nav-menu .nav-link {
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+        border-radius: 0;
+        font-size: 16px;
+    }
+    
+    .nav-menu .nav-link:last-child {
+        border-bottom: none;
+    }
+    
+    .nav-menu .nav-link:hover {
+        background-color: #f8f9fa;
+        color: #ff6b6b;
+    }
+    
+    .nav-user {
+        gap: 5px;
+    }
+    
+    .nav-user .btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .mypage-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .diary-filters {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
