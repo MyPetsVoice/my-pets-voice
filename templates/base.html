@@ -6,41 +6,79 @@
         <title>{% block title %} {% endblock %}</title>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: {
+                                50: '#fefce8',
+                                100: '#fef9c3',
+                                200: '#fef08a',
+                                300: '#fde047',
+                                400: '#facc15',
+                                500: '#eab308',
+                                600: '#ca8a04',
+                                700: '#a16207',
+                                800: '#854d0e',
+                                900: '#713f12',
+                            },
+                            secondary: {
+                                50: '#fff7ed',
+                                100: '#ffedd5',
+                                200: '#fed7aa',
+                                300: '#fdba74',
+                                400: '#fb923c',
+                                500: '#f97316',
+                                600: '#ea580c',
+                                700: '#c2410c',
+                                800: '#9a3412',
+                                900: '#7c2d12',
+                            }
+                        },
+                        fontFamily: {
+                            'korean': ['Noto Sans KR', 'sans-serif']
+                        }
+                    }
+                }
+            }
+        </script>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
         <script src="static/js/base.js" defer></script>
 </head>
-<body>
+<body class="font-korean text-gray-800 bg-gray-50 min-h-screen">
     <!-- 네비게이션 -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="#" class="nav-link">
-                <div class="nav-logo">
-                    <i class="fas fa-paw"></i>
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-5 flex justify-between items-center h-18">
+            <a href="#" class="flex items-center text-secondary-500 hover:text-secondary-600 transition-colors">
+                <div class="flex items-center text-2xl font-bold">
+                    <i class="fas fa-paw mr-2 text-3xl"></i>
                     <span>MyPet's Voice</span>
                 </div>
             </a>
             
-            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars"></i>
+            <button class="md:hidden p-2 text-gray-700 hover:text-secondary-500" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars text-xl"></i>
             </button>
             
-            <div class="nav-menu" id="nav-menu">
-                <a href="#" class="nav-link">너의 일기장</a>
-                <a href="#" class="nav-link">커뮤니티</a>
-                <a href="#" class="nav-link">플레이스</a>
-                <a href="#" class="nav-link">투어스팟</a>
-                <a href="#" class="nav-link">데일리케어</a>
-                <a href="#" class="nav-link">마이페이지</a>
+            <div class="hidden md:flex space-x-4" id="nav-menu">
+                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">너의 일기장</a>
+                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">커뮤니티</a>
+                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">플레이스</a>
+                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">투어스팟</a>
+                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">데일리케어</a>
+                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">마이페이지</a>
             </div>
 
             <!-- 날씨 api 가져와서 렌더링 -->
 
             
-            <div class="nav-user">
-                <button class="btn btn-primary">
-                    <i class="fas fa-sign-in-alt"></i> 로그인
+            <div class="flex space-x-3">
+                <button class="inline-flex items-center px-4 py-2 bg-secondary-500 text-white rounded-lg hover:bg-secondary-600 transition-all duration-300 hover:-translate-y-0.5 shadow-md text-sm font-medium">
+                    <i class="fas fa-sign-in-alt mr-2"></i> 로그인
                 </button>
-                <button class="btn btn-outline">
+                <button class="px-4 py-2 border-2 border-secondary-500 text-secondary-500 rounded-lg hover:bg-secondary-500 hover:text-white transition-all duration-300 text-sm font-medium">
                     회원가입
                 </button>
             </div>
@@ -53,61 +91,69 @@
 
 
     <!-- 푸터 -->
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <i class="fas fa-paw"></i>
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="max-w-7xl mx-auto px-5 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div class="md:col-span-2 lg:col-span-1">
+                    <div class="flex items-center text-2xl font-bold text-secondary-400 mb-4">
+                        <i class="fas fa-paw mr-2 text-3xl"></i>
                         <span>MyPet's Voice</span>
                     </div>
-                    <p class="footer-description">
+                    <p class="text-gray-300 leading-relaxed mb-6">
                         반려동물과의 특별한 소통을 위한 AI 플랫폼
                     </p>
-                    <div class="footer-social">
-                        <a href="#" onclick="alert('Instagram 링크 (데모)')"><i class="fab fa-instagram"></i></a>
-                        <a href="#" onclick="alert('Facebook 링크 (데모)')"><i class="fab fa-facebook"></i></a>
-                        <a href="#" onclick="alert('Twitter 링크 (데모)')"><i class="fab fa-twitter"></i></a>
-                        <a href="#" onclick="alert('YouTube 링크 (데모)')"><i class="fab fa-youtube"></i></a>
+                    <div class="flex space-x-3">
+                        <a href="#" onclick="alert('Instagram 링크 (데모)')" class="w-10 h-10 bg-gray-700 hover:bg-secondary-500 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:-translate-y-0.5">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" onclick="alert('Facebook 링크 (데모)')" class="w-10 h-10 bg-gray-700 hover:bg-secondary-500 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:-translate-y-0.5">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" onclick="alert('Twitter 링크 (데모)')" class="w-10 h-10 bg-gray-700 hover:bg-secondary-500 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:-translate-y-0.5">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" onclick="alert('YouTube 링크 (데모)')" class="w-10 h-10 bg-gray-700 hover:bg-secondary-500 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:-translate-y-0.5">
+                            <i class="fab fa-youtube"></i>
+                        </a>
                     </div>
                 </div>
 
-                <div class="footer-section">
-                    <h4>서비스</h4>
-                    <ul>
-                        <li><a href="#" onclick="showSection('chat')">AI 채팅</a></li>
-                        <li><a href="#" onclick="showSection('diary')">반려동물 일기</a></li>
-                        <li><a href="#" onclick="showSection('community')">커뮤니티</a></li>
-                        <li><a href="#" onclick="showSection('place')">플레이스</a></li>
+                <div>
+                    <h4 class="text-primary-400 text-lg font-semibold mb-4">서비스</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" onclick="showSection('chat')" class="text-gray-300 hover:text-primary-400 transition-colors">AI 채팅</a></li>
+                        <li><a href="#" onclick="showSection('diary')" class="text-gray-300 hover:text-primary-400 transition-colors">반려동물 일기</a></li>
+                        <li><a href="#" onclick="showSection('community')" class="text-gray-300 hover:text-primary-400 transition-colors">커뮤니티</a></li>
+                        <li><a href="#" onclick="showSection('place')" class="text-gray-300 hover:text-primary-400 transition-colors">플레이스</a></li>
                     </ul>
                 </div>
 
-                <div class="footer-section">
-                    <h4>고객지원</h4>
-                    <ul>
-                        <li><a href="#" onclick="alert('공지사항 (데모)')">공지사항</a></li>
-                        <li><a href="#" onclick="alert('FAQ (데모)')">자주 묻는 질문</a></li>
-                        <li><a href="#" onclick="alert('문의하기 (데모)')">문의하기</a></li>
-                        <li><a href="#" onclick="alert('이용가이드 (데모)')">이용가이드</a></li>
+                <div>
+                    <h4 class="text-primary-400 text-lg font-semibold mb-4">고객지원</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" onclick="alert('공지사항 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">공지사항</a></li>
+                        <li><a href="#" onclick="alert('FAQ (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">자주 묻는 질문</a></li>
+                        <li><a href="#" onclick="alert('문의하기 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">문의하기</a></li>
+                        <li><a href="#" onclick="alert('이용가이드 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">이용가이드</a></li>
                     </ul>
                 </div>
 
-                <div class="footer-section">
-                    <h4>정보</h4>
-                    <ul>
-                        <li><a href="#" onclick="alert('회사소개 (데모)')">회사소개</a></li>
-                        <li><a href="#" onclick="alert('이용약관 (데모)')">이용약관</a></li>
-                        <li><a href="#" onclick="alert('개인정보처리방침 (데모)')">개인정보처리방침</a></li>
-                        <li><a href="#" onclick="alert('사업자정보 (데모)')">사업자정보</a></li>
+                <div>
+                    <h4 class="text-primary-400 text-lg font-semibold mb-4">정보</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" onclick="alert('회사소개 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">회사소개</a></li>
+                        <li><a href="#" onclick="alert('이용약관 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">이용약관</a></li>
+                        <li><a href="#" onclick="alert('개인정보처리방침 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">개인정보처리방침</a></li>
+                        <li><a href="#" onclick="alert('사업자정보 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">사업자정보</a></li>
                     </ul>
                 </div>
             </div>
 
-            <div class="footer-bottom">
-                <div class="footer-copyright">
+            <div class="flex flex-col md:flex-row justify-between items-center pt-6 border-t border-gray-700 text-sm text-gray-400">
+                <div>
                     <p>&copy; 2025 MyPet's Voice. All rights reserved.</p>
                 </div>
-                <div class="footer-contact">
+                <div class="mt-2 md:mt-0">
                     <p>문의: contact@mypetsvoice.com | 대표번호: 02-1234-5678</p>
                 </div>
             </div>

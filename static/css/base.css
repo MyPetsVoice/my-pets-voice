@@ -1,862 +1,323 @@
-/* 기본 스타일 */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* 추가 커스텀 스타일 (Tailwind로 처리하기 어려운 스타일들) */
+
+/* 모바일 메뉴 토글 애니메이션 */
+.mobile-menu-active #nav-menu {
+    @apply flex flex-col absolute top-full left-0 right-0 bg-white shadow-lg rounded-b-xl p-5 space-y-0 z-50;
 }
 
-body {
-    font-family: 'Noto Sans KR', sans-serif;
-    line-height: 1.6;
-    color: #333;
-    background-color: #f8f9fa;
+.mobile-menu-active #nav-menu a {
+    @apply py-4 border-b border-gray-100 text-base;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+.mobile-menu-active #nav-menu a:last-child {
+    @apply border-b-0;
 }
 
-/* 버튼 스타일 */
-.btn {
-    display: inline-block;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    text-decoration: none;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    text-align: center;
+.mobile-menu-active #nav-menu a:hover {
+    @apply bg-primary-50 text-primary-600 rounded-lg px-3;
 }
 
-.btn-primary {
-    background-color: #ff6b6b;
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #ff5252;
-    transform: translateY(-2px);
-}
-
-.btn-outline {
-    background-color: transparent;
-    color: #ff6b6b;
-    border: 2px solid #ff6b6b;
-}
-
-.btn-outline:hover {
-    background-color: #ff6b6b;
-    color: white;
-}
-
-.btn-large {
-    padding: 15px 30px;
-    font-size: 16px;
-}
-
-.btn-full {
-    width: 100%;
-}
-
-/* 네비게이션 */
-.navbar {
-    background-color: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 70px;
-}
-
-.nav-logo {
-    display: flex;
-    align-items: center;
-    font-size: 24px;
-    font-weight: 700;
-    color: #ff6b6b;
-}
-
-.nav-logo:hover {
-    color: #ff6b6b;
-    background-color: transparent;
-}
-
-.nav-logo i {
-    margin-right: 8px;
-    font-size: 28px;
-}
-
-.nav-menu {
-    display: flex;
-    gap: 15px;
-    flex-wrap: nowrap;
-}
-
-.nav-link {
-    color: #333;
-    text-decoration: none;
-    font-weight: 500;
-    padding: 8px 10px;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    font-size: 14px;
-    white-space: nowrap;
-}
-
-.nav-menu .nav-link:hover,
-.nav-menu .nav-link.active {
-    background-color: #ff6b6b;
-    color: white;
-}
-
-.nav-link:has(.nav-logo):hover {
-    background-color: transparent;
-    color: inherit;
-}
-
-.mobile-menu-toggle {
-    display: none;
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: #333;
-    cursor: pointer;
-    padding: 5px;
-}
-
-.nav-user {
-    position: relative;
-    display: flex;
-    gap: 10px;
-    flex-shrink: 0;
-}
-
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-}
-
-.user-profile:hover {
-    background-color: #f5f5f5;
-}
-
-.user-profile img {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.user-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    min-width: 150px;
-    display: none;
-    z-index: 1001;
-}
-
-.user-menu.active {
-    display: block;
-}
-
-.user-menu a {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 16px;
-    color: #333;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
-
-.user-menu a:hover {
-    background-color: #f5f5f5;
-}
-
-/* 메인 컨테이너 */
-.main-container {
-    min-height: calc(100vh - 70px);
-}
-
-.section {
-    display: none;
-    padding: 40px 0;
-}
-
-.section.active {
-    display: block;
-}
-
-/* 데모 알림 */
-.demo-notice {
-    background-color: #d1ecf1;
-    border: 1px solid #bee5eb;
-    color: #0c5460;
-    padding: 15px;
-    border-radius: 8px;
-    margin: 20px;
-    text-align: center;
-    font-weight: 500;
-}
-
-/* 채팅 섹션 */
+/* 채팅 컨테이너 스타일 */
 .chat-container {
-    max-width: 800px;
-    margin: 0 auto;
+    @apply max-w-4xl mx-auto flex flex-col bg-white rounded-xl shadow-xl;
     height: calc(100vh - 150px);
-    display: flex;
-    flex-direction: column;
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
 .chat-header {
-    padding: 20px;
-    border-bottom: 1px solid #eee;
+    @apply p-5 border-b border-gray-200 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-t-xl;
 }
 
 .pet-selector select {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
+    @apply w-full p-3 border-2 border-gray-200 rounded-lg text-sm bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all;
 }
 
 .chat-messages {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    background-color: #f8f9fa;
+    @apply flex-1 p-5 overflow-y-auto bg-gradient-to-b from-gray-50 to-white;
 }
 
 .message {
-    margin-bottom: 15px;
-    display: flex;
-    align-items: flex-end;
-    gap: 10px;
+    @apply mb-4 flex items-end gap-3;
 }
 
 .message.user {
-    flex-direction: row-reverse;
+    @apply flex-row-reverse;
 }
 
 .message-bubble {
-    max-width: 70%;
-    padding: 12px 16px;
-    border-radius: 18px;
-    word-wrap: break-word;
+    @apply max-w-xs lg:max-w-md p-4 rounded-2xl break-words;
 }
 
 .message.user .message-bubble {
-    background-color: #ff6b6b;
-    color: white;
-    border-bottom-right-radius: 6px;
+    @apply bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-br-md;
 }
 
 .message.pet .message-bubble {
-    background-color: white;
-    color: #333;
-    border: 1px solid #ddd;
-    border-bottom-left-radius: 6px;
+    @apply bg-white border border-gray-200 text-gray-800 rounded-bl-md shadow-sm;
 }
 
 .message-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    background-color: #ff6b6b;
-    color: white;
+    @apply w-8 h-8 rounded-full flex items-center justify-center text-sm bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-medium;
 }
 
 .chat-input-container {
-    padding: 20px;
-    border-top: 1px solid #eee;
-    background-color: white;
+    @apply p-5 border-t border-gray-200 bg-white rounded-b-xl;
 }
 
 .chat-input {
-    display: flex;
-    gap: 10px;
+    @apply flex gap-3;
 }
 
 .chat-input input {
-    flex: 1;
-    padding: 12px 16px;
-    border: 2px solid #ddd;
-    border-radius: 25px;
-    font-size: 14px;
-    outline: none;
-}
-
-.chat-input input:focus {
-    border-color: #ff6b6b;
+    @apply flex-1 p-4 border-2 border-gray-200 rounded-full text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all;
 }
 
 .chat-input button {
-    width: 45px;
-    height: 45px;
-    border: none;
-    background-color: #ff6b6b;
-    color: white;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease;
+    @apply w-12 h-12 border-none bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-full cursor-pointer flex items-center justify-center transition-all hover:from-secondary-600 hover:to-secondary-700 hover:shadow-lg hover:-translate-y-0.5;
 }
 
-.chat-input button:hover {
-    background-color: #ff5252;
-}
-
-/* 일기 섹션 */
+/* 일기 섹션 스타일 */
 .diary-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+    @apply max-w-7xl mx-auto p-5;
 }
 
 .diary-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+    @apply flex justify-between items-center mb-8;
 }
 
 .diary-filters {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    gap: 20px;
+    @apply flex justify-between items-center mb-8 gap-5;
 }
 
 .view-toggle {
-    display: flex;
-    border: 2px solid #ff6b6b;
-    border-radius: 25px;
-    overflow: hidden;
+    @apply flex border-2 border-primary-500 rounded-full overflow-hidden;
 }
 
 .view-btn {
-    padding: 8px 20px;
-    border: none;
-    background-color: transparent;
-    color: #ff6b6b;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    @apply py-2 px-5 border-none bg-transparent text-primary-500 cursor-pointer transition-all;
 }
 
 .view-btn.active {
-    background-color: #ff6b6b;
-    color: white;
+    @apply bg-primary-500 text-white;
 }
 
 .diary-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
-    margin-bottom: 40px;
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10;
 }
 
 .diary-card {
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    overflow: hidden;
-    transition: transform 0.3s ease;
-    cursor: pointer;
-}
-
-.diary-card:hover {
-    transform: translateY(-5px);
+    @apply bg-white rounded-xl shadow-lg overflow-hidden transition-all hover:-translate-y-1 hover:shadow-xl cursor-pointer;
 }
 
 .diary-image {
-    width: 100%;
-    height: 200px;
-    background-color: #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 48px;
+    @apply w-full h-48 bg-gradient-to-br from-primary-100 to-secondary-100 flex items-center justify-center text-5xl text-primary-600;
 }
 
 .diary-content {
-    padding: 20px;
+    @apply p-5;
 }
 
 .diary-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    font-size: 12px;
-    color: #666;
+    @apply flex justify-between items-center mb-3 text-xs text-gray-500;
 }
 
 .diary-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: #333;
+    @apply text-lg font-semibold mb-3 text-gray-800;
 }
 
 .diary-preview {
-    color: #666;
-    line-height: 1.4;
-    margin-bottom: 15px;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    @apply text-gray-600 leading-relaxed mb-4 line-clamp-3;
 }
 
 .diary-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid #eee;
-    padding-top: 15px;
+    @apply flex justify-between items-center border-t border-gray-100 pt-4;
 }
 
 .diary-pet {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    @apply flex items-center gap-2;
 }
 
 .diary-pet-avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: #ff6b6b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 12px;
+    @apply w-6 h-6 rounded-full bg-gradient-to-r from-primary-500 to-secondary-500 flex items-center justify-center text-white text-xs;
 }
 
 .diary-stats {
-    display: flex;
-    gap: 15px;
-    font-size: 12px;
-    color: #666;
+    @apply flex gap-4 text-xs text-gray-500;
 }
 
-/* 마이페이지 섹션 */
+/* 마이페이지 스타일 */
 .mypage-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 40px;
+    @apply max-w-7xl mx-auto p-5 grid grid-cols-1 lg:grid-cols-4 gap-10;
 }
 
 .mypage-sidebar {
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    overflow: hidden;
-    height: fit-content;
+    @apply lg:col-span-1 bg-white rounded-xl shadow-lg overflow-hidden h-fit;
 }
 
 .profile-card {
-    padding: 30px;
-    text-align: center;
-    border-bottom: 1px solid #eee;
+    @apply p-8 text-center border-b border-gray-100 bg-gradient-to-b from-primary-50 to-white;
 }
 
 .profile-image {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 20px;
+    @apply relative w-24 h-24 mx-auto mb-5;
 }
 
 .profile-image img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
+    @apply w-full h-full rounded-full object-cover border-4 border-white shadow-lg;
 }
 
 .image-upload {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 32px;
-    height: 32px;
-    background-color: #ff6b6b;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    @apply absolute bottom-0 right-0 w-8 h-8 bg-gradient-to-r from-secondary-500 to-secondary-600 rounded-full flex items-center justify-center text-white cursor-pointer shadow-lg hover:shadow-xl transition-all;
 }
 
 .profile-card h3 {
-    font-size: 18px;
-    margin-bottom: 8px;
-    color: #333;
+    @apply text-lg font-semibold mb-2 text-gray-800;
 }
 
 .profile-card p {
-    color: #666;
-    font-size: 14px;
+    @apply text-gray-600 text-sm;
 }
 
 .menu-list {
-    display: flex;
-    flex-direction: column;
+    @apply flex flex-col;
 }
 
 .menu-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 20px;
-    border: none;
-    background-color: transparent;
-    color: #666;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.3s ease;
+    @apply flex items-center gap-3 p-4 border-none bg-transparent text-gray-600 cursor-pointer text-left transition-all hover:bg-primary-500 hover:text-white;
 }
 
-.menu-item:hover,
 .menu-item.active {
-    background-color: #ff6b6b;
-    color: white;
+    @apply bg-gradient-to-r from-primary-500 to-secondary-500 text-white;
 }
 
 .menu-item i {
-    font-size: 16px;
-    width: 20px;
+    @apply text-base w-5;
 }
 
 .mypage-content {
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    padding: 30px;
+    @apply lg:col-span-3 bg-white rounded-xl shadow-lg p-8;
 }
 
 .tab-content {
-    display: none;
+    @apply hidden;
 }
 
 .tab-content.active {
-    display: block;
+    @apply block;
 }
 
 .tab-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+    @apply flex justify-between items-center mb-8;
 }
 
 .pets-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5;
 }
 
 .pet-card-mypage {
-    background-color: #f8f9fa;
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.pet-card-mypage:hover {
-    transform: translateY(-3px);
+    @apply bg-gradient-to-b from-primary-50 to-white rounded-xl p-5 text-center transition-all hover:-translate-y-1 hover:shadow-md;
 }
 
 .pet-card-mypage img {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 15px;
+    @apply w-20 h-20 rounded-full object-cover mx-auto mb-4 border-4 border-white shadow-lg;
 }
 
 .pet-card-mypage h4 {
-    font-size: 16px;
-    margin-bottom: 8px;
-    color: #333;
+    @apply text-base font-semibold mb-2 text-gray-800;
 }
 
 .pet-card-mypage p {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 15px;
+    @apply text-gray-600 text-sm mb-4;
 }
 
 .pet-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
+    @apply flex gap-2 justify-center;
 }
 
 .pet-actions button {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-    transition: background-color 0.3s ease;
+    @apply py-2 px-3 border-none rounded-lg cursor-pointer text-xs transition-all;
 }
 
 .pet-edit {
-    background-color: #ff6b6b;
-    color: white;
+    @apply bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700;
 }
 
 .pet-delete {
-    background-color: #dc3545;
-    color: white;
+    @apply bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700;
 }
 
 /* 폼 스타일 */
 .form-group {
-    margin-bottom: 20px;
+    @apply mb-5;
 }
 
 .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #333;
+    @apply block mb-2 font-medium text-gray-700;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.3s ease;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    border-color: #ff6b6b;
+    @apply w-full p-4 border-2 border-gray-200 rounded-lg text-sm outline-none transition-all focus:border-primary-500 focus:ring-2 focus:ring-primary-200;
 }
 
 .form-group textarea {
-    min-height: 100px;
-    resize: vertical;
+    @apply min-h-24 resize-y;
 }
 
-/* 푸터 */
-.footer {
-    background-color: #2c3e50;
-    color: white;
-    margin-top: 60px;
+/* 버튼 스타일 */
+.btn {
+    @apply inline-flex items-center px-5 py-3 border-none rounded-lg no-underline cursor-pointer text-sm font-medium transition-all text-center;
 }
 
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 20px 20px;
+.btn-primary {
+    @apply bg-gradient-to-r from-secondary-500 to-secondary-600 text-white hover:from-secondary-600 hover:to-secondary-700 hover:-translate-y-0.5 shadow-md;
 }
 
-.footer-content {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 40px;
-    margin-bottom: 30px;
+.btn-outline {
+    @apply bg-transparent text-secondary-500 border-2 border-secondary-500 hover:bg-secondary-500 hover:text-white;
 }
 
-.footer-section h4 {
-    color: #ff6b6b;
-    margin-bottom: 15px;
-    font-size: 16px;
-    font-weight: 600;
+.btn-large {
+    @apply px-8 py-4 text-base;
 }
 
-.footer-logo {
-    display: flex;
-    align-items: center;
-    font-size: 24px;
-    font-weight: 700;
-    color: #ff6b6b;
-    margin-bottom: 15px;
+.btn-full {
+    @apply w-full;
 }
 
-.footer-logo i {
-    margin-right: 8px;
-    font-size: 28px;
+/* 데모 알림 */
+.demo-notice {
+    @apply bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg mx-5 text-center font-medium;
 }
 
-.footer-description {
-    color: #bdc3c7;
-    line-height: 1.6;
-    margin-bottom: 20px;
+/* 유틸리티 클래스 */
+.container {
+    @apply max-w-7xl mx-auto px-5;
 }
 
-.footer-social {
-    display: flex;
-    gap: 10px;
+.section {
+    @apply hidden py-10;
 }
 
-.footer-social a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background-color: #34495e;
-    color: white;
-    border-radius: 50%;
-    text-decoration: none;
-    transition: all 0.3s ease;
+.section.active {
+    @apply block;
 }
 
-.footer-social a:hover {
-    background-color: #ff6b6b;
-    transform: translateY(-2px);
+.main-container {
+    min-height: calc(100vh - 70px);
 }
 
-.footer-section ul {
-    list-style: none;
-    padding: 0;
-}
-
-.footer-section ul li {
-    margin-bottom: 8px;
-}
-
-.footer-section ul li a {
-    color: #bdc3c7;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.footer-section ul li a:hover {
-    color: #ff6b6b;
-}
-
-.footer-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 20px;
-    border-top: 1px solid #34495e;
-    font-size: 14px;
-    color: #bdc3c7;
-}
-
-/* 반응형 */
+/* 반응형 추가 스타일 */
 @media (max-width: 768px) {
-    .mobile-menu-toggle {
-        display: block;
-    }
-    
-    .nav-menu {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background-color: white;
-        flex-direction: column;
-        gap: 0;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        border-radius: 0 0 12px 12px;
-        padding: 20px;
-        z-index: 1000;
-    }
-    
-    .nav-menu.active {
-        display: flex;
-    }
-    
-    .nav-menu .nav-link {
-        padding: 15px 0;
-        border-bottom: 1px solid #eee;
-        border-radius: 0;
-        font-size: 16px;
-    }
-    
-    .nav-menu .nav-link:last-child {
-        border-bottom: none;
-    }
-    
-    .nav-menu .nav-link:hover {
-        background-color: #f8f9fa;
-        color: #ff6b6b;
-    }
-    
-    .nav-user {
-        gap: 5px;
-    }
-    
-    .nav-user .btn {
-        padding: 8px 12px;
-        font-size: 12px;
+    .mobile-menu-active #nav-menu {
+        @apply flex;
     }
     
     .mypage-container {
-        grid-template-columns: 1fr;
-        gap: 20px;
+        @apply grid-cols-1 gap-5;
     }
     
     .diary-filters {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
-    }
-    
-    .footer-content {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
-    
-    .footer-bottom {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
+        @apply flex-col items-stretch gap-4;
     }
 }
