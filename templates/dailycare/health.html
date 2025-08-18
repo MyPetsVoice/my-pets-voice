@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}반려동물 건강관리 - MyPet's Voice{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-5 py-8">
+    <!-- 페이지 헤더 -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-heartbeat text-red-500 mr-3"></i>
+            반려동물 건강관리
+        </h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            우리 아이의 건강한 삶을 위한 체계적인 건강 관리 서비스입니다
+        </p>
+    </div>
+
+    <!-- 건강 상태 대시보드 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">전체 건강점수</h3>
+                    <p class="text-3xl font-bold text-green-500 mt-2">85점</p>
+                    <p class="text-sm text-gray-500">매우 좋음</p>
+                </div>
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-heart text-2xl text-green-500"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">마지막 검진</h3>
+                    <p class="text-lg font-bold text-blue-500 mt-2">7일 전</p>
+                    <p class="text-sm text-gray-500">정기검진</p>
+                </div>
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-stethoscope text-2xl text-blue-500"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">예정된 접종</h3>
+                    <p class="text-lg font-bold text-orange-500 mt-2">5일 후</p>
+                    <p class="text-sm text-gray-500">광견병 예방접종</p>
+                </div>
+                <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-syringe text-2xl text-orange-500"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 건강 관리 메뉴 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-red-200 transition-colors">
+                    <i class="fas fa-weight text-2xl text-red-500"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">체중 관리</h3>
+                <p class="text-sm text-gray-600">정기적인 체중 측정과 관리</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
+                    <i class="fas fa-pills text-2xl text-blue-500"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">투약 관리</h3>
+                <p class="text-sm text-gray-600">복용 중인 약물과 일정 관리</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
+                    <i class="fas fa-calendar-check text-2xl text-green-500"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">접종 일정</h3>
+                <p class="text-sm text-gray-600">예방접종 일정과 기록 관리</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-200 transition-colors">
+                    <i class="fas fa-notes-medical text-2xl text-purple-500"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">건강 기록</h3>
+                <p class="text-sm text-gray-600">일일 건강 상태와 증상 기록</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 최근 건강 기록 -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">
+                <i class="fas fa-chart-line text-primary-500 mr-2"></i>
+                최근 건강 기록
+            </h2>
+            <button class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
+                <i class="fas fa-plus mr-2"></i>새 기록 추가
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-check text-green-500"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800">정기 건강검진</h4>
+                        <p class="text-sm text-gray-600">혈액검사, 심장검사 완료</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm font-medium text-gray-800">2024-01-15</p>
+                    <p class="text-xs text-gray-500">김수의사</p>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-weight text-blue-500"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800">체중 측정</h4>
+                        <p class="text-sm text-gray-600">4.2kg (±0.1kg)</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm font-medium text-gray-800">2024-01-10</p>
+                    <p class="text-xs text-gray-500">집에서</p>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-syringe text-orange-500"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800">DHPP 접종</h4>
+                        <p class="text-sm text-gray-600">5차 접종 완료</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm font-medium text-gray-800">2024-01-05</p>
+                    <p class="text-xs text-gray-500">행복동물병원</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 건강 팁 -->
+    <div class="bg-gradient-to-r from-primary-50 to-secondary-50 rounded-xl p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-lightbulb text-primary-500 mr-2"></i>
+            오늘의 건강 팁
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white rounded-lg p-4 shadow-sm">
+                <h4 class="font-semibold text-gray-800 mb-2">겨울철 털 관리</h4>
+                <p class="text-sm text-gray-600">건조한 겨울철에는 반려동물의 털과 피부가 건조해지기 쉽습니다. 정기적인 브러싱과 보습이 중요해요.</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 shadow-sm">
+                <h4 class="font-semibold text-gray-800 mb-2">적정 체온 유지</h4>
+                <p class="text-sm text-gray-600">개의 정상 체온은 38-39℃입니다. 체온이 급격히 변한다면 수의사와 상담하세요.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

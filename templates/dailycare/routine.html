@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block title %}일상 루틴 관리 - MyPet's Voice{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-5 py-8">
+    <!-- 페이지 헤더 -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-calendar-alt text-primary-500 mr-3"></i>
+            일상 루틴 관리
+        </h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            반려동물의 규칙적인 생활 패턴을 만들어 건강한 하루를 관리해보세요
+        </p>
+    </div>
+
+    <!-- 오늘의 루틴 요약 -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">
+                <i class="fas fa-today text-primary-500 mr-2"></i>
+                오늘의 루틴 (1월 22일)
+            </h2>
+            <div class="text-right">
+                <p class="text-sm text-gray-500">완료율</p>
+                <p class="text-2xl font-bold text-green-500">75%</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <i class="fas fa-check text-white"></i>
+                </div>
+                <h4 class="font-semibold text-gray-800">아침 식사</h4>
+                <p class="text-sm text-green-600">완료</p>
+            </div>
+
+            <div class="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <i class="fas fa-check text-white"></i>
+                </div>
+                <h4 class="font-semibold text-gray-800">산책</h4>
+                <p class="text-sm text-green-600">완료</p>
+            </div>
+
+            <div class="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                <div class="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <i class="fas fa-clock text-white"></i>
+                </div>
+                <h4 class="font-semibold text-gray-800">점심 식사</h4>
+                <p class="text-sm text-yellow-600">30분 후</p>
+            </div>
+
+            <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div class="w-12 h-12 bg-gray-400 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <i class="fas fa-moon text-white"></i>
+                </div>
+                <h4 class="font-semibold text-gray-800">저녁 식사</h4>
+                <p class="text-sm text-gray-500">예정</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- 루틴 관리 -->
+        <div class="lg:col-span-2">
+            <!-- 식사 루틴 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">
+                        <i class="fas fa-utensils text-secondary-500 mr-2"></i>
+                        식사 루틴
+                    </h3>
+                    <button class="px-3 py-1 bg-secondary-500 text-white rounded-md text-sm hover:bg-secondary-600 transition-colors">
+                        <i class="fas fa-plus mr-1"></i>추가
+                    </button>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" checked class="w-5 h-5 text-green-500 rounded focus:ring-green-500">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">아침 식사</h4>
+                                <p class="text-sm text-gray-600">오전 8:00 | 사료 100g + 물</p>
+                            </div>
+                        </div>
+                        <span class="text-sm text-green-600 font-medium">완료</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" class="w-5 h-5 text-yellow-500 rounded focus:ring-yellow-500">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">점심 식사</h4>
+                                <p class="text-sm text-gray-600">오후 12:00 | 간식 50g</p>
+                            </div>
+                        </div>
+                        <span class="text-sm text-yellow-600 font-medium">30분 후</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" class="w-5 h-5 text-gray-400 rounded focus:ring-gray-500">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">저녁 식사</h4>
+                                <p class="text-sm text-gray-600">오후 6:00 | 사료 100g + 물</p>
+                            </div>
+                        </div>
+                        <span class="text-sm text-gray-500 font-medium">예정</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 활동 루틴 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">
+                        <i class="fas fa-running text-primary-500 mr-2"></i>
+                        활동 루틴
+                    </h3>
+                    <button class="px-3 py-1 bg-primary-500 text-white rounded-md text-sm hover:bg-primary-600 transition-colors">
+                        <i class="fas fa-plus mr-1"></i>추가
+                    </button>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" checked class="w-5 h-5 text-green-500 rounded focus:ring-green-500">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">아침 산책</h4>
+                                <p class="text-sm text-gray-600">오전 9:00 | 30분 | 근린공원</p>
+                            </div>
+                        </div>
+                        <span class="text-sm text-green-600 font-medium">완료</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" class="w-5 h-5 text-gray-400 rounded focus:ring-gray-500">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">저녁 산책</h4>
+                                <p class="text-sm text-gray-600">오후 7:00 | 45분 | 강변공원</p>
+                            </div>
+                        </div>
+                        <span class="text-sm text-gray-500 font-medium">예정</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" class="w-5 h-5 text-gray-400 rounded focus:ring-gray-500">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">놀이 시간</h4>
+                                <p class="text-sm text-gray-600">오후 8:00 | 20분 | 실내 놀이</p>
+                            </div>
+                        </div>
+                        <span class="text-sm text-gray-500 font-medium">예정</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 케어 루틴 -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">
+                        <i class="fas fa-spa text-blue-500 mr-2"></i>
+                        케어 루틴
+                    </h3>
+                    <button class="px-3 py-1 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-plus mr-1"></i>추가
+                    </button>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" class="w-5 h-5 text-gray-400 rounded focus:ring-gray-500">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">양치하기</h4>
+                                <p class="text-sm text-gray-600">매일 오후 9:00</p>
+                            </div>
+                        </div>
+                        <span class="text-sm text-gray-500 font-medium">예정</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" class="w-5 h-5 text-blue-500 rounded focus:ring-blue-500">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">털 빗기</h4>
+                                <p class="text-sm text-gray-600">주 3회 | 다음: 내일</p>
+                            </div>
+                        </div>
+                        <span class="text-sm text-blue-600 font-medium">내일</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 사이드바 -->
+        <div class="space-y-6">
+            <!-- 주간 통계 -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-chart-pie text-primary-500 mr-2"></i>
+                    주간 통계
+                </h3>
+
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-600">식사 완료율</span>
+                            <span class="font-medium text-gray-800">95%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 95%"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-600">산책 완료율</span>
+                            <span class="font-medium text-gray-800">85%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-600">케어 완료율</span>
+                            <span class="font-medium text-gray-800">70%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-purple-500 h-2 rounded-full" style="width: 70%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 빠른 액션 -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-bolt text-secondary-500 mr-2"></i>
+                    빠른 액션
+                </h3>
+
+                <div class="space-y-3">
+                    <button class="w-full p-3 bg-green-50 border border-green-200 rounded-lg text-left hover:bg-green-100 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-utensils text-green-500"></i>
+                            <span class="text-gray-800 font-medium">식사 완료 표시</span>
+                        </div>
+                    </button>
+
+                    <button class="w-full p-3 bg-blue-50 border border-blue-200 rounded-lg text-left hover:bg-blue-100 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-running text-blue-500"></i>
+                            <span class="text-gray-800 font-medium">산책 시작</span>
+                        </div>
+                    </button>
+
+                    <button class="w-full p-3 bg-purple-50 border border-purple-200 rounded-lg text-left hover:bg-purple-100 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-plus text-purple-500"></i>
+                            <span class="text-gray-800 font-medium">새 루틴 추가</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 오늘의 팁 -->
+            <div class="bg-gradient-to-br from-primary-50 to-secondary-50 rounded-xl p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-lightbulb text-primary-500 mr-2"></i>
+                    오늘의 팁
+                </h3>
+                <p class="text-sm text-gray-700 leading-relaxed">
+                    규칙적인 식사와 산책 시간을 유지하면 반려동물의 스트레스가 줄어들고 건강한 생활리듬을 만들 수 있어요. 💪
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 체크박스 상태 변경 시 스타일 업데이트
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const routineItem = this.closest('.p-4');
+            const statusSpan = routineItem.querySelector('span:last-child');
+            
+            if (this.checked) {
+                routineItem.className = routineItem.className.replace(/bg-\w+-50 border-\w+-200/g, 'bg-green-50 border-green-200');
+                statusSpan.textContent = '완료';
+                statusSpan.className = 'text-sm text-green-600 font-medium';
+            } else {
+                routineItem.className = routineItem.className.replace(/bg-green-50 border-green-200/g, 'bg-gray-50 border-gray-200');
+                statusSpan.textContent = '예정';
+                statusSpan.className = 'text-sm text-gray-500 font-medium';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
