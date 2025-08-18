@@ -62,99 +62,23 @@
             </button>
             
             <div class="hidden md:flex space-x-4" id="nav-menu">
+                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">반려동물과 대화하기</a>
                 <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">너의 일기장</a>
-                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">커뮤니티</a>
-                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">플레이스</a>
-                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">투어스팟</a>
-                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">데일리케어</a>
+                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">데일리 케어</a>
                 <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">마이페이지</a>
             </div>
 
             <!-- 날씨 api 가져와서 렌더링 -->
 
             
-            <div class="flex items-center space-x-3">
-                <!-- 알림 아이콘 -->
-                <div class="relative">
-                    <button id="notification-btn" class="relative p-2 text-gray-700 hover:text-secondary-500 transition-colors" onclick="toggleNotifications()">
-                        <i class="fas fa-bell text-xl"></i>
-                        <!-- 알림 배지 -->
-                        <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">3</span>
-                    </button>
+
                     
-                    <!-- 알림 드롭다운 -->
-                    <div id="notification-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50 hidden">
-                        <div class="p-4 border-b border-gray-200">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold text-gray-800">알림</h3>
-                                <button class="text-sm text-secondary-500 hover:text-secondary-600">모두 읽음</button>
-                            </div>
-                        </div>
+
                         
-                        <div class="max-h-96 overflow-y-auto">
-                            <!-- 알림 아이템들 -->
-                            <div class="notification-item p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
-                                <div class="flex items-start space-x-3">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-                                            <i class="fas fa-heart text-white text-sm"></i>
-                                        </div>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900">새로운 좋아요</p>
-                                        <p class="text-sm text-gray-500">누군가가 당신의 게시물을 좋아합니다</p>
-                                        <p class="text-xs text-gray-400 mt-1">5분 전</p>
-                                    </div>
-                                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="notification-item p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
-                                <div class="flex items-start space-x-3">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-8 h-8 bg-secondary-500 rounded-full flex items-center justify-center">
-                                            <i class="fas fa-comment text-white text-sm"></i>
-                                        </div>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900">새로운 댓글</p>
-                                        <p class="text-sm text-gray-500">멍멍이가 너무 귀여워요!</p>
-                                        <p class="text-xs text-gray-400 mt-1">1시간 전</p>
-                                    </div>
-                                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="notification-item p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
-                                <div class="flex items-start space-x-3">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                                            <i class="fas fa-user-plus text-white text-sm"></i>
-                                        </div>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900">새로운 팔로워</p>
-                                        <p class="text-sm text-gray-500">김철수님이 당신을 팔로우했습니다</p>
-                                        <p class="text-xs text-gray-400 mt-1">2시간 전</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="p-4 border-t border-gray-200">
-                            <button class="w-full text-center text-sm text-secondary-500 hover:text-secondary-600 font-medium">
-                                모든 알림 보기
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
                 <button class="inline-flex items-center px-4 py-2 bg-secondary-500 text-white rounded-lg hover:bg-secondary-600 transition-all duration-300 hover:-translate-y-0.5 shadow-md text-sm font-medium">
                     <i class="fas fa-sign-in-alt mr-2"></i> 로그인
                 </button>
-                <button class="px-4 py-2 border-2 border-secondary-500 text-secondary-500 rounded-lg hover:bg-secondary-500 hover:text-white transition-all duration-300 text-sm font-medium">
-                    회원가입
-                </button>
+
             </div>
         </div>
     </nav>
@@ -195,10 +119,9 @@
                 <div>
                     <h4 class="text-primary-400 text-lg font-semibold mb-4">서비스</h4>
                     <ul class="space-y-2">
-                        <li><a href="#" onclick="showSection('chat')" class="text-gray-300 hover:text-primary-400 transition-colors">AI 채팅</a></li>
+                        <li><a href="#" onclick="showSection('chat')" class="text-gray-300 hover:text-primary-400 transition-colors">반려동물과 대화하기</a></li>
                         <li><a href="#" onclick="showSection('diary')" class="text-gray-300 hover:text-primary-400 transition-colors">반려동물 일기</a></li>
-                        <li><a href="#" onclick="showSection('community')" class="text-gray-300 hover:text-primary-400 transition-colors">커뮤니티</a></li>
-                        <li><a href="#" onclick="showSection('place')" class="text-gray-300 hover:text-primary-400 transition-colors">플레이스</a></li>
+                        <li><a href="#" onclick="showSection('dailycare')" class="text-gray-300 hover:text-primary-400 transition-colors">데일리 케어</a></li>
                     </ul>
                 </div>
 
