@@ -1,1 +1,9 @@
 .env
+# =============== #
+# Mac OS 관련 파일 #
+# =============== #
+
+# Finder 설정 파일
+.DS_Store
+.AppleDouble
+.LSOverride
