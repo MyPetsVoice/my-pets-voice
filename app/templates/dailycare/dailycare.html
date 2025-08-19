@@ -1,0 +1,1422 @@
+{% extends "app/templates/base.html" %}
+{% block title %}반려동물의 목소리가 들려 - 건강관리{% endblock %}
+{% block content %}
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .pet-selector {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .pet-card {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .pet-card.active {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            padding: 30px;
+        }
+        
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .right-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            height: fit-content;
+            position: sticky;
+            top: 30px;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid #ff6b6b;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: #f1f3f4;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 25px;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 12px 20px;
+            text-align: center;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .health-item {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px dashed #e0e7ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .health-item:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .health-item h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .health-item p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .daily-care-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #e1e5e9;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .ai-chat-widget {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .ai-chat-widget h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .ai-chat-widget p {
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        
+        .health-report-widget {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .health-report-widget h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .health-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .calendar-widget {
+            margin-top: 25px;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-day:hover {
+            background: #e3f2fd;
+        }
+        
+        .calendar-day.today {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .calendar-day.has-care {
+            background: #fff3e0;
+            color: #f57c00;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .right-panel {
+                position: static;
+            }
+            
+            .health-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .daily-care-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                justify-content: center;
+            }
+        }
+        
+        /* 모달 스타일 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal-content {
+            padding: 30px;
+        }
+        
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .modal-form .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e5e9;
+        }
+        
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+        
+        .file-upload {
+            border: 2px dashed #e1e5e9;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .file-upload input {
+            display: none;
+        }
+        
+        /* 대화창 스타일 */
+        .chat-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+        
+        .chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .message.ai {
+            align-self: flex-start;
+            background: #f1f3f4;
+            color: #333;
+        }
+        
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid #e1e5e9;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        
+        .chat-input input:focus {
+            border-color: #667eea;
+        }
+        
+        .chat-send {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .chat-send:hover {
+            transform: scale(1.05);
+        }
+        
+        /* 분석 페이지 스타일 */
+        .analysis-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+        
+        .analysis-header {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .analysis-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e1e5e9;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .chat-container {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+            }
+            
+            .analysis-content {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🐾 데일리케어</h1>
+            <p>우리 반려동물의 건강을 함께 관리해요</p>
+            <div class="pet-selector">
+                <div class="pet-card active">
+                    <strong>멍멍이</strong>
+                    <small>골든리트리버</small>
+                </div>
+                <div class="pet-card">
+                    <strong>야옹이</strong>
+                    <small>페르시안</small>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <!-- 의료기록 관리 섹션 -->
+                <div class="section-card">
+                    <h2 class="section-title">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        의료기록 관리
+                    </h2>
+                    
+                    <div class="health-grid">
+                        <div class="health-item" onclick="openModal('allergy')">
+                            <h4>🤧 알러지 정보</h4>
+                            <p>음식, 환경 알러지 등록</p>
+                        </div>
+                        <div class="health-item" onclick="openModal('disease')">
+                            <h4>🏥 질병 이력</h4>
+                            <p>과거 질병 및 치료 기록</p>
+                        </div>
+                        <div class="health-item" onclick="openModal('surgery')">
+                            <h4>⚕️ 수술 이력</h4>
+                            <p>수술 날짜 및 내용 기록</p>
+                        </div>
+                        <div class="health-item" onclick="openModal('checkup')">
+                            <h4>🔍 건강검진</h4>
+                            <p>정기검진 결과 관리</p>
+                        </div>
+                        <div class="health-item" onclick="openModal('vaccination')">
+                            <h4>💉 예방접종</h4>
+                            <p>접종 기록 및 일정 관리</p>
+                        </div>
+                        <div class="health-item" onclick="openModal('medication')">
+                            <h4>💊 복용약물</h4>
+                            <p>현재 복용 중인 약물 정보</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 일상 케어 관리 섹션 -->
+                <div class="section-card">
+                    <h2 class="section-title">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                        오늘의 케어 기록
+                    </h2>
+                    
+                    <div class="nav-tabs">
+                        <button class="nav-tab active" onclick="switchTab('daily')">일상 기록</button>
+                        <button class="nav-tab" onclick="switchTab('symptoms')">증상 기록</button>
+                        <button class="nav-tab" onclick="switchTab('schedule')">케어 일정</button>
+                    </div>
+                    
+                    <div id="daily-tab" class="tab-content active">
+                        <form class="daily-care-form">
+                            <div class="form-group">
+                                <label>🍽️ 먹이</label>
+                                <select>
+                                    <option>먹음</option>
+                                    <option>조금 먹음</option>
+                                    <option>안 먹음</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>💧 급수량</label>
+                                <input type="number" placeholder="ml 단위로 입력">
+                            </div>
+                            <div class="form-group">
+                                <label>💩 배변 상태</label>
+                                <select>
+                                    <option>정상</option>
+                                    <option>설사</option>
+                                    <option>변비</option>
+                                    <option>혈변</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>⚖️ 몸무게</label>
+                                <input type="number" step="0.1" placeholder="kg 단위로 입력">
+                            </div>
+                            <div class="form-group">
+                                <label>🚶 산책 시간</label>
+                                <input type="number" placeholder="분 단위로 입력">
+                            </div>
+                            <div class="form-group">
+                                <label>💊 약/영양제</label>
+                                <textarea placeholder="복용한 약물이나 영양제를 기록하세요"></textarea>
+                            </div>
+                        </form>
+                        <div class="quick-actions">
+                            <button class="btn btn-primary">📝 기록 저장</button>
+                            <button class="btn btn-secondary">📊 기록 보기</button>
+                        </div>
+                    </div>
+                    
+                    <div id="symptoms-tab" class="tab-content">
+                        <form class="daily-care-form">
+                            <div class="form-group">
+                                <label>🌡️ 체온</label>
+                                <input type="number" step="0.1" placeholder="°C 단위로 입력">
+                            </div>
+                            <div class="form-group">
+                                <label>😷 증상</label>
+                                <textarea placeholder="관찰된 증상을 자세히 기록하세요"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>⏰ 지속 시간</label>
+                                <input type="text" placeholder="예: 오전부터, 3시간째">
+                            </div>
+                            <div class="form-group">
+                                <label>📈 심각도</label>
+                                <select>
+                                    <option>경미함</option>
+                                    <option>보통</option>
+                                    <option>심각함</option>
+                                    <option>응급</option>
+                                </select>
+                            </div>
+                        </form>
+                        <div class="quick-actions">
+                            <button class="btn btn-primary">🚨 응급 상담</button>
+                            <button class="btn btn-secondary">📝 증상 기록</button>
+                        </div>
+                    </div>
+                    
+                    <div id="schedule-tab" class="tab-content">
+                        <div class="form-group">
+                            <label>📅 케어 일정 추가</label>
+                            <input type="text" placeholder="케어 내용을 입력하세요">
+                        </div>
+                        <div class="quick-actions">
+                            <button class="btn btn-primary">➕ 일정 추가</button>
+                            <button class="btn btn-secondary">📋 전체 일정</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <!-- AI 건강상담 위젯 -->
+                <div class="ai-chat-widget">
+                    <h3>🤖 AI 건강상담</h3>
+                    <p>반려동물 전문 AI가 24시간 상담해드려요</p>
+                    <button class="btn btn-secondary" onclick="openChat()" style="background: rgba(255,255,255,0.2); color: white; border: none;">
+                        💬 상담 시작
+                    </button>
+                </div>
+                
+                <!-- 건강 리포트 위젯 -->
+                <div class="health-report-widget">
+                    <h3>📊 이번주 건강 리포트</h3>
+                    <div class="health-score">85점</div>
+                    <p style="text-align: center; opacity: 0.9;">전체적으로 건강한 상태예요!</p>
+                    <button class="btn btn-secondary" onclick="openAnalysis()" style="background: rgba(255,255,255,0.2); color: white; border: none; width: 100%;">
+                        📈 전체 리포트 보기
+                    </button>
+                </div>
+                
+                <!-- 케어 캘린더 위젯 -->
+                <div class="calendar-widget">
+                    <h3>📅 케어 캘린더</h3>
+                    <div class="calendar-header">
+                        <button class="btn btn-secondary">◀</button>
+                        <strong>2025년 8월</strong>
+                        <button class="btn btn-secondary">▶</button>
+                    </div>
+                    <div class="calendar-grid">
+                        <!-- 요일 헤더 -->
+                        <div style="font-weight: 600; text-align: center; padding: 8px; color: #666;">일</div>
+                        <div style="font-weight: 600; text-align: center; padding: 8px; color: #666;">월</div>
+                        <div style="font-weight: 600; text-align: center; padding: 8px; color: #666;">화</div>
+                        <div style="font-weight: 600; text-align: center; padding: 8px; color: #666;">수</div>
+                        <div style="font-weight: 600; text-align: center; padding: 8px; color: #666;">목</div>
+                        <div style="font-weight: 600; text-align: center; padding: 8px; color: #666;">금</div>
+                        <div style="font-weight: 600; text-align: center; padding: 8px; color: #666;">토</div>
+                        
+                        <!-- 날짜들 -->
+                        <div class="calendar-day">1</div>
+                        <div class="calendar-day">2</div>
+                        <div class="calendar-day has-care">3</div>
+                        <div class="calendar-day">4</div>
+                        <div class="calendar-day has-care">5</div>
+                        <div class="calendar-day">6</div>
+                        <div class="calendar-day">7</div>
+                        <div class="calendar-day">8</div>
+                        <div class="calendar-day">9</div>
+                        <div class="calendar-day has-care">10</div>
+                        <div class="calendar-day">11</div>
+                        <div class="calendar-day">12</div>
+                        <div class="calendar-day">13</div>
+                        <div class="calendar-day">14</div>
+                        <div class="calendar-day">15</div>
+                        <div class="calendar-day">16</div>
+                        <div class="calendar-day">17</div>
+                        <div class="calendar-day today">18</div>
+                        <div class="calendar-day">19</div>
+                        <div class="calendar-day has-care">20</div>
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                        <div class="calendar-day">23</div>
+                        <div class="calendar-day">24</div>
+                        <div class="calendar-day">25</div>
+                        <div class="calendar-day">26</div>
+                        <div class="calendar-day">27</div>
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day">29</div>
+                        <div class="calendar-day">30</div>
+                        <div class="calendar-day">31</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 의료기록 모달창들 -->
+    <div id="allergy-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>🤧 알러지 정보 관리</h3>
+                <button class="modal-close" onclick="closeModal('allergy-modal')">&times;</button>
+            </div>
+            <div class="modal-content">
+                <form class="modal-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>알러지 유형</label>
+                            <select>
+                                <option>음식 알러지</option>
+                                <option>환경 알러지</option>
+                                <option>접촉 알러지</option>
+                                <option>약물 알러지</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>알러지원</label>
+                            <input type="text" placeholder="예: 닭고기, 꽃가루, 진드기">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>증상</label>
+                        <textarea placeholder="알러지 증상을 자세히 기록하세요"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>심각도</label>
+                            <select>
+                                <option>경미함</option>
+                                <option>보통</option>
+                                <option>심각함</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>진단일</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>진단서/검사 결과 첨부</label>
+                        <div class="file-upload" onclick="document.getElementById('allergy-file').click()">
+                            <input type="file" id="allergy-file" accept="image/*,.pdf">
+                            📎 파일을 선택하거나 드래그하세요
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-actions">
+                    <button class="btn btn-cancel" onclick="closeModal('allergy-modal')">취소</button>
+                    <button class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="disease-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>🏥 질병 이력 관리</h3>
+                <button class="modal-close" onclick="closeModal('disease-modal')">&times;</button>
+            </div>
+            <div class="modal-content">
+                <form class="modal-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>질병명</label>
+                            <input type="text" placeholder="진단받은 질병명을 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label>진단일</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>증상</label>
+                        <textarea placeholder="질병의 증상을 자세히 기록하세요"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>치료 내용</label>
+                        <textarea placeholder="받은 치료 내용을 기록하세요"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>치료 병원</label>
+                            <input type="text" placeholder="병원명">
+                        </div>
+                        <div class="form-group">
+                            <label>담당 의사</label>
+                            <input type="text" placeholder="수의사명">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>진료비</label>
+                        <input type="number" placeholder="원">
+                    </div>
+                </form>
+                <div class="modal-actions">
+                    <button class="btn btn-cancel" onclick="closeModal('disease-modal')">취소</button>
+                    <button class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="surgery-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>⚕️ 수술 이력 관리</h3>
+                <button class="modal-close" onclick="closeModal('surgery-modal')">&times;</button>
+            </div>
+            <div class="modal-content">
+                <form class="modal-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>수술명</label>
+                            <input type="text" placeholder="수술명을 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label>수술일</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>수술 사유</label>
+                        <textarea placeholder="수술을 받게 된 이유를 기록하세요"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>수술 과정</label>
+                        <textarea placeholder="수술 과정과 특이사항을 기록하세요"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>수술 병원</label>
+                            <input type="text" placeholder="병원명">
+                        </div>
+                        <div class="form-group">
+                            <label>집도의</label>
+                            <input type="text" placeholder="수의사명">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>회복 상태</label>
+                        <select>
+                            <option>완전 회복</option>
+                            <option>회복 중</option>
+                            <option>경과 관찰 중</option>
+                        </select>
+                    </div>
+                </form>
+                <div class="modal-actions">
+                    <button class="btn btn-cancel" onclick="closeModal('surgery-modal')">취소</button>
+                    <button class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="checkup-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>🔍 건강검진 관리</h3>
+                <button class="modal-close" onclick="closeModal('checkup-modal')">&times;</button>
+            </div>
+            <div class="modal-content">
+                <form class="modal-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>검진 유형</label>
+                            <select>
+                                <option>정기 건강검진</option>
+                                <option>종합 건강검진</option>
+                                <option>특별 검진</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>검진일</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>검진 항목</label>
+                        <textarea placeholder="실시한 검진 항목들을 기록하세요"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>검진 결과</label>
+                        <textarea placeholder="검진 결과와 의사 소견을 기록하세요"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>검진 병원</label>
+                            <input type="text" placeholder="병원명">
+                        </div>
+                        <div class="form-group">
+                            <label>다음 검진일</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-actions">
+                    <button class="btn btn-cancel" onclick="closeModal('checkup-modal')">취소</button>
+                    <button class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="vaccination-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>💉 예방접종 관리</h3>
+                <button class="modal-close" onclick="closeModal('vaccination-modal')">&times;</button>
+            </div>
+            <div class="modal-content">
+                <form class="modal-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>백신명</label>
+                            <input type="text" placeholder="예: DHPPL, 광견병">
+                        </div>
+                        <div class="form-group">
+                            <label>접종일</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>제조회사</label>
+                            <input type="text" placeholder="백신 제조회사">
+                        </div>
+                        <div class="form-group">
+                            <label>로트번호</label>
+                            <input type="text" placeholder="백신 로트번호">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>부작용</label>
+                        <textarea placeholder="접종 후 나타난 부작용이 있다면 기록하세요"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>접종 병원</label>
+                            <input type="text" placeholder="병원명">
+                        </div>
+                        <div class="form-group">
+                            <label>다음 접종일</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-actions">
+                    <button class="btn btn-cancel" onclick="closeModal('vaccination-modal')">취소</button>
+                    <button class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="medication-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>💊 복용약물 관리</h3>
+                <button class="modal-close" onclick="closeModal('medication-modal')">&times;</button>
+            </div>
+            <div class="modal-content">
+                <form class="modal-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>약물명</label>
+                            <input type="text" placeholder="복용 중인 약물명">
+                        </div>
+                        <div class="form-group">
+                            <label>복용 목적</label>
+                            <input type="text" placeholder="질병명 또는 증상">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>용량</label>
+                            <input type="text" placeholder="예: 5mg">
+                        </div>
+                        <div class="form-group">
+                            <label>복용 횟수</label>
+                            <select>
+                                <option>하루 1회</option>
+                                <option>하루 2회</option>
+                                <option>하루 3회</option>
+                                <option>필요시</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>복용 시작일</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group">
+                            <label>복용 종료일</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>부작용/주의사항</label>
+                        <textarea placeholder="복용 중 주의사항이나 부작용을 기록하세요"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>처방 병원</label>
+                        <input type="text" placeholder="병원명">
+                    </div>
+                </form>
+                <div class="modal-actions">
+                    <button class="btn btn-cancel" onclick="closeModal('medication-modal')">취소</button>
+                    <button class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI 건강상담 대화창 -->
+    <div id="chat-overlay" class="chat-overlay">
+        <div class="chat-container">
+            <div class="chat-header">
+                <h3>🤖 AI 건강상담</h3>
+                <button class="modal-close" onclick="closeChat()">&times;</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai">
+                    안녕하세요! 반려동물 전문 AI 수의사입니다. 🐾<br>
+                    어떤 건강 상담이 필요하신가요?
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="궁금한 것을 물어보세요..." onkeypress="handleChatKeyPress(event)">
+                <button class="chat-send" onclick="sendMessage()">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M15.854 0.146a.5.5 0 0 1 0 .708L5.707 10.5H2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1.293L8.146 15.354a.5.5 0 0 0 .708-.708L15.854 0.146z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 건강 상태 분석 페이지 -->
+    <div id="analysis-page" class="analysis-page">
+        <div class="analysis-header">
+            <h2>📊 건강 상태 분석 리포트</h2>
+            <button class="btn btn-secondary" onclick="closeAnalysis()">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zM5.707 6.707L8 9l2.293-2.293a1 1 0 011.414 1.414L9.414 10.5l2.293 2.293a1 1 0 01-1.414 1.414L8 11.914l-2.293 2.293a1 1 0 01-1.414-1.414L6.586 10.5 4.293 8.207a1 1 0 011.414-1.414z"/>
+                </svg>
+                닫기
+            </button>
+        </div>
+        <div class="analysis-content">
+            <div class="chart-card">
+                <div class="chart-header">
+                    🏥 전체 건강 지수
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 3rem; color: #667eea; font-weight: bold; margin: 20px 0;">85점</div>
+                    <p style="color: #666;">전체적으로 건강한 상태입니다!</p>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    📈 월간 체중 변화
+                </div>
+                <div style="text-align: center; padding: 20px;">
+                    <div style="height: 200px; background: linear-gradient(to top, #e3f2fd 0%, #bbdefb 100%); border-radius: 10px; display: flex; align-items: end; justify-content: center;">
+                        <p style="color: #1976d2; font-weight: bold;">체중 변화 차트 영역</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    💧 수분 섭취량
+                </div>
+                <p>일평균: 800ml</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 80%;"></div>
+                </div>
+                <small style="color: #666;">권장량의 80% 달성</small>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    🍽️ 식사 패턴
+                </div>
+                <p>규칙적인 식사: 95%</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 95%;"></div>
+                </div>
+                <small style="color: #666;">매우 규칙적인 식사 패턴</small>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    🚶 활동량
+                </div>
+                <p>일평균 산책: 45분</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%;"></div>
+                </div>
+                <small style="color: #666;">권장 운동량의 75%</small>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    💊 약물 복용
+                </div>
+                <p>복용률: 100%</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%;"></div>
+                </div>
+                <small style="color: #666;">완벽한 복용 관리</small>
+            </div>
+
+            <div class="chart-card" style="grid-column: 1 / -1;">
+                <div class="chart-header">
+                    🎯 건강 관리 권장사항
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 10px; border-left: 4px solid #4caf50;">
+                        <strong style="color: #2e7d32;">👍 잘하고 있어요</strong>
+                        <p style="margin: 10px 0 0 0; color: #666;">규칙적인 식사와 약물 복용을 잘 지키고 있습니다.</p>
+                    </div>
+                    <div style="background: #fff3e0; padding: 15px; border-radius: 10px; border-left: 4px solid #ff9800;">
+                        <strong style="color: #f57c00;">💡 개선 권장</strong>
+                        <p style="margin: 10px 0 0 0; color: #666;">산책 시간을 조금 더 늘려보세요. 하루 1시간 정도가 적당합니다.</p>
+                    </div>
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; border-left: 4px solid #2196f3;">
+                        <strong style="color: #1976d2;">📅 예정 일정</strong>
+                        <p style="margin: 10px 0 0 0; color: #666;">다음 건강검진: 2025년 10월 15일</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function switchTab(tabName) {
+            // 모든 탭 비활성화
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 선택된 탭 활성화
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+        
+        function openModal(type) {
+            document.getElementById(type + '-modal').style.display = 'block';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        function openChat() {
+            document.getElementById('chat-overlay').style.display = 'block';
+        }
+        
+        function closeChat() {
+            document.getElementById('chat-overlay').style.display = 'none';
+        }
+        
+        function openAnalysis() {
+            document.getElementById('analysis-page').style.display = 'block';
+        }
+        
+        function closeAnalysis() {
+            document.getElementById('analysis-page').style.display = 'none';
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const messages = document.getElementById('chatMessages');
+            
+            if (input.value.trim()) {
+                // 사용자 메시지 추가
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message user';
+                userMessage.textContent = input.value;
+                messages.appendChild(userMessage);
+                
+                // 입력 초기화
+                const userText = input.value;
+                input.value = '';
+                
+                // AI 응답 시뮬레이션
+                setTimeout(() => {
+                    const aiMessage = document.createElement('div');
+                    aiMessage.className = 'message ai';
+                    aiMessage.innerHTML = getAIResponse(userText);
+                    messages.appendChild(aiMessage);
+                    
+                    // 스크롤을 맨 아래로
+                    messages.scrollTop = messages.scrollHeight;
+                }, 1000);
+                
+                // 스크롤을 맨 아래로
+                messages.scrollTop = messages.scrollHeight;
+            }
+        }
+        
+        function getAIResponse(userText) {
+            const responses = {
+                '설사': '설사가 계속된다면 탈수 위험이 있어요. 물을 충분히 주시고, 12시간 정도 금식 후 소량의 흰쌀밥부터 시작해보세요. 24시간 이상 지속되면 병원 방문을 권해드려요.',
+                '열': '체온이 39도 이상이라면 응급상황일 수 있어요. 시원한 곳에서 휴식을 취하게 하고, 물수건으로 발바닥과 귀를 시원하게 해주세요. 즉시 병원에 연락하세요.',
+                '식욕': '갑작스런 식욕 부진은 여러 원인이 있을 수 있어요. 스트레스, 환경 변화, 또는 건강 문제일 수 있습니다. 2일 이상 지속되면 수의사 상담을 받아보세요.',
+                '구토': '구토가 반복된다면 위험할 수 있어요. 일시적으로 물과 사료를 제한하고, 증상이 계속되면 즉시 병원에 가세요. 탈수 방지가 중요해요.'
+            };
+            
+            for (let keyword in responses) {
+                if (userText.includes(keyword)) {
+                    return responses[keyword];
+                }
+            }
+            
+            return '반려동물의 건강에 관한 구체적인 증상을 알려주시면 더 정확한 답변을 드릴 수 있어요. 응급상황이라면 즉시 가까운 동물병원에 연락하세요! 🏥';
+        }
+        
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        // 반려동물 선택 기능
+        document.querySelectorAll('.pet-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.pet-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+
+{% endblock %}
