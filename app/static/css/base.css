@@ -2,7 +2,7 @@
 
 /* 모바일 메뉴 토글 애니메이션 */
 .mobile-menu-active #nav-menu {
-    @apply flex flex-col absolute top-full left-0 right-0 bg-white shadow-lg rounded-b-xl p-5 space-y-0 z-50;
+    @apply flex flex-col absolute top-full left-0 right-0 bg-white rounded-b-xl p-5 space-y-0 z-50;
 }
 
 .mobile-menu-active #nav-menu a {
