@@ -9,6 +9,6 @@ def create_app():
         return render_template('base.html')
 
     # 블루프린트 등록 위치
-    app.register_blueprint(dailycare_bp, url_prefix='/dailycare') #dailycare
+    app.register_blueprint(dailycare_bp) #dailycare
 
     return app
