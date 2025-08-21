@@ -1,0 +1,56 @@
+ <div id="allergy-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>🤧 알러지 정보 관리</h3>
+                <button class="modal-close" onclick="closeModal('allergy-modal')">&times;</button>
+            </div>
+            <div class="modal-content">
+                <form class="modal-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>알러지 유형</label>
+                            <select>
+                                <option>음식 알러지</option>
+                                <option>환경 알러지</option>
+                                <option>접촉 알러지</option>
+                                <option>약물 알러지</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>알러지원</label>
+                            <input type="text" placeholder="예: 닭고기, 꽃가루, 진드기">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>증상</label>
+                        <textarea placeholder="알러지 증상을 자세히 기록하세요"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>심각도</label>
+                            <select>
+                                <option>경미함</option>
+                                <option>보통</option>
+                                <option>심각함</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>진단일</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>진단서/검사 결과 첨부</label>
+                        <div class="file-upload" onclick="document.getElementById('allergy-file').click()">
+                            <input type="file" id="allergy-file" accept="image/*,.pdf">
+                            📎 파일을 선택하거나 드래그하세요
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-actions">
+                    <button class="btn btn-cancel" onclick="closeModal('allergy-modal')">취소</button>
+                    <button class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>

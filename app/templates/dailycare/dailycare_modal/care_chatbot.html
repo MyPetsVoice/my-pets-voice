@@ -1,0 +1,23 @@
+  <!-- AI 건강상담 대화창 -->
+    <div id="chat-overlay" class="chat-overlay">
+        <div class="chat-container">
+            <div class="chat-header">
+                <h3>🤖 AI 건강상담</h3>
+                <button class="modal-close" onclick="closeChat()">&times;</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai">
+                    안녕하세요! 반려동물 전문 AI 수의사입니다. 🐾<br>
+                    어떤 건강 상담이 필요하신가요?
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="궁금한 것을 물어보세요..." onkeypress="handleChatKeyPress(event)">
+                <button class="chat-send" onclick="sendMessage()">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M15.854 0.146a.5.5 0 0 1 0 .708L5.707 10.5H2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1.293L8.146 15.354a.5.5 0 0 0 .708-.708L15.854 0.146z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>

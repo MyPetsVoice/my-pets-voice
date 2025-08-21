@@ -1,0 +1,52 @@
+<div id="surgery-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>⚕️ 수술 이력 관리</h3>
+                <button class="modal-close" onclick="closeModal('surgery-modal')">&times;</button>
+            </div>
+            <div class="modal-content">
+                <form class="modal-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>수술명</label>
+                            <input type="text" placeholder="수술명을 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label>수술일</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>수술 사유</label>
+                        <textarea placeholder="수술을 받게 된 이유를 기록하세요"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>수술 과정</label>
+                        <textarea placeholder="수술 과정과 특이사항을 기록하세요"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>수술 병원</label>
+                            <input type="text" placeholder="병원명">
+                        </div>
+                        <div class="form-group">
+                            <label>집도의</label>
+                            <input type="text" placeholder="수의사명">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>회복 상태</label>
+                        <select>
+                            <option>완전 회복</option>
+                            <option>회복 중</option>
+                            <option>경과 관찰 중</option>
+                        </select>
+                    </div>
+                </form>
+                <div class="modal-actions">
+                    <button class="btn btn-cancel" onclick="closeModal('surgery-modal')">취소</button>
+                    <button class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>

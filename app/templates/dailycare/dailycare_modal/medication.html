@@ -1,0 +1,59 @@
+<div id="medication-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>💊 복용약물 관리</h3>
+                <button class="modal-close" onclick="closeModal('medication-modal')">&times;</button>
+            </div>
+            <div class="modal-content">
+                <form class="modal-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>약물명</label>
+                            <input type="text" placeholder="복용 중인 약물명">
+                        </div>
+                        <div class="form-group">
+                            <label>복용 목적</label>
+                            <input type="text" placeholder="질병명 또는 증상">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>용량</label>
+                            <input type="text" placeholder="예: 5mg">
+                        </div>
+                        <div class="form-group">
+                            <label>복용 횟수</label>
+                            <select>
+                                <option>하루 1회</option>
+                                <option>하루 2회</option>
+                                <option>하루 3회</option>
+                                <option>필요시</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>복용 시작일</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group">
+                            <label>복용 종료일</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>부작용/주의사항</label>
+                        <textarea placeholder="복용 중 주의사항이나 부작용을 기록하세요"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>처방 병원</label>
+                        <input type="text" placeholder="병원명">
+                    </div>
+                </form>
+                <div class="modal-actions">
+                    <button class="btn btn-cancel" onclick="closeModal('medication-modal')">취소</button>
+                    <button class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
