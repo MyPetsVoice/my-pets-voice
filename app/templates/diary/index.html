@@ -1,0 +1,339 @@
+{% extends "base.html" %} {% block title %}나의 일기장 {% endblock %} {% block
+content %}
+<div
+  class="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50"
+>
+  <div class="container mx-auto px-4 py-8">
+    <!-- 페이지 헤더 -->
+    <div class="mb-8 text-center">
+      <h1 class="text-4xl font-bold text-gray-800 mb-2">
+        <i class="fas fa-book-open text-orange-400 mr-3"></i>
+        나의 일기장
+      </h1>
+      <p class="text-gray-600">반려동물과 함께한 소중한 순간들을 기록해요</p>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+      <!-- 왼쪽: 펫 선택 사이드바 -->
+      <div class="lg:w-1/4">
+        <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-24">
+          <h2 class="text-xl font-bold mb-4 text-gray-800">
+            <i class="fas fa-paw text-orange-400 mr-2"></i>
+            내 반려동물
+          </h2>
+
+          <!-- 펫 목록 -->
+          <div class="space-y-3" id="petList">
+            <!-- 펫 카드 1 -->
+            <div
+              class="pet-card cursor-pointer p-4 rounded-xl bg-gradient-to-r from-orange-100 to-yellow-100 hover:from-orange-200 hover:to-yellow-200 transition-all duration-300 transform hover:scale-105 active"
+              onclick="selectPet(1, '반려동물1')"
+            >
+              <div class="flex items-center space-x-3">
+                <div
+                  class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-yellow-400 flex items-center justify-center text-white font-bold text-lg shadow-lg"
+                >
+                  🐕
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-800">반려동물1</h3>
+                  <p class="text-xs text-gray-600">일기 15개</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 펫 카드 2 -->
+            <div
+              class="pet-card cursor-pointer p-4 rounded-xl bg-gradient-to-r from-blue-100 to-purple-100 hover:from-blue-200 hover:to-purple-200 transition-all duration-300 transform hover:scale-105"
+              onclick="selectPet(2, '반려동물2')"
+            >
+              <div class="flex items-center space-x-3">
+                <div
+                  class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-400 flex items-center justify-center text-white font-bold text-lg shadow-lg"
+                >
+                  🐈
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-800">반려동물2</h3>
+                  <p class="text-xs text-gray-600">일기 8개</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 펫 추가 버튼 -->
+            <div
+              class="cursor-pointer p-4 rounded-xl border-2 border-dashed border-gray-300 hover:border-orange-400 transition-all duration-300 transform hover:scale-105"
+              onclick="alert('펫 추가 기능은 준비중입니다')"
+            >
+              <div
+                class="flex items-center justify-center space-x-2 text-gray-500 hover:text-orange-500"
+              >
+                <i class="fas fa-plus-circle text-2xl"></i>
+                <span class="font-medium">펫 추가하기</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 오른쪽: 일기 목록 -->
+      <div class="lg:w-3/4">
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <!-- 검색 및 추가 버튼 영역 -->
+          <div
+            class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4"
+          >
+            <!-- 검색창 -->
+            <div class="relative w-full sm:w-96">
+              <input
+                type="text"
+                placeholder="일기 검색..."
+                class="w-full pl-12 pr-4 py-3 rounded-full border-2 border-gray-200 focus:border-orange-400 focus:outline-none transition-all duration-300"
+                id="searchInput"
+                onkeyup="searchDiary()"
+              />
+              <i
+                class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+              ></i>
+            </div>
+
+            <!-- 일기 추가 버튼 -->
+            <button
+              onclick="location.href='/diary/write'"
+              class="px-6 py-3 bg-gradient-to-r from-orange-400 to-yellow-400 text-white rounded-full font-semibold hover:from-orange-500 hover:to-yellow-500 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              <i class="fas fa-plus mr-2"></i>
+              일기 추가
+            </button>
+          </div>
+
+          <!-- 현재 선택된 펫 표시 -->
+          <div
+            class="mb-4 p-3 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg"
+          >
+            <span class="text-sm text-gray-600">선택된 반려동물:</span>
+            <span
+              class="font-semibold text-orange-600 ml-2"
+              id="selectedPetName"
+              >반려동물1</span
+            >
+          </div>
+
+          <!-- 일기 테이블 -->
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b-2 border-gray-200">
+                  <th class="text-left py-3 px-4 font-semibold text-gray-700">
+                    번호
+                  </th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-700">
+                    제목
+                  </th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-700">
+                    날짜
+                  </th>
+                  <th class="text-center py-3 px-4 font-semibold text-gray-700">
+                    기분
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="diaryTableBody">
+                <!-- 일기 항목 1 -->
+                <tr
+                  class="border-b hover:bg-orange-50 transition-colors duration-200 cursor-pointer"
+                  onclick="location.href='/diary/detail/1'"
+                >
+                  <td class="py-4 px-4 text-gray-600">1</td>
+                  <td class="py-4 px-4">
+                    <div class="flex items-center space-x-2">
+                      <span class="font-medium text-gray-800"
+                        >오늘은 산책을 다녀왔어요!</span
+                      >
+                      <span
+                        class="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full"
+                        >AI</span
+                      >
+                    </div>
+                  </td>
+                  <td class="py-4 px-4 text-gray-600">2025-01-15</td>
+                  <td class="py-4 px-4 text-center">
+                    <span class="text-2xl">😊</span>
+                  </td>
+                </tr>
+
+                <!-- 일기 항목 2 -->
+                <tr
+                  class="border-b hover:bg-orange-50 transition-colors duration-200 cursor-pointer"
+                  onclick="location.href='/diary/detail/2'"
+                >
+                  <td class="py-4 px-4 text-gray-600">2</td>
+                  <td class="py-4 px-4">
+                    <div class="flex items-center space-x-2">
+                      <span class="font-medium text-gray-800"
+                        >병원 다녀온 날</span
+                      >
+                    </div>
+                  </td>
+                  <td class="py-4 px-4 text-gray-600">2025-01-14</td>
+                  <td class="py-4 px-4 text-center">
+                    <span class="text-2xl">😔</span>
+                  </td>
+                </tr>
+
+                <!-- 일기 항목 3 -->
+                <tr
+                  class="border-b hover:bg-orange-50 transition-colors duration-200 cursor-pointer"
+                  onclick="location.href='/diary/detail/3'"
+                >
+                  <td class="py-4 px-4 text-gray-600">3</td>
+                  <td class="py-4 px-4">
+                    <div class="flex items-center space-x-2">
+                      <span class="font-medium text-gray-800"
+                        >새로운 장난감을 받았어요</span
+                      >
+                      <span
+                        class="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full"
+                        >AI</span
+                      >
+                    </div>
+                  </td>
+                  <td class="py-4 px-4 text-gray-600">2025-01-13</td>
+                  <td class="py-4 px-4 text-center">
+                    <span class="text-2xl">🥰</span>
+                  </td>
+                </tr>
+
+                <!-- 일기 항목 4 -->
+                <tr
+                  class="border-b hover:bg-orange-50 transition-colors duration-200 cursor-pointer"
+                  onclick="location.href='/diary/detail/4'"
+                >
+                  <td class="py-4 px-4 text-gray-600">4</td>
+                  <td class="py-4 px-4">
+                    <div class="flex items-center space-x-2">
+                      <span class="font-medium text-gray-800"
+                        >비오는 날의 기록</span
+                      >
+                    </div>
+                  </td>
+                  <td class="py-4 px-4 text-gray-600">2025-01-12</td>
+                  <td class="py-4 px-4 text-center">
+                    <span class="text-2xl">😴</span>
+                  </td>
+                </tr>
+
+                <!-- 일기 항목 5 -->
+                <tr
+                  class="border-b hover:bg-orange-50 transition-colors duration-200 cursor-pointer"
+                  onclick="location.href='/diary/detail/5'"
+                >
+                  <td class="py-4 px-4 text-gray-600">5</td>
+                  <td class="py-4 px-4">
+                    <div class="flex items-center space-x-2">
+                      <span class="font-medium text-gray-800"
+                        >친구들과 놀았어요!</span
+                      >
+                      <span
+                        class="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full"
+                        >AI</span
+                      >
+                    </div>
+                  </td>
+                  <td class="py-4 px-4 text-gray-600">2025-01-11</td>
+                  <td class="py-4 px-4 text-center">
+                    <span class="text-2xl">🎉</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 페이지네이션 -->
+          <div class="flex justify-center mt-6 space-x-2">
+            <button
+              class="px-3 py-1 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors duration-200"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="px-3 py-1 rounded-lg bg-orange-400 text-white">
+              1
+            </button>
+            <button
+              class="px-3 py-1 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors duration-200"
+            >
+              2
+            </button>
+            <button
+              class="px-3 py-1 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors duration-200"
+            >
+              3
+            </button>
+            <button
+              class="px-3 py-1 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors duration-200"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 펫 선택 함수
+  function selectPet(petId, petName) {
+    // 모든 펫 카드의 active 클래스 제거
+    document.querySelectorAll(".pet-card").forEach((card) => {
+      card.classList.remove("active");
+    });
+
+    // 선택된 펫 카드에 active 클래스 추가
+    event.currentTarget.classList.add("active");
+
+    // 선택된 펫 이름 업데이트
+    document.getElementById("selectedPetName").textContent = petName;
+
+    // TODO: API 호출하여 해당 펫의 일기 목록 가져오기
+    console.log(`Selected pet: ${petName} (ID: ${petId})`);
+  }
+
+  // 일기 검색 함수
+  function searchDiary() {
+    const searchValue = document
+      .getElementById("searchInput")
+      .value.toLowerCase();
+    const rows = document.querySelectorAll("#diaryTableBody tr");
+
+    rows.forEach((row) => {
+      const title = row
+        .querySelector("td:nth-child(2)")
+        .textContent.toLowerCase();
+      if (title.includes(searchValue)) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+  }
+</script>
+
+<style>
+  /* 선택된 펫 카드 스타일 */
+  .pet-card.active {
+    background: linear-gradient(to right, #fb923c, #fbbf24);
+    color: white;
+  }
+
+  .pet-card.active h3,
+  .pet-card.active p {
+    color: white !important;
+  }
+
+  .pet-card.active .w-12 {
+    background: white !important;
+    color: #fb923c !important;
+  }
+</style>
+{% endblock %}
