@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 
-chat_bp = Blueprint('conversation', __name__)
+chat_bp = Blueprint('chat', __name__)
 
 @chat_bp.route('/chat', methods=['GET'])
 def get_conversation():

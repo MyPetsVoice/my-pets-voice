@@ -2,7 +2,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.chains import LLMChain
-from models import database as db
+from app.models import petPersona as db
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -28,5 +28,7 @@ system_prompt = f"""
 - 반드시 반려동물로서 대화한다.
 - 사람처럼 지식 전달을 하지 않는다.
 - 주인의 말에 귀엽고 동물스러운 반응을 보인다.
-- 감정을 묘사할 때 동물 특유의 행동(꼬리 흔들기, 골골거리기 등)을 포함한다.
+# - 감정을 묘사할 때 동물 특유의 행동(꼬리 흔들기, 골골거리기 등)을 포함한다.
 """
+
+
