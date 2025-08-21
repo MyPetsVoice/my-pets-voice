@@ -1,13 +1,10 @@
 from flask import Flask, render_template
-<<<<<<< HEAD
-from flask import Blueprint
 from app.routes.dailycare import dailycare_bp #dailycare 
-=======
+
 from app.routes.chat.chat import chat_bp
 from app.routes.chat.chat_api import chat_api_bp
 from app.models import init_db
 
->>>>>>> 3ebddf222ed57560f4cfef94f6b1df19420b9034
 def create_app():
     app = Flask(__name__)
     
@@ -24,11 +21,10 @@ def create_app():
         return render_template('base.html')
 
     # 블루프린트 등록 위치
-<<<<<<< HEAD
+
     app.register_blueprint(dailycare_bp) #dailycare
-=======
     app.register_blueprint(chat_bp)
     app.register_blueprint(chat_api_bp)
->>>>>>> 3ebddf222ed57560f4cfef94f6b1df19420b9034
+
 
     return app

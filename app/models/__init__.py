@@ -9,6 +9,7 @@ def init_db(app):
     from app.models.base import BaseModel
     from app.models.user import User
     from app.models.petPersona import PetPersona
+    
 
     with app.app_context():
         db.create_all()
