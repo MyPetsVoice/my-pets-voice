@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify, redirect, session, url_for, render_template
+from flask import Blueprint, request, redirect, session, url_for
+from models.user import User
 import requests
 from dotenv import load_dotenv
 import os
@@ -13,7 +14,6 @@ KAKAO_REDIRECT_URI = os.getenv('KAKAO_REDIRECT_URI')
 
 KAPI_HOST="https://kapi.kakao.com"
 KAUTH_HOST="https://kauth.kakao.com"
-
 
 @auth_api_bp.route('/auth')
 def kakao_login():
@@ -65,10 +65,11 @@ def kakao_callback():
     }
 
     # 사용자 정보 조회 API GET 요청 전송
-    user_info = requests.get(KAPI_HOST + "/v2/user/me", headers=headers)  
-    user = user_info.json()['kakao_account']
-    print('사용자 정보 : ', user)
-    session['user'] = user
+    user_info = requests.get(KAPI_HOST + "/v2/user/me", headers=headers) 
+    print('user_info : ', user_info.json()) 
+    kakao_user_info = user_info.json()
+    print('사용자 정보 : ', kakao_user_info)
+    session['user'] = kakao_user_info
     '''
     {'id': 4408942414, 
     'connected_at': '2025-08-22T09:12:57Z', 
@@ -79,9 +80,10 @@ def kakao_callback():
         'profile_image_needs_agreement': False, 
         'profile': 
             {'nickname': '김태민', 
-            'thumbnail_image_url': 'http://img1.kakaocdn.net/thumb/R110x110.q70/?fname=http://t1.kakaocdn.net/account_images/default_profile.jpeg',
-            'profile_image_url': 'http://img1.kakaocdn.net/thumb/R640x640.q70/?fname=http://t1.kakaocdn.net/account_images/default_profile.jpeg', 'is_default_image': True, 
-            'is_default_nickname': False}, 
+                'thumbnail_image_url': 'http://img1.kakaocdn.net/thumb/R110x110.q70/?fname=http://t1.kakaocdn.net/account_images/default_profile.jpeg',
+                'profile_image_url': 'http://img1.kakaocdn.net/thumb/R640x640.q70/?fname=http://t1.kakaocdn.net/account_images/default_profile.jpeg', 
+                'is_default_image': True, 
+                'is_default_nickname': False}, 
             'has_email': True, 
             'email_needs_agreement': False, 
             'is_email_valid': True, 
@@ -91,8 +93,21 @@ def kakao_callback():
     '''
 
     # 사용자 정보 저장 로직
+    # 기존에 회원가입된 사람인지 아닌지 확인
+    existing_user = User.find_by_social('kakao', str(kakao_user_info['id']))
+    if existing_user:
+        existing_user.update_last_login()
+        user = existing_user
+    else:
+        user = User.create_user_from_kakao(kakao_user_info)
+
+    session['user_id'] = user.user_id
+
+
+    # 이미지 저장. -> 이거 나중에는 스토리지에 저장해야하는거 아님?
 
     return redirect(url_for('mypage.mypage_views.mypage', user=user))
+    # return redirect('/dashboard')
 
 
 # 현재는 로그인/로그아웃 상태에 따른 차이가 없는 상황. 추후 수정
@@ -101,6 +116,6 @@ def logout():
     url = (f'https://kauth.kakao.com/oauth/logout?'
            f'client_id={KAKAO_CLIENT_ID}&logout_redirect_uri=http://127.0.0.1:5000&state=logout')
     print('로그아웃')
-    # 세션 삭제는 안 해도 되는거임?
+    # 세션 삭제는 안 해도 되는건가?
 
     return redirect(url) # 나중에 로그인 안 한 사용자들한테 보이는 페이지로 이동하도록 변경
