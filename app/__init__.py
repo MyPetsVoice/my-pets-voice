@@ -1,7 +1,7 @@
 from flask import Flask, render_template
-from app.routes.chat.chat import chat_bp
-from app.routes.chat.chat_api import chat_api_bp
-from app.routes.auth.auth_api import auth_api_bp
+from app.routes.chat import chat_bp
+from app.routes.auth import auth_bp
+from app.routes.mypage import mypage_bp
 from app.models import init_db
 import os
 
@@ -26,7 +26,7 @@ def create_app():
 
     # 블루프린트 등록 위치
     app.register_blueprint(chat_bp)
-    app.register_blueprint(chat_api_bp)
-    app.register_blueprint(auth_api_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(mypage_bp)
 
     return app

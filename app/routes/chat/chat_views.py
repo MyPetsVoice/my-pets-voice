@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
 
-chat_bp = Blueprint('chat', __name__)
+chat_views_bp = Blueprint('chat', __name__)
 
-@chat_bp.route('/chat', methods=['GET'])
+@chat_views_bp.route('/chat', methods=['GET'])
 def get_conversation():
     return jsonify({"message": "Hello from conversation blueprint!"})
 

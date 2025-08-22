@@ -64,7 +64,7 @@ def kakao_callback():
         'Authorization': 'Bearer ' + session.get('access_token', '')  # 세션에 저장된 액세스 토큰 전달
     }
 
-    user_info = requests.get(kapi_host + "/v2/user/me", headers=headers)  # 사용자 정보 조회 API 요청 전송
+    user_info = requests.get(KAPI_HOST + "/v2/user/me", headers=headers)  # 사용자 정보 조회 API 요청 전송
     print('사용자 정보 : ', user_info.json())
     user = user_info.json()['kakao_account']
     session['user'] = user
