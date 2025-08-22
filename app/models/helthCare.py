@@ -14,8 +14,8 @@ class HealthCare(BaseModel):
     
     care_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
-    # 음식 섭취량: 먹음 / 조금먹음 / 안먹음
-    food = db.Column(String(20))
+    # 음식 섭취량
+    food = db.Column(Integer(20))
     
     # 물 섭취량
     water = db.Column(db.DECIMAL(6, 2))
@@ -30,10 +30,6 @@ class HealthCare(BaseModel):
     walk_time_minutes = db.Column(Integer)
 
     __table_args__ = (
-        CheckConstraint(
-            food.in_(['먹음', '조금먹음', '안먹음']),
-            name='check_food_intake'
-        ),
         CheckConstraint(
             excrement_status.in_(['정상', '설사', '변비', '혈변']),
             name='check_bowel_status'
