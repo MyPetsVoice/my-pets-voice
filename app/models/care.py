@@ -178,7 +178,7 @@ class Disease(BaseModel):
     def __repr__(self):
         return f"<DiseaseHistory(id={self.disease_id}, disease='{self.disease_name}')>"
     
-# -----------Allergy-----------     
+# -----------Surgery-----------     
 class Surgery(BaseModel):
     __tablename__ = 'surgeries'
     """데일리케어 > 의료기록 > 수술 이력"""
@@ -206,7 +206,7 @@ class Surgery(BaseModel):
     
     def __repr__(self):
         return f"<Surgeries(id={self.surgery_id}, surgery='{self.surgery_name}')>"
-# -----------Allergy-----------   
+# -----------Vaccination-----------   
 class Vaccination(BaseModel):
     """데일리케어 > 의료기록 > 예방접종"""
     __tablename__ = 'vaccinations'
@@ -230,7 +230,7 @@ class Vaccination(BaseModel):
     
     def __repr__(self):
         return f"<Vaccination(id={self.vaccination_id}, vaccine='{self.vaccine_name}')>"
-# -----------Allergy-----------     
+# -----------Medication-----------     
 class Medication(BaseModel):
     """데일리케어 > 의료기록 > 복용약물 관리"""
     __tablename__ = 'medications'

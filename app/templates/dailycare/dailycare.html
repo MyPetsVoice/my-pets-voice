@@ -10,6 +10,9 @@
         <header class="header">
             <h1>🐾 데일리케어</h1>
             <p>우리 반려동물의 건강을 함께 관리해요</p>
+            <!-- TODO : 반려동물 리스트 불러오기 
+                1) 반려동물 클릭하면 반려동물 별 기록
+              -->
             <div class="pet-selector">
                 <div class="pet-card active">
                     <strong>멍멍이</strong>
@@ -158,14 +161,12 @@
                     <h3>📊 이번주 건강 리포트</h3>
                     <div class="health-score">85점</div>
                     <p style="text-align: center; opacity: 0.9;">전체적으로 건강한 상태예요!</p>
-                    <!-- <button class="btn btn-secondary" onclick="openAnalysis()" style="background: rgba(255,255,255,0.2); color: white; border: none; width: 100%;"> -->
-                        
                     <a class = 'btn btn-secondary ' style="background: rgba(255,255,255,0.2); color: white; border: none; width: 100%;" href="/dailycare/analysis"> 📈 전체 리포트 보기</a></button>
                     
                 </div>
                 
 <div class="calendar-widget">
-  <h3>📅 케어 캘린더</h3>
+  
   <div class="calendar-header">
     <button id="prev-month" class="btn btn-secondary">◀</button>
     <strong id="current-month"></strong>
@@ -181,21 +182,11 @@
     </div>
     
 <!-- 공용 모달 -->
-<!-- <div id="common-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-  <div class="bg-white rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto">
-    <div class="flex justify-between items-center mb-4">
-      <button id="modal-close-btn" class="text-gray-500">&times;</button>
-    </div> 
-    <div id="modalContent" ></div> 
-  </div>
-</div>  -->
 <div id="common-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-  <!-- <div class="bg-white rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto"> -->
     <div class="flex justify-between items-center mb-4">
       <button id="modal-close-btn" class="text-gray-500">&times;</button>
     </div> 
     <div id="modalContent" ></div> 
-  <!-- </div> -->
 </div> 
 
 

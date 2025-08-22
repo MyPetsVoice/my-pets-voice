@@ -10,6 +10,10 @@ def get_dailycare():
 def get_analysis():
     return render_template('dailycare/analysis_pet.html')
 
+@dailycare_bp.route('/medicationHistory')
+def get_medication_history():
+    return True
+
 # 모달 전용 라우트
 @dailycare_bp.route("/modal/<string:name>")
 def load_modal(name):
