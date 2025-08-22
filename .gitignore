@@ -1,6 +1,12 @@
 .env
 # Python cache
 
+# python 어쩌꾸
+__pycache__/
+
+# 데이터베이스
+.db
+
 __pycache__/
 *.pyc
 # =============== #
