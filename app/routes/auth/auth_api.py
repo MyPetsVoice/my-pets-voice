@@ -1,10 +1,14 @@
 from flask import Blueprint, request, redirect, session, url_for
 from app.models.user import User
 import requests
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os
+import logging
 
-load_dotenv()
+# load_dotenv()
+
+logger = logging.getLogger(__name__)
+
 
 auth_api_bp = Blueprint('auth_api', __name__)
 
@@ -36,7 +40,7 @@ def kakao_callback():
 
     if not code:
         return '인증코드가 없습니다.', 400
-    print('발급된 code : ', code)
+    logger.debug('발급된 code : ', code)
 
     # 액세스 토큰 요청에 필요한 파라미터 구성
     data = {
@@ -52,12 +56,12 @@ def kakao_callback():
 
     # 카카오 인증 서버에 액세스 토큰 post 요청
     resp = requests.post(KAUTH_HOST + "/oauth/token", data=data) # 자동으로 헤더 추가해줌.
-    print('액세스 토큰 요청 응답 : ', resp)
+    logger.debug('액세스 토큰 요청 응답 : ', resp)
 
 
     # 발급받은 액세스 토큰을 세션에 저장 (로그인 상태 유지 목적)
     session['access_token'] = resp.json()['access_token']
-    print('액세스 토큰 : ', resp.json()['access_token'])
+    logger.debug('액세스 토큰 : ', resp.json()['access_token'])
 
     # 사용자 정보 요청위한 헤더
     headers = {
@@ -66,9 +70,8 @@ def kakao_callback():
 
     # 사용자 정보 조회 API GET 요청 전송
     user_info = requests.get(KAPI_HOST + "/v2/user/me", headers=headers) 
-    print('user_info : ', user_info.json()) 
     kakao_user_info = user_info.json()
-    print('사용자 정보 : ', kakao_user_info)
+    logger.debug('사용자 정보 : ', kakao_user_info)
     session['user'] = kakao_user_info
     '''
     {'id': 4408942414, 
@@ -115,7 +118,7 @@ def kakao_callback():
 def logout():
     url = (f'https://kauth.kakao.com/oauth/logout?'
            f'client_id={KAKAO_CLIENT_ID}&logout_redirect_uri=http://127.0.0.1:5000&state=logout')
-    print('로그아웃')
+    logger.info('로그아웃')
     # 세션 삭제는 안 해도 되는건가?
 
     return redirect(url) # 나중에 로그인 안 한 사용자들한테 보이는 페이지로 이동하도록 변경
