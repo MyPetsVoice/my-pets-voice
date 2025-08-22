@@ -73,17 +73,16 @@
             
 
                     
-
-                        
-                <button class="inline-flex items-center px-4 py-2 bg-secondary-500 text-white rounded-lg hover:bg-secondary-600 transition-all duration-300 hover:-translate-y-0.5 shadow-md text-sm font-medium">
-                    <i class="fas fa-sign-in-alt mr-2"></i> 로그인
-                </button>
+                <a href="{{ url_for('auth_api.kakao_login')}}">
+                    <img src="{{ url_for('static', filename='img/auth/kakao_login_medium.png')}}">
+                </a>
 
             </div>
         </div>
     </nav>
 
     <!-- 메인 컨테이너 -->
+
      {% block content %}
      {% endblock %}
 

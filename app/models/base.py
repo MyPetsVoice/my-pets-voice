@@ -7,7 +7,6 @@ def get_utc_now():
 class BaseModel(db.Model):
     __abstract__ = True
 
-    id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime(timezone=True), default=get_utc_now, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), default=get_utc_now, onupdate=get_utc_now, nullable=False)
 

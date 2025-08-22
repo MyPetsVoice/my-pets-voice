@@ -2,7 +2,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.chains import LLMChain
-from app.models import petPersona as db
+from app.models import pet_persona as db
 from dotenv import load_dotenv
 
 load_dotenv()
