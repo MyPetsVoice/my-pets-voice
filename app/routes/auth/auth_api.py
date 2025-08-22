@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, session, url_for
-from models.user import User
+from app.models.user import User
 import requests
 from dotenv import load_dotenv
 import os

@@ -12,7 +12,7 @@ class PetPersona(BaseModel):
     speaking_style = db.Column(db.Text)
     user_nickname = db.Column(db.String(50))
     favorite_activities = db.Column(db.Text)
-    dislikes = db.Colomns(db.Text)
+    dislikes = db.Column(db.Text)
     habits = db.Column(db.Text)
     special_note = db.Column(db.Text)
     family_info = db.Column(db.Text)

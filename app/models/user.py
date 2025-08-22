@@ -78,7 +78,7 @@ class User(BaseModel):
 
     @classmethod
     def find_by_social(cls, provider, social_id):
-        user = cls.query.filter_by(social_privider=provider, social_id=social_id).first()
+        user = cls.query.filter_by(social_provider=provider, social_id=social_id).first()
         return user
     
 
