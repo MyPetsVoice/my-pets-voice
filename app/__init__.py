@@ -1,8 +1,10 @@
 from flask import Flask, render_template
-from app.routes.dailycare.dailycare_view import dailycare_bp #dailycare 
+
 
 from app.routes.chat.chat import chat_bp
 from app.routes.chat.chat_api import chat_api_bp
+from app.routes.dailycare.dailycare_api import dailycare_api_bp
+from app.routes.dailycare.dailycare_view import dailycare_bp 
 from app.models import init_db
 
 def create_app():
@@ -22,7 +24,8 @@ def create_app():
 
     # 블루프린트 등록 위치
 
-    app.register_blueprint(dailycare_bp , url_prefix='/dailycare') #dailycare
+    app.register_blueprint(dailycare_bp , url_prefix='/dailycare') 
+    app.register_blueprint(dailycare_api_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(chat_api_bp)
 
