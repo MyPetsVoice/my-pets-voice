@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from app.routes.dailycare.dailycare import dailycare_bp #dailycare 
+from app.routes.dailycare.dailycare_view import dailycare_bp #dailycare 
 
 from app.routes.chat.chat import chat_bp
 from app.routes.chat.chat_api import chat_api_bp
