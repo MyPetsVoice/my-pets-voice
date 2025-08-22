@@ -16,7 +16,8 @@ def init_db(app):
 # 모델들을 import하여 다른 모듈에서 사용할 수 있도록 함
 from app.models.base import BaseModel
 from app.models.user import User
+from app.models.pet import Pet
 from app.models.pet_persona import PetPersona
 
-__all__ = ['db', 'init_db', 'BaseModel', 'User', 'PetPersona']
+__all__ = ['db', 'init_db', 'BaseModel', 'User', 'Pet', 'PetPersona']
 
