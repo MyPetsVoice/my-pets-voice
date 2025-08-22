@@ -13,7 +13,7 @@ function switchTab(event, tabName) {
 // open modal
 function openModal(name) {
   console.log(`##### name ${name}`)
-  fetch(`/dailycare/modal/${name}`)
+  fetch(`/api/dailycares/modal/${name}`)
     .then((res) => {
       if (!res.ok) throw new Error("네트워크 오류");
       return res.text();
