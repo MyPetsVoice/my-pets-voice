@@ -10,7 +10,7 @@ function switchTab(event, tabName) {
   event.target.classList.add("active");
   document.getElementById(tabName + "-tab").classList.add("active");
 }
-
+// open modal
 function openModal(name) {
   console.log(`##### name ${name}`)
   fetch(`/dailycare/modal/${name}`)
@@ -29,6 +29,7 @@ function openModal(name) {
       // 닫기 버튼 이벤트
       const closeBtn = document.getElementById("modal-close-btn");
       closeBtn.onclick = () => modal.classList.add("hidden");
+     
     })
     .catch((err) => {
       console.error("모달 불러오기 실패:", err);
@@ -37,18 +38,12 @@ function openModal(name) {
 }
 
 
+
+// close modal
 function closeModal() {
   document.getElementById("common-modal").classList.add("hidden");
 }
 
-
-// 채팅 열기/닫기
-function openChat() {
-  document.getElementById("chat-overlay").style.display = "block";
-}
-function closeChat() {
-  document.getElementById("chat-overlay").style.display = "none";
-}
 
 // 분석 페이지 열기/닫기
 function openAnalysis() {
