@@ -20,13 +20,13 @@ llm = None  # LangChain ChatOpenAI 모델 (앱 컨텍스트에서 초기화)
 # 채팅 세션 저장 딕셔너리
 chat_sessions = {}
 
-def init_socketio(app_socketio):
-    """메인 앱에서 SocketIO 객체를 전달받아 초기화"""
+def init_socketio(app_socketio, app):
+    """메인 앱에서 SocketIO 객체와 Flask 앱을 전달받아 초기화"""
     global socketio, llm
     socketio = app_socketio
     
-    # LangChain ChatOpenAI 모델 초기화 (환경변수에서 직접 가져오기)
-    openai_api_key = os.getenv('OPENAI_API_KEY')
+    # config에서 OpenAI API 키 가져오기
+    openai_api_key = app.config.get('OPENAI_API_KEY')
     if not openai_api_key:
         logger.error("OPENAI_API_KEY가 설정되지 않았습니다.")
         raise ValueError("OPENAI_API_KEY 환경변수가 설정되지 않았습니다.")

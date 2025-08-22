@@ -30,7 +30,7 @@ def create_app(config_name=None):
     
     # chat_api_bp의 socketio 초기화
     from app.routes.chat.chat_api import init_socketio
-    init_socketio(socketio)
+    init_socketio(socketio, app)
     app.logger.info('채팅 API SocketIO가 초기화되었습니다.')
 
     @app.route('/')
