@@ -1,130 +1,181 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session, current_app
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from langchain_openai import ChatOpenAI
 from langchain.schema import SystemMessage, HumanMessage
 from app.models.pet_persona import PetPersona
 from app.models.pet import Pet
-from dotenv import load_dotenv
 import os
 import json
 import threading
 import time
+import logging
 
-load_dotenv()
+logger = logging.getLogger(__name__)
 
 chat_api_bp = Blueprint('chat_api', __name__)
 
 socketio = None  # 메인 앱에서 초기화됨
-
-# OpenAI API 키 설정
-openai_api_key = os.environ.get('OPENAI_API_KEY')
-if not openai_api_key:
-    raise ValueError("OPENAI_API_KEY 환경변수가 설정되지 않았습니다.")
-
-# LangChain ChatOpenAI 모델 초기화
-llm = ChatOpenAI(
-    api_key=openai_api_key,
-    model="gpt-4o-mini",
-    temperature=0.8,
-    max_tokens=500
-)
+llm = None  # LangChain ChatOpenAI 모델 (앱 컨텍스트에서 초기화)
 
 # 채팅 세션 저장 딕셔너리
 chat_sessions = {}
 
 def init_socketio(app_socketio):
     """메인 앱에서 SocketIO 객체를 전달받아 초기화"""
-    global socketio
+    global socketio, llm
     socketio = app_socketio
+    
+    # LangChain ChatOpenAI 모델 초기화 (환경변수에서 직접 가져오기)
+    openai_api_key = os.getenv('OPENAI_API_KEY')
+    if not openai_api_key:
+        logger.error("OPENAI_API_KEY가 설정되지 않았습니다.")
+        raise ValueError("OPENAI_API_KEY 환경변수가 설정되지 않았습니다.")
+    
+    llm = ChatOpenAI(
+        api_key=openai_api_key,
+        model="gpt-4o-mini",
+        temperature=0.8,
+        max_tokens=500
+    )
+    logger.info("ChatOpenAI 모델이 초기화되었습니다.")
     
     # SocketIO 이벤트 핸들러들 등록
     @socketio.on('connect')
     def on_connect():
-        print(f"클라이언트 연결됨: {request.sid}")
+        logger.info(f"클라이언트 연결됨: {request.sid}")
+        
         # 세션에 펫 정보가 있는지 확인
         if 'pet_info' not in session:
+            logger.warning(f"펫 정보 없이 연결 시도: {request.sid}")
             emit('error', {'message': '펫 정보가 없습니다. 다시 설정해주세요.'})
             return
         
         # 채팅 세션 초기화
         chat_sessions[request.sid] = {
             'pet_info': session['pet_info'],
-            'messages': []
+            'messages': [],
+            'created_at': time.time()
         }
         
         join_room(request.sid)
-        print(f"펫 정보: {session['pet_info']['name']}")
+        pet_name = session['pet_info'].get('name', '알 수 없음')
+        logger.info(f"펫 정보 로드됨: {pet_name} (세션: {request.sid})")
 
     @socketio.on('disconnect')  
     def on_disconnect():
-        print(f"클라이언트 연결 종료: {request.sid}")
+        logger.info(f"클라이언트 연결 종료: {request.sid}")
         if request.sid in chat_sessions:
             del chat_sessions[request.sid]
+            logger.debug(f"채팅 세션 삭제됨: {request.sid}")
         leave_room(request.sid)
 
     @socketio.on('send_message')
     def handle_message(data):
-        user_message = data['message']
-        client_sid = request.sid  # request context에서 sid 미리 저장
-        
-        if client_sid not in chat_sessions:
-            emit('error', {'message': '채팅 세션이 존재하지 않습니다.'})
-            return
+        try:
+            # 입력값 검증
+            if not data or 'message' not in data:
+                logger.warning(f"잘못된 메시지 형식: {data}")
+                emit('error', {'message': '메시지 형식이 올바르지 않습니다.'})
+                return
             
-        chat_session = chat_sessions[client_sid]
-        pet_info = chat_session['pet_info']
+            user_message = data['message'].strip()
+            if not user_message:
+                emit('error', {'message': '빈 메시지는 보낼 수 없습니다.'})
+                return
+            
+            if len(user_message) > 1000:  # 메시지 길이 제한
+                emit('error', {'message': '메시지가 너무 깁니다. (최대 1000자)'})
+                return
+            
+            client_sid = request.sid
+            
+            if client_sid not in chat_sessions:
+                logger.error(f"존재하지 않는 채팅 세션: {client_sid}")
+                emit('error', {'message': '채팅 세션이 존재하지 않습니다.'})
+                return
+                
+            chat_session = chat_sessions[client_sid]
+            pet_info = chat_session['pet_info']
+            
+            logger.debug(f"메시지 수신 - 사용자: {user_message[:50]}...")
+            
+            # 사용자 메시지 저장 및 브로드캐스트
+            chat_session['messages'].append({'role': 'user', 'content': user_message})
+            emit('user_message', {'message': user_message})
+            
+            # 타이핑 인디케이터 표시
+            emit('bot_typing', {'pet_name': pet_info['name']})
         
-        # 사용자 메시지 저장 및 브로드캐스트
-        chat_session['messages'].append({'role': 'user', 'content': user_message})
-        emit('user_message', {'message': user_message})
-        
-        # 타이핑 인디케이터 표시
-        emit('bot_typing', {'pet_name': pet_info['name']})
-        
-        # 백그라운드에서 AI 응답 생성
-        def generate_response():
-            try:
-                # 펫 페르소나 정보로 시스템 프롬프트 생성
-                system_prompt = create_pet_system_prompt(pet_info)
-                
-                # 대화 히스토리 구성
-                messages = [SystemMessage(content=system_prompt)]
-                
-                # 최근 10개 메시지만 포함
-                recent_messages = chat_session['messages'][-10:]
-                for msg in recent_messages:
-                    if msg['role'] == 'user':
-                        messages.append(HumanMessage(content=msg['content']))
-                    else:
-                        messages.append(SystemMessage(content=msg['content']))
-                
-                # AI 응답 생성
-                response = llm.invoke(messages)
-                bot_message = response.content
-                
-                # 응답 저장
-                chat_session['messages'].append({'role': 'assistant', 'content': bot_message})
-                
-                # 클라이언트에게 응답 전송 (미리 저장한 sid 사용)
-                socketio.emit('bot_response', {
-                    'message': bot_message,
-                    'pet_name': pet_info['name']
-                }, room=client_sid)
-                
-            except Exception as e:
-                print(f"AI 응답 생성 중 오류: {e}")
-                socketio.emit('error', {
-                    'message': f'죄송해요, 지금은 대답하기 어려워요... 😔'
-                }, room=client_sid)
-        
-        # 별도 스레드에서 응답 생성
-        threading.Thread(target=generate_response).start()
+            # 백그라운드에서 AI 응답 생성
+            def generate_response():
+                try:
+                    if llm is None:
+                        logger.error("ChatOpenAI 모델이 초기화되지 않았습니다.")
+                        socketio.emit('error', {
+                            'message': '서비스가 준비되지 않았습니다. 잠시 후 다시 시도해주세요.'
+                        }, room=client_sid)
+                        return
+                    
+                    # 펫 페르소나 정보로 시스템 프롬프트 생성
+                    system_prompt = create_pet_system_prompt(pet_info)
+                    
+                    # 대화 히스토리 구성
+                    messages = [SystemMessage(content=system_prompt)]
+                    
+                    # 최근 10개 메시지만 포함
+                    recent_messages = chat_session['messages'][-10:]
+                    for msg in recent_messages:
+                        if msg['role'] == 'user':
+                            messages.append(HumanMessage(content=msg['content']))
+                        else:
+                            messages.append(SystemMessage(content=msg['content']))
+                    
+                    logger.debug(f"AI 응답 생성 시작 - 펫: {pet_info.get('name', '알 수 없음')}")
+                    
+                    # AI 응답 생성
+                    response = llm.invoke(messages)
+                    bot_message = response.content
+                    
+                    if not bot_message:
+                        logger.warning("AI 응답이 비어있습니다.")
+                        bot_message = "죄송해요, 지금은 말하기 어려워요... 🥺"
+                    
+                    # 응답 저장
+                    chat_session['messages'].append({'role': 'assistant', 'content': bot_message})
+                    
+                    # 클라이언트에게 응답 전송
+                    socketio.emit('bot_response', {
+                        'message': bot_message,
+                        'pet_name': pet_info.get('name', '펫')
+                    }, room=client_sid)
+                    
+                    logger.debug(f"AI 응답 완료 - 길이: {len(bot_message)}자")
+                    
+                except Exception as e:
+                    logger.error(f"AI 응답 생성 중 오류: {str(e)}")
+                    socketio.emit('error', {
+                        'message': '죄송해요, 지금은 대답하기 어려워요... 😔'
+                    }, room=client_sid)
+            
+            # 별도 스레드에서 응답 생성
+            threading.Thread(target=generate_response, daemon=True).start()
+            
+        except Exception as e:
+            logger.error(f"메시지 처리 중 오류: {str(e)}")
+            emit('error', {'message': '메시지 처리 중 오류가 발생했습니다.'})
 
     @socketio.on('reset_chat')
     def handle_reset():
-        if request.sid in chat_sessions:
-            chat_sessions[request.sid]['messages'] = []
-            emit('chat_reset', {'message': '대화가 초기화되었습니다.'})
+        try:
+            if request.sid in chat_sessions:
+                chat_sessions[request.sid]['messages'] = []
+                logger.info(f"채팅 초기화: {request.sid}")
+                emit('chat_reset', {'message': '대화가 초기화되었습니다.'})
+            else:
+                emit('error', {'message': '채팅 세션을 찾을 수 없습니다.'})
+        except Exception as e:
+            logger.error(f"채팅 초기화 중 오류: {str(e)}")
+            emit('error', {'message': '채팅 초기화 중 오류가 발생했습니다.'})
 
 def create_pet_system_prompt(pet_info):
     """펫 정보를 바탕으로 시스템 프롬프트 생성"""
@@ -178,11 +229,17 @@ def create_pet_system_prompt(pet_info):
 @chat_api_bp.route('/get_pet_info')
 def get_pet_info():
     """현재 세션의 펫 정보 반환"""
-    if 'pet_info' not in session:
-        return jsonify({'success': False, 'error': '펫 정보가 없습니다.'})
-    
-    return jsonify({
-        'success': True,
-        'pet_info': session['pet_info']
-    })
+    try:
+        if 'pet_info' not in session:
+            logger.warning("펫 정보 요청 실패 - 세션에 정보 없음")
+            return jsonify({'success': False, 'error': '펫 정보가 없습니다.'})
+        
+        logger.debug("펫 정보 요청 성공")
+        return jsonify({
+            'success': True,
+            'pet_info': session['pet_info']
+        })
+    except Exception as e:
+        logger.error(f"펫 정보 조회 중 오류: {str(e)}")
+        return jsonify({'success': False, 'error': '펫 정보 조회 중 오류가 발생했습니다.'})
 
