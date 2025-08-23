@@ -1,11 +1,11 @@
 from app.models import db
 from app.models.base import BaseModel
 from sqlalchemy import (
-    Column, Integer, String, Text, Date, DateTime, Decimal, Boolean, 
-    Time, ForeignKey, CheckConstraint, UniqueConstraint, Index
+   Integer, ForeignKey, 
 )
 from sqlalchemy.orm import relationship
-
+from dotenv import load_dotenv
+load_dotenv()
 class HealthCareMedication(BaseModel):
     """건강 기록에 포함된 약물 기록
     중간테이블
@@ -19,7 +19,7 @@ class HealthCareMedication(BaseModel):
     # HealthCare 기록
     record_id = db.Column(
         Integer, 
-        ForeignKey('health_cares.record_id', ondelete="CASCADE"), 
+        ForeignKey('health_cares.care_id', ondelete="CASCADE"), 
         nullable=False
     )
 

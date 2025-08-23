@@ -30,7 +30,7 @@ class Medication(BaseModel):
     )
     
     pet = relationship("Pet", back_populates="medications")
-    daily_medication_logs = relationship("HealthCareLog", back_populates="medication")
+    # daily_medication_logs = relationship("HealthCareLog", back_populates="medication")
     
     def __repr__(self):
         return f"<Medication(id={self.medication_id}, name='{self.medication_name}')>"

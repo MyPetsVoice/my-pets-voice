@@ -10,7 +10,8 @@ from app.routes.mypage import mypage_bp
 from app.models import init_db
 from config import config, setup_logging
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 def create_app(config_name=None):
     app = Flask(__name__)
     

@@ -16,7 +16,7 @@ class HealthCare(BaseModel):
     __tablename__ = 'health_cares'
     
     care_id = db.Column(Integer, primary_key=True, autoincrement=True)
-    pet_id = db.Column(Integer, ForeignKey('pet.pet_id', ondelete='CASCADE'), nullable=False)
+    pet_id = db.Column(Integer, ForeignKey('pets.pet_id', ondelete='CASCADE'), nullable=False)
     
     food = db.Column(Integer)                  # 음식 섭취량
     water = db.Column(DECIMAL(6, 2))           # 수분 섭취량 (ml)
@@ -30,12 +30,12 @@ class HealthCare(BaseModel):
         Index('idx_health_records_user_date', 'pet_id', 'created_at'),
     )
     
-    pet = relationship("Pet", backref="health_records")
-    daily_medication_logs = relationship(
-        "HealthCareLog",
-        back_populates="daily_record",
-        cascade="all, delete-orphan"
-    )
+    pet = db.relationship('Pet', back_populates='health_care')
+    # daily_medication_logs = relationship(
+    #     "HealthCareLog",
+    #     back_populates="daily_record",
+    #     cascade="all, delete-orphan"
+    # )
     
     def __repr__(self):
         return f"<HealthCare(id={self.care_id}, created_at='{self.created_at}')>"

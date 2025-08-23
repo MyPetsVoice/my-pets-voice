@@ -1,5 +1,6 @@
 from app.models import db
 from app.models.base import BaseModel
+from app.models.pet import Pet
 from sqlalchemy import (
      Integer, String, ForeignKey, CheckConstraint, Index
 )

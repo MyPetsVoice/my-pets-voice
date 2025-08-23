@@ -30,7 +30,7 @@ class TodoList(BaseModel):
         Index('idx_todo_lists_pet_date', 'pet_id', 'todo_date'),
     )
     
-    pet = relationship("Pet", back_populates="todos")
+    pet = relationship("Pet", back_populates="todo")
     
     def __repr__(self):
         return f"<TodoList(id={self.todo_id}, title='{self.title}', status='{self.status}')>"
