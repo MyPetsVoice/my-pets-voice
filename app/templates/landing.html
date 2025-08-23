@@ -1,0 +1,375 @@
+{% extends 'base.html' %}
+
+{% block title %}MyPet's Voice - 반려동물과의 특별한 소통{% endblock %}
+
+{% block content %}
+<link href="{{ url_for('static', filename='css/landing.css') }}" rel="stylesheet">
+<div class="min-h-screen">
+    <!-- 히어로 섹션 -->
+    <section class="bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-20">
+        <div class="max-w-7xl mx-auto px-5">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="text-center lg:text-left">
+                    <h1 class="text-4xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
+                        반려동물과의<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary-500 to-primary-500">
+                            특별한 소통
+                        </span>
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                        AI가 만들어내는 반려동물의 목소리로<br>
+                        새로운 관계를 경험해보세요
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="{{ url_for('auth.auth_api.kakao_login') }}" 
+                           class="px-8 py-4 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-full font-semibold text-lg hover:from-secondary-600 hover:to-secondary-700 transition-all duration-300 hover:transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-paw me-2"></i>지금 시작하기
+                        </a>
+                        <button onclick="scrollToDemo()" 
+                                class="px-8 py-4 border-2 border-secondary-500 text-secondary-600 rounded-full font-semibold text-lg hover:bg-secondary-500 hover:text-white transition-all duration-300">
+                            <i class="fas fa-play me-2"></i>데모 보기
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="bg-gradient-to-br from-primary-100 to-secondary-100 rounded-3xl p-8 transform rotate-3 hover:rotate-0 transition-all duration-500">
+                        <div class="bg-white rounded-2xl p-6 shadow-xl">
+                            <div class="flex items-center space-x-3 mb-4">
+                                <div class="w-12 h-12 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center text-white">
+                                    <i class="fas fa-paw text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800">귀여운 몽실이</h3>
+                                    <p class="text-sm text-gray-500">골든 리트리버 · 3살</p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-4">
+                                <p class="text-gray-700 italic">
+                                    "엄마! 오늘 산책 언제 가요? 🐕<br>
+                                    밖에 나가서 공놀이 하고 싶어요!"
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 기능 소개 섹션 -->
+    <section class="py-20 bg-white" id="features">
+        <div class="max-w-7xl mx-auto px-5">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+                    반려동물과 함께하는 특별한 경험
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    AI 기술로 반려동물의 성격과 특성을 분석하여 마치 진짜 대화하는 것 같은 경험을 제공합니다
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- 반려동물과 대화 -->
+                <div class="group bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
+                    <div class="w-16 h-16 bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-comments text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">AI 반려동물 대화</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        반려동물의 성격, 말투, 취향을 학습한 AI가 마치 진짜 반려동물이 말하는 것처럼 대화해드려요. 
+                        언제든지 우리 아이와 이야기할 수 있어요.
+                    </p>
+                </div>
+                
+                <!-- 반려동물 일기 -->
+                <div class="group bg-gradient-to-br from-secondary-50 to-secondary-100 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
+                    <div class="w-16 h-16 bg-gradient-to-r from-secondary-500 to-secondary-600 rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-book text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">반려동물 일기</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        오늘 있었던 일을 간단히 입력하면, AI가 반려동물의 시선에서 귀여운 일기를 작성해줍니다. 
+                        특별한 추억을 반려동물의 목소리로 기록하세요.
+                    </p>
+                </div>
+                
+                <!-- 데일리 케어 -->
+                <div class="group bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105">
+                    <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-heart text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">스마트 케어 관리</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        건강 기록, 일정 관리, AI 건강상담까지. 
+                        반려동물의 건강과 일상을 체계적으로 관리하고 전문적인 조언을 받아보세요.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 데모 섹션 -->
+    <section class="py-20 bg-gray-50" id="demo">
+        <div class="max-w-7xl mx-auto px-5">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+                    실제 대화 예시
+                </h2>
+                <p class="text-xl text-gray-600">
+                    이렇게 자연스럽게 대화할 수 있어요
+                </p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                    <div class="bg-gradient-to-r from-primary-500 to-secondary-500 text-white p-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                <i class="fas fa-paw text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold">몽실이와의 대화</h3>
+                                <p class="text-sm opacity-90">골든 리트리버 · 3살 · 활발한 성격</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 space-y-4 h-96 overflow-y-auto" id="demo-chat">
+                        <!-- 데모 메시지들이 여기에 동적으로 추가됩니다 -->
+                    </div>
+                    
+                    <div class="p-6 border-t border-gray-100">
+                        <div class="flex space-x-3">
+                            <input type="text" id="demo-input" 
+                                   placeholder="몽실이에게 메시지를 입력해보세요..." 
+                                   class="flex-1 p-3 border-2 border-gray-200 rounded-full focus:border-primary-500 focus:outline-none"
+                                   disabled>
+                            <button onclick="startDemo()" 
+                                    class="px-6 py-3 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-full hover:from-secondary-600 hover:to-secondary-700 transition-all">
+                                <i class="fas fa-play me-1"></i>데모 시작
+                            </button>
+                        </div>
+                        <p class="text-center text-sm text-gray-500 mt-3">
+                            실제 서비스를 이용하려면 로그인이 필요합니다
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA 섹션 -->
+    <section class="py-20 bg-gradient-to-r from-primary-500 to-secondary-500 text-white">
+        <div class="max-w-7xl mx-auto px-5 text-center">
+            <h2 class="text-3xl lg:text-4xl font-bold mb-6">
+                지금 바로 반려동물과 대화해보세요
+            </h2>
+            <p class="text-xl mb-8 opacity-90">
+                간편한 소셜 로그인으로 30초 만에 시작할 수 있어요
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="{{ url_for('auth.auth_api.kakao_login') }}" 
+                   class="px-8 py-4 bg-white text-secondary-600 rounded-full font-semibold text-lg hover:bg-gray-100 transition-all duration-300 hover:transform hover:scale-105 shadow-lg">
+                    <i class="fab fa-kakao me-2"></i>카카오로 시작하기
+                </a>
+                <p class="text-sm opacity-75">
+                    <i class="fas fa-shield-alt me-1"></i>
+                    안전한 소셜 로그인 · 개인정보 보호
+                </p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    let demoMessages = [
+        { type: 'user', text: '몽실아 안녕!' },
+        { type: 'bot', text: '엄마! 안녕하세요! 오늘 하루 어떠셨어요? 🐕 꼬리가 막 흔들려요!' },
+        { type: 'user', text: '오늘 산책 갈까?' },
+        { type: 'bot', text: '와!! 정말요?! 산책 대찬성이에요! 🎾 공도 같이 가져가요! 밖에 나가면 신나서 뛰어다니고 싶어요!' },
+        { type: 'user', text: '착하게 걸어야 해' },
+        { type: 'bot', text: '네... 알겠어요 😅 엄마 손 놓치지 않고 착하게 걸을게요! 그런데... 다람쥐 보면 조금 신날 수도 있어요 히히' }
+    ];
+    
+    let demoIndex = 0;
+    let isDemo = false;
+
+    function startDemo() {
+        if (isDemo) return;
+        
+        isDemo = true;
+        demoIndex = 0;
+        document.getElementById('demo-chat').innerHTML = '';
+        document.getElementById('demo-input').disabled = false;
+        
+        // 첫 번째 메시지부터 시작
+        showNextDemoMessage();
+    }
+
+    function showNextDemoMessage() {
+        if (demoIndex >= demoMessages.length) {
+            // 데모 완료
+            setTimeout(() => {
+                addDemoMessage('system', '데모가 완료되었습니다! 실제 서비스를 이용하려면 로그인해주세요 😊');
+                document.getElementById('demo-input').disabled = true;
+                isDemo = false;
+            }, 1000);
+            return;
+        }
+        
+        const message = demoMessages[demoIndex];
+        
+        if (message.type === 'user') {
+            // 사용자 메시지 - 타이핑 효과
+            typeMessage(message.text, () => {
+                addDemoMessage('user', message.text);
+                demoIndex++;
+                setTimeout(showNextDemoMessage, 1000);
+            });
+        } else {
+            // 봇 메시지 - 타이핑 인디케이터 후 메시지
+            showTypingIndicator();
+            setTimeout(() => {
+                hideTypingIndicator();
+                addDemoMessage('bot', message.text);
+                demoIndex++;
+                setTimeout(showNextDemoMessage, 2000);
+            }, 1500);
+        }
+    }
+
+    function typeMessage(text, callback) {
+        const input = document.getElementById('demo-input');
+        input.value = '';
+        input.focus();
+        
+        let i = 0;
+        const typeInterval = setInterval(() => {
+            if (i < text.length) {
+                input.value += text[i];
+                i++;
+            } else {
+                clearInterval(typeInterval);
+                setTimeout(callback, 500);
+            }
+        }, 100);
+    }
+
+    function addDemoMessage(type, text) {
+        const chatContainer = document.getElementById('demo-chat');
+        const messageDiv = document.createElement('div');
+        
+        if (type === 'user') {
+            messageDiv.className = 'flex justify-end mb-4';
+            messageDiv.innerHTML = `
+                <div class="max-w-xs bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-2xl rounded-br-md p-3">
+                    <p>${text}</p>
+                </div>
+            `;
+        } else if (type === 'bot') {
+            messageDiv.className = 'flex justify-start mb-4';
+            messageDiv.innerHTML = `
+                <div class="flex items-start space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center text-white text-sm">
+                        <i class="fas fa-paw"></i>
+                    </div>
+                    <div class="max-w-xs bg-gray-100 rounded-2xl rounded-bl-md p-3">
+                        <p class="text-sm font-medium text-primary-600 mb-1">몽실이</p>
+                        <p class="text-gray-800">${text}</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            messageDiv.className = 'flex justify-center mb-4';
+            messageDiv.innerHTML = `
+                <div class="bg-blue-100 text-blue-800 rounded-xl p-3 text-sm">
+                    ${text}
+                </div>
+            `;
+        }
+        
+        chatContainer.appendChild(messageDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+        // 입력창 비우기
+        if (type === 'user') {
+            document.getElementById('demo-input').value = '';
+        }
+    }
+
+    function showTypingIndicator() {
+        const chatContainer = document.getElementById('demo-chat');
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'flex justify-start mb-4 typing-indicator';
+        typingDiv.innerHTML = `
+            <div class="flex items-start space-x-2">
+                <div class="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full flex items-center justify-center text-white text-sm">
+                    <i class="fas fa-paw"></i>
+                </div>
+                <div class="bg-gray-100 rounded-2xl rounded-bl-md p-3">
+                    <div class="flex space-x-1">
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+        chatContainer.appendChild(typingDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+        const typingIndicator = document.querySelector('.typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    function scrollToDemo() {
+        document.getElementById('demo').scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+
+    // 페이지 로드 시 애니메이션
+    document.addEventListener('DOMContentLoaded', function() {
+        // 히어로 섹션 애니메이션
+        const heroElements = document.querySelectorAll('.hero-animate');
+        heroElements.forEach((el, index) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            setTimeout(() => {
+                el.style.transition = 'all 0.6s ease-out';
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+        
+        // 스크롤 애니메이션 관찰자
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // 기능 카드들에 애니메이션 적용
+        document.querySelectorAll('.group').forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = `all 0.6s ease-out ${index * 0.2}s`;
+            observer.observe(card);
+        });
+    });
+</script>
+{% endblock %}
