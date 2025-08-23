@@ -19,7 +19,7 @@
 
 /* 채팅 컨테이너 스타일 */
 .chat-container {
-    @apply max-w-4xl mx-auto flex flex-col bg-white rounded-xl shadow-xl;
+    @apply max-w-4xl mx-auto flex flex-col bg-white rounded-xl ;
     height: calc(100vh - 150px);
 }
 
