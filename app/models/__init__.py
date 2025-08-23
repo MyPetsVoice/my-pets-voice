@@ -9,6 +9,7 @@ def init_db(app):
     from app.models.base import BaseModel
     from app.models.user import User
     from app.models.petPersona import PetPersona
+    from app.models.diary import Diary, DiaryPhoto
 
     with app.app_context():
         db.create_all()
@@ -17,6 +18,7 @@ def init_db(app):
 from app.models.base import BaseModel
 from app.models.user import User
 from app.models.petPersona import PetPersona
+from app.models.diary import Diary, DiaryPhoto
 
-__all__ = ['db', 'init_db', 'BaseModel', 'User', 'PetPersona']
+__all__ = ['db', 'init_db', 'BaseModel', 'User', 'PetPersona', 'Diary', 'DiaryPhoto']
 
