@@ -13,7 +13,7 @@ class Allergy(BaseModel):
     __tablename__ = 'allergies'
     
     allergy_id = db.Column(Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
+    pet_id = db.Column(Integer, ForeignKey('pets.pet_id', ondelete='CASCADE'), nullable=False)
     
     allergy_type = db.Column(String(20), nullable=False)   # 알러지 유형
     allergen = db.Column(String(200), nullable=False)      # 알러지원
@@ -23,10 +23,10 @@ class Allergy(BaseModel):
     __table_args__ = (
         CheckConstraint(allergy_type.in_(['음식', '접촉', '환경', '약물', '기타']), name='check_allergy_type'),
         CheckConstraint(severity.in_(['경미', '보통', '심각']), name='check_severity'),
-        Index('idx_allergies_user_id', 'user_id'),
+        Index('idx_allergies_pet_id', 'pet_id'),
     )
     
-    user = relationship("User", back_populates="allergies")
+    pet = relationship("Pet", back_populates="allergies")
     
     def __repr__(self):
         return f"<Allergy(id={self.allergy_id}, type='{self.allergy_type}', allergen='{self.allergen}')>"

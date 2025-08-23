@@ -12,7 +12,7 @@ class Disease(BaseModel):
     __tablename__ = 'diseases'
     
     disease_id = db.Column(Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
+    pet_id = db.Column(Integer, ForeignKey('pets.pet_id', ondelete='CASCADE'), nullable=False)
     
     disease_name = db.Column(String(200), nullable=False)  # 질병 이름
     symptoms = db.Column(Text)                             # 증상
@@ -22,10 +22,10 @@ class Disease(BaseModel):
     diagnosis_date = db.Column(Date)                       # 진단일
     
     __table_args__ = (
-        Index('idx_diseases_user_id', 'user_id'),
+        Index('idx_diseases_pet_id', 'pet_id'),
     )
     
-    user = relationship("User", back_populates="diseases")
+    pet = relationship("Pet", back_populates="diseases")
     
     def __repr__(self):
         return f"<Disease(id={self.disease_id}, disease='{self.disease_name}')>"

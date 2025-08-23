@@ -16,7 +16,7 @@ class TodoList(BaseModel):
     __tablename__ = 'todos'
     
     todo_id = db.Column(Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
+    pet_id = db.Column(Integer, ForeignKey('pets.pet_id', ondelete='CASCADE'), nullable=False)
     
     todo_date = db.Column(Date, nullable=False)           # 해당 날짜
     title = db.Column(String(200), nullable=False)        # 제목
@@ -27,10 +27,10 @@ class TodoList(BaseModel):
     __table_args__ = (
         CheckConstraint(status.in_(['미완료', '완료']), name='check_status'),
         CheckConstraint(priority.in_(['낮음', '보통', '높음']), name='check_priority'),
-        Index('idx_todo_lists_user_date', 'user_id', 'todo_date'),
+        Index('idx_todo_lists_pet_date', 'pet_id', 'todo_date'),
     )
     
-    user = relationship("User", back_populates="todos")
+    pet = relationship("Pet", back_populates="todos")
     
     def __repr__(self):
         return f"<TodoList(id={self.todo_id}, title='{self.title}', status='{self.status}')>"

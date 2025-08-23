@@ -16,7 +16,7 @@ class HealthCare(BaseModel):
     __tablename__ = 'health_cares'
     
     care_id = db.Column(Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
+    pet_id = db.Column(Integer, ForeignKey('pet.pet_id', ondelete='CASCADE'), nullable=False)
     
     food = db.Column(Integer)                  # 음식 섭취량
     water = db.Column(DECIMAL(6, 2))           # 수분 섭취량 (ml)
@@ -26,11 +26,11 @@ class HealthCare(BaseModel):
     
     __table_args__ = (
         CheckConstraint(excrement_status.in_(['정상', '설사', '변비', '혈변']), name='check_bowel_status'),
-        UniqueConstraint('user_id', 'created_at', name='uq_user_record_date'),
-        Index('idx_health_records_user_date', 'user_id', 'created_at'),
+        UniqueConstraint('pet_id', 'created_at', name='uq_user_record_date'),
+        Index('idx_health_records_user_date', 'pet_id', 'created_at'),
     )
     
-    user = relationship("User", backref="health_records")
+    pet = relationship("Pet", backref="health_records")
     daily_medication_logs = relationship(
         "HealthCareLog",
         back_populates="daily_record",

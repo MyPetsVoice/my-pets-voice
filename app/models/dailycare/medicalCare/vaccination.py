@@ -12,7 +12,7 @@ class Vaccination(BaseModel):
     __tablename__ = 'vaccinations'
     
     vaccination_id = db.Column(Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
+    pet_id = db.Column(Integer, ForeignKey('pets.pet_id', ondelete='CASCADE'), nullable=False)
     
     vaccine_name = db.Column(String(200), nullable=False)   # 백신명
     vaccination_date = db.Column(Date, nullable=False)      # 접종일
@@ -21,10 +21,10 @@ class Vaccination(BaseModel):
     next_vaccination_date = db.Column(Date)                 # 다음 접종 예정일
     
     __table_args__ = (
-        Index('idx_vaccinations_user_id', 'user_id'),
+        Index('idx_vaccinations_pet_id', 'pet_id'),
     )
     
-    user = relationship("User", back_populates="vaccinations")
+    pet = relationship("Pet", back_populates="vaccinations")
     
     def __repr__(self):
         return f"<Vaccination(id={self.vaccination_id}, vaccine='{self.vaccine_name}')>"

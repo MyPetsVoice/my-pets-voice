@@ -13,7 +13,7 @@ class Medication(BaseModel):
     __tablename__ = 'medications'
     
     medication_id = db.Column(Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
+    pet_id = db.Column(Integer, ForeignKey('pets.pet_id', ondelete='CASCADE'), nullable=False)
     
     medication_name = db.Column(String(200), nullable=False)  # 약물명
     purpose = db.Column(String(500))                          # 복용 목적
@@ -26,10 +26,10 @@ class Medication(BaseModel):
     
     __table_args__ = (
         CheckConstraint(frequency.in_(['하루1회', '하루2회', '하루3회', '필요시']), name='check_frequency'),
-        Index('idx_medications_user_id', 'user_id'),
+        Index('idx_medications_pet_id', 'pet_id'),
     )
     
-    user = relationship("User", back_populates="medications")
+    pet = relationship("Pet", back_populates="medications")
     daily_medication_logs = relationship("HealthCareLog", back_populates="medication")
     
     def __repr__(self):
