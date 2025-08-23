@@ -1,27 +1,41 @@
-
 from app.models import db
 from app.models.base import BaseModel
 
 class PetPersona(BaseModel):
     __tablename__ = 'pet_personas'
 
-    pet_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    pet_persona_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-    pet_name = db.Column(db.String(50), nullable=False)
-    pet_species = db.Column(db.String(30), nullable=False)
-    pet_breed = db.Column(db.String(50))
-    pet_age = db.Column(db.Integer)
-    pet_gender = db.Column(db.String(10))
-    personality_traits = db.Column(db.Text)
-    favorite_activities = db.Column(db.Text)
-    health_conditions = db.Column(db.Text)
-    behavioral_notes = db.Column(db.Text)
-    profile_image_url = db.Column(db.String(500))
+    pet_id = db.Column(db.Integer, db.ForeignKey('pets.pet_id'), nullable=False)
 
-    user = db.relationship('User', backref=db.backref('pets', lazy=True))
+    personality_traits = db.Column(db.Text)
+    speaking_style = db.Column(db.Text)
+    user_nickname = db.Column(db.String(50))
+    favorite_activities = db.Column(db.Text)
+    dislikes = db.Column(db.Text)
+    habits = db.Column(db.Text)
+    special_note = db.Column(db.Text)
+    family_info = db.Column(db.Text)
+    additional_info = db.Column(db.Text)
+
+
+    user = db.relationship('User', backref='pet_personas')
+    pet = db.relationship('Pet', backref=db.backref('persona', uselist=False))
 
     def __repr__(self):
-        return f'<PetPersona {self.pet_name}>'
+        return f'<PetPersona {self.pet.pet_name}>'
+
+    @classmethod
+    def create_persona(cls, pet_id, user_id, **kwargs):
+        existing = cls.find_by_pet_id(pet_id)
+        if existing:
+            raise ValueError(f'Pet Id {pet_id}에 대한 페르소나가 이미 존재합니다.')
+        return cls.create(pet_id=pet_id, user_id=user_id, **kwargs)
+
+    @classmethod
+    def find_by_pet_id(cls, pet_id):
+        return cls.query.filter_by(pet_id=pet_id).first()
+
 
     def get_persona_prompt(self):
         """대화 챗봇 시스템 프롬프트로 사용될 반려동물 정보를 반환"""

@@ -5,9 +5,16 @@ db
 *.db
 # Python cache
 
+# python 어쩌꾸
 __pycache__/
 *.pyc
 
+# 데이터베이스
+.db
+instance/
+
+logs/
+app.log
 # =============== #
 # Mac OS 관련 파일 #
 # =============== #

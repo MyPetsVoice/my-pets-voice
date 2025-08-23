@@ -63,28 +63,30 @@
             </button>
             
             <div class="hidden md:flex space-x-4" id="nav-menu">
-                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">반려동물과 대화하기</a>
+                <a href="{{ url_for('chat.chat_views.chat')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">반려동물과 대화하기</a>
                 <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">너의 일기장</a>
                 <a href="/dailycare" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">데일리 케어</a>
                 <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">마이페이지</a>
+                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">데일리 케어</a>
+                <a href="{{ url_for('mypage.mypage_views.mypage')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">마이페이지</a>
             </div>
-
-            <!-- 날씨 api 가져와서 렌더링 -->
-
             
-
-                    
-
-                        
-                <button class="inline-flex items-center px-4 py-2 bg-secondary-500 text-white rounded-lg hover:bg-secondary-600 transition-all duration-300 hover:-translate-y-0.5 shadow-md text-sm font-medium">
-                    <i class="fas fa-sign-in-alt mr-2"></i> 로그인
-                </button>
+            <!-- 날씨 api 가져와서 렌더링 -->
+            
+            
+            
+            
+                <a href="{{ url_for('auth.auth_api.logout')}}">로그아웃</a>
+                <a href="{{ url_for('auth.auth_api.kakao_login')}}">
+                    <img src="{{ url_for('static', filename='img/auth/kakao_login_medium.png')}}">
+                </a>
 
             </div>
         </div>
     </nav>
 
     <!-- 메인 컨테이너 -->
+
      {% block content %}
      {% endblock %}
 
