@@ -60,3 +60,54 @@ class PetPersona(BaseModel):
             prompt += f"특이사항: {self.behavioral_notes} "
             
         return prompt
+    
+
+class PersonalityTrait(BaseModel):
+    __tablename__ = 'personality_traits'
+
+    trait_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    trait_name = db.Column(db.String(50), unique=True, nullable=False)
+    category = db.Column(db.String(50))
+
+    def __repr__(self):
+        return f'<PersonalityTrait {self.trait_name}>'
+    
+    @classmethod
+    def get_traits_by_category(cls):
+        traits = cls.query.order_by(cls.category.asc()).all()
+        grouped = {}
+
+        for trait in traits:
+            category = trait.category
+            if category not in grouped:
+                grouped[category] = []
+            grouped[category].append(trait)
+        
+        return grouped
+    
+    @classmethod
+    def create_trait(cls, trait_name, category):
+        return cls.create(trait_name=trait_name, category=category)
+    
+    def to_dict(self):
+        return {'trait_id': self.trait_id, 'category': self.category}
+
+
+class SpeechStyle(BaseModel):
+    __tablename__ = 'speech_styles'
+
+    style_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    style_name = db.Column(db.String(50), unique=True, nullable=False)
+    description = db.Column(db.Text)
+    example_phrases = db.Column(db.Text)
+
+    def __repr__(self):
+        return f'<SpeechStyle {self.style_name}>'
+    
+    @classmethod
+    def get_speech_styles(cls):
+        return cls.query.all()
+    
+    @classmethod
+    def create_speech_style(cls, style_name, description=None, example_phrase=None):
+        return cls.create(style_name=style_name, description=description, example_phrase=example_phrase)
