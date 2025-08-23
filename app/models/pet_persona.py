@@ -8,15 +8,17 @@ class PetPersona(BaseModel):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     pet_id = db.Column(db.Integer, db.ForeignKey('pets.pet_id'), nullable=False)
 
-    personality_traits = db.Column(db.Text)
-    speaking_style = db.Column(db.Text)
-    user_nickname = db.Column(db.String(50))
-    favorite_activities = db.Column(db.Text)
+    user_call = db.Column(db.String(50))
+    personality_traits = db.Column(db.Text) #테이블 따로 빼야함.
+    style_id = db.Column(db.String, db.ForeignKey('speech_styles.style_id'), nullable=False)
+    politeness = db.Column(db.String, nullable=False)
+    speech_habit = db.Column(db.Text)
+    likes = db.Column(db.Text)
     dislikes = db.Column(db.Text)
     habits = db.Column(db.Text)
-    special_note = db.Column(db.Text)
     family_info = db.Column(db.Text)
-    additional_info = db.Column(db.Text)
+    special_note = db.Column(db.Text)
+    # additional_info = db.Column(db.Text)
 
 
     user = db.relationship('User', backref='pet_personas')
@@ -98,7 +100,7 @@ class SpeechStyle(BaseModel):
 
     style_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     style_name = db.Column(db.String(50), unique=True, nullable=False)
-    description = db.Column(db.Text)
+    style_description = db.Column(db.Text)
     example_phrases = db.Column(db.Text)
 
     def __repr__(self):

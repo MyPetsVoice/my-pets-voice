@@ -1,5 +1,8 @@
 from app.models import db
 from app.models.base import BaseModel
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Pet(BaseModel):
     __tablename__ = 'pets'
@@ -34,14 +37,14 @@ class PetSpecies(BaseModel):
     # is_active = db.Column(db.Boolean, default=True)
     # display_order = db.Column(db.Integer, default=0)
 
-    breeds = db.relationship('PetBreed', backref='species', cascasde='all, delete-orphan')
+    breeds = db.relationship('PetBreed', backref='species', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<AnimalSpecies {self.species_name}>'
     
     @classmethod
     def get_all_species(cls):
-        return cls.query.order_by(cls.species_name.asc()).all()
+        return cls.query.all()
     
     @classmethod
     def create_species(cls, species_name):
@@ -75,3 +78,9 @@ class PetBreed(BaseModel):
             'species_id': self.species_id,
             'breed_name': self.breed_name
         }
+
+
+
+
+if __name__=='__main__':
+    print(PetSpecies.get_all_species())
