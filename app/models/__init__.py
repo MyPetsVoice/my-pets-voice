@@ -9,7 +9,7 @@ def init_db(app):
     from app.models.base import BaseModel
     from app.models.user import User
     from app.models.pet import Pet, PetSpecies, PetBreed
-    from app.models.pet_persona import PetPersona, PersonalityTrait, SpeechStyle
+    from app.models.pet_persona import PetPersona, PersonaTrait, PersonalityTrait, SpeechStyle
 
     with app.app_context():
         db.create_all()
@@ -18,7 +18,7 @@ def init_db(app):
 from app.models.base import BaseModel
 from app.models.user import User
 from app.models.pet import Pet, PetSpecies, PetBreed
-from app.models.pet_persona import PetPersona, PersonalityTrait, SpeechStyle
+from app.models.pet_persona import PetPersona, PersonaTrait, PersonalityTrait, SpeechStyle
 
-__all__ = ['db', 'init_db', 'BaseModel', 'User', 'Pet', 'PetPersona', 'PetSpecies', 'PetBreed', 'PersonalityTrait', 'SpeechStyle']
+__all__ = ['db', 'init_db', 'BaseModel', 'User', 'Pet', 'PetPersona', 'PersonaTrait', 'PetSpecies', 'PetBreed', 'PersonalityTrait', 'SpeechStyle']
 

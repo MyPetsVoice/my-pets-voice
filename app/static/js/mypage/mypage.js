@@ -158,14 +158,14 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(addPersonaForm.dataset.currentPetId)
         const petId = addPersonaForm.dataset.currentPetId
 
-
         const formData = new FormData(e.target);
-        console.log(formData)
-
         const trimedFormData = {}
 
+        // trait_id(체크박스)는 여러 개 선택될 수 있으므로 getAll로 배열로 받기
+        trimedFormData['trait_id'] = formData.getAll('trait_id');
+        
         for (let [key, value] of formData.entries()) {
-            if (value.trim() !== '') {
+            if (key !== 'trait_id' && value.trim() !== '') {
                 trimedFormData[key] = value;
             }
         }
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const response = await fetch(`/api/save-persona/${petId}`,{
             method: 'POST',
             body: JSON.stringify(trimedFormData),
-            header: {'Content-Type': 'application/json'}
+            headers: {'Content-Type': 'application/json'}
         }
         )
         const data = await response.json()

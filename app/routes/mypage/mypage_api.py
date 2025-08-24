@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, session
-from app.models import Pet, PetSpecies, PetBreed, PetPersona, SpeechStyle, PersonalityTrait
+from app.models import Pet, PetSpecies, PetBreed, PetPersona, SpeechStyle, PersonalityTrait, PersonaTrait
 import logging
 
 logger = logging.getLogger(__name__)
@@ -127,10 +127,18 @@ def save_persona(pet_id):
 
     user_id = session.get('user_id')
 
-    persona_info = request.form
-    # persona_info = request.get_json()
-    logger.debug(persona_info)
+    persona_info = request.get_json()
+    logger.debug(f'저장해야할 페르소나 정보 : {persona_info}')
 
-    new_persona = PetPersona.create_persona(user_id, pet_id, **persona_info)
+    trait_ids = persona_info['trait_id']
+    logger.debug(f'페르소나의 성격 및 특징들 : {trait_ids}')
+
+    persona = {k: v for k, v in persona_info.items() if k != 'trait_id'}
+    logger.debug(f'PetPersona에 저장될 정보들 : {persona}')
+
+    new_persona = PetPersona.create_persona(user_id, pet_id, **persona)
+    persona_id = new_persona.pet_persona_id
+    new_traits = PersonaTrait.create_persona_trait(persona_id, trait_ids)
+    logger.debug(new_traits)
 
     return jsonify({'success': '성공적으로 페르소나가 생성되었습니다.'})

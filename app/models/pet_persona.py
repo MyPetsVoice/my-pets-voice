@@ -9,7 +9,7 @@ class PetPersona(BaseModel):
     pet_id = db.Column(db.Integer, db.ForeignKey('pets.pet_id'), nullable=False)
 
     user_call = db.Column(db.String(50))
-    personality_traits = db.Column(db.Text) #테이블 따로 빼야함.
+    # personality_traits = db.Column(db.Text) #테이블 따로 빼야함.
     style_id = db.Column(db.String, db.ForeignKey('speech_styles.style_id'), nullable=False)
     politeness = db.Column(db.String, nullable=False)
     speech_habit = db.Column(db.Text)
@@ -22,7 +22,7 @@ class PetPersona(BaseModel):
 
 
     user = db.relationship('User', backref='pet_personas')
-    pet = db.relationship('Pet', backref=db.backref('persona', uselist=False))
+    pet = db.relationship('Pet', backref=db.backref('persona', uselist=False)) # uselist=False => 1:1 관계
 
     def __repr__(self):
         return f'<PetPersona {self.pet.pet_name}>'
@@ -64,16 +64,23 @@ class PetPersona(BaseModel):
         return prompt
 
 class PersonaTrait(BaseModel):
-    __table_name__ = 'persona_traits'
+    __tablename__ = 'persona_traits'
 
-    persona_trait_id = db.Columns(db.Integer, primary_key=True, autoincrement=True)
-    persona_id = db.Columns(db.Integer, db.ForeignKey('pet_personas.pet_persona_id'), nullable=False)
-    category = db.Columns(db.String(50), db.ForeignKey('persoanlity_traits.category'), nullable=False)
-    trait_id = db.Columns(db.String(50), db.ForeignKey('personality_traits.trait_id'), nullable=False)
+    persona_trait_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    pet_persona_id = db.Column(db.Integer, db.ForeignKey('pet_personas.pet_persona_id'), nullable=False)
+    trait_id = db.Column(db.Integer, db.ForeignKey('personality_traits.trait_id'), nullable=False)
+
+    persona = db.relationship('PetPersona', backref='persona_traits')
+    personality = db.relationship('PersonalityTrait', backref='persona_traits')
 
     @classmethod
-    def create_persona_trait(cls, persona_id, **kwargs):
-        return cls.create(persona_id, **kwargs)
+    def create_persona_trait(cls, persona_id, trait_ids):
+        created = []
+        for trait_id in trait_ids:
+            trait = cls.create(pet_persona_id=persona_id, trait_id=trait_id)
+            print(trait)
+            created.append(trait)
+        return created
 
 class PersonalityTrait(BaseModel):
     __tablename__ = 'personality_traits'
@@ -122,8 +129,8 @@ class SpeechStyle(BaseModel):
         return cls.query.all()
     
     @classmethod
-    def create_speech_style(cls, style_name, description=None, example_phrase=None):
-        return cls.create(style_name=style_name, description=description, example_phrase=example_phrase)
+    def create_speech_style(cls, style_name, style_description=None, example_phrases=None):
+        return cls.create(style_name=style_name, description=style_description, example_phrases=example_phrases)
 
     def to_dict(self):
         return {'style_id': self.style_id,
