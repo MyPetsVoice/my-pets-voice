@@ -62,7 +62,18 @@ class PetPersona(BaseModel):
             prompt += f"특이사항: {self.behavioral_notes} "
             
         return prompt
-    
+
+class PersonaTrait(BaseModel):
+    __table_name__ = 'persona_traits'
+
+    persona_trait_id = db.Columns(db.Integer, primary_key=True, autoincrement=True)
+    persona_id = db.Columns(db.Integer, db.ForeignKey('pet_personas.pet_persona_id'), nullable=False)
+    category = db.Columns(db.String(50), db.ForeignKey('persoanlity_traits.category'), nullable=False)
+    trait_id = db.Columns(db.String(50), db.ForeignKey('personality_traits.trait_id'), nullable=False)
+
+    @classmethod
+    def create_persona_trait(cls, persona_id, **kwargs):
+        return cls.create(persona_id, **kwargs)
 
 class PersonalityTrait(BaseModel):
     __tablename__ = 'personality_traits'
@@ -92,7 +103,7 @@ class PersonalityTrait(BaseModel):
         return cls.create(trait_name=trait_name, category=category)
     
     def to_dict(self):
-        return {'trait_id': self.trait_id, 'category': self.category}
+        return {'trait_id': self.trait_id, 'trait_name': self.trait_name, 'category': self.category}
 
 
 class SpeechStyle(BaseModel):
@@ -113,3 +124,9 @@ class SpeechStyle(BaseModel):
     @classmethod
     def create_speech_style(cls, style_name, description=None, example_phrase=None):
         return cls.create(style_name=style_name, description=description, example_phrase=example_phrase)
+
+    def to_dict(self):
+        return {'style_id': self.style_id,
+                'style_name': self.style_name}
+    
+

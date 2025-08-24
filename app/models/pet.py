@@ -10,14 +10,18 @@ class Pet(BaseModel):
     pet_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     pet_name = db.Column(db.String(50), nullable=False)
-    pet_species = db.Column(db.String(30), nullable=False)
-    pet_breed = db.Column(db.String(50))
+    species_id = db.Column(db.Integer, db.ForeignKey('pet_species.species_id'), nullable=False)
+    breed_id = db.Column(db.Integer, db.ForeignKey('pet_breeds.breed_id'))
     pet_age = db.Column(db.Integer)
+    birthdate = db.Column(db.Date)
+    adoption_date = db.Column(db.Date)
     pet_gender = db.Column(db.String(10))
     is_neutered = db.Column(db.Boolean, default=False)
     profile_image_url = db.Column(db.String(500))
 
     user = db.relationship('User', backref='pets')
+    species = db.relationship('PetSpecies', backref='pets', lazy='joined')
+    breeds = db.relationship('PetBreed', backref='pets', lazy='joined')
     
     def __repr__(self):
         return f'<Pet {self.pet_name}>'
@@ -26,6 +30,29 @@ class Pet(BaseModel):
     def create_pet(cls, user_id, **kwargs):
         return cls.create(user_id=user_id, **kwargs)
     
+    @classmethod
+    def get_pets_by_user_id(cls, user_id):
+        return cls.query.filter_by(user_id=user_id).all()
+    
+    @classmethod
+    def get_pet_by_pet_id(cls, pet_id):
+        return cls.query.filter_by(pet_id=pet_id).first()
+
+    def to_dict(self):
+        return {
+            'pet_id': self.pet_id,
+            'user_id': self.user_id,
+            'pet_name': self.pet_name,
+            'species_id': self.species_id,
+            'species_name': self.species.species_name if self.species else None,
+            'breed_id': self.breed_id,
+            'breed_name': self.breeds.breed_name if self.breeds else None,
+            'pet_age': self.pet_age,
+            'birthdate': self.birthdate.isoformat() if self.birthdate else None,
+            'adoption_date': self.adoption_date.isoformat() if self.adoption_date else None,
+            'pet_gender': self.pet_gender,
+            'is_neutered': self.is_neutered,
+        }
 
 class PetSpecies(BaseModel):
     __tablename__='pet_species'
