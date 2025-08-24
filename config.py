@@ -10,6 +10,8 @@ class Config:
     
     # 데이터베이스 설정
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///mypetsvoice-xuswns.db')
+    print('연결된 database : ',SQLALCHEMY_DATABASE_URI)
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # OpenAI API 설정

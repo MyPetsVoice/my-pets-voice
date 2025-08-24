@@ -12,7 +12,7 @@ def get_analysis():
 # 의료기록 모아보기 ('전체기록')
 @dailycare_bp.route('/medication-history')
 def get_medication_history():
-    return True
+    return render_template('dailycare/medication_history.html')
 
 # 건강기록 모아보기 ('기록보기')
 @dailycare_bp.route('/health-history')

@@ -47,6 +47,7 @@ def create_app(config_name=None):
     app.register_blueprint(dailycare_api_bp)
     app.logger.info('블루프린트를 등록합니다.')
     app.register_blueprint(chat_bp)
+    app.register_blueprint(chat_api_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(mypage_bp)
     app.logger.info('모든 블루프린트가 등록되었습니다.')
