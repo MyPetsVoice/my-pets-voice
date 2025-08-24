@@ -81,6 +81,14 @@ class PersonaTrait(BaseModel):
             print(trait)
             created.append(trait)
         return created
+    
+    @classmethod
+    def find_by_persona_id(cls, pet_persona_id):
+        return cls.query.filter_by(pet_persona_id=pet_persona_id).all()
+
+    def to_dict(self):
+        trait_name = self.personality.trait_name
+        return {'trait_id': self.trait_id, 'trait_name': trait_name}
 
 class PersonalityTrait(BaseModel):
     __tablename__ = 'personality_traits'

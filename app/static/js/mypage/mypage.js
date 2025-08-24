@@ -287,7 +287,7 @@ function renderPetsProfile(data) {
 }
 
 // 반려동물 프로필 모달 표시
-function showPetProfile(pet) {
+async function showPetProfile(pet) {
     const viewPetModal = document.getElementById('view-pet-modal')
     
     // 프로필 정보 업데이트
@@ -318,13 +318,10 @@ function showPetProfile(pet) {
     document.getElementById('profile-neutered').textContent = pet.is_neutered ? '완료' : '미완료'
     
     // 페르소나 상태 (향후 확장)
-    const personaStatus = document.getElementById('persona-status')
-    personaStatus.innerHTML = `
-        <div class="text-center py-4">
-            <i class="fas fa-robot text-3xl text-gray-400 mb-2"></i>
-            <p class="text-gray-600">아직 페르소나가 생성되지 않았습니다</p>
-        </div>
-    `
+    const data = await getPersonaInfo(pet.pet_id)
+    renderPersona(data)
+
+    
     
     // 현재 선택된 펫 ID 저장 (추후 사용)
     viewPetModal.dataset.currentPetId = pet.pet_id
@@ -334,7 +331,124 @@ function showPetProfile(pet) {
     viewPetModal.querySelector('.bg-white').classList.add('modal-enter')
 }
 
-// 페르소나 모달 데이터 로드
+// 페르소나 정보 가져오기
+async function getPersonaInfo(petId) {
+    const response = await fetch(`/api/get-persona/${petId}`)
+    const data = await response.json()
+    console.log(data)
+    console.log(data.pet_persona)
+    console.log(data.traits)
+    return data
+}
+
+// 페르소나 정보 렌더링
+function renderPersona(data) {
+    console.log('render persona')
+    const personaStatus = document.getElementById('persona-status')
+    personaStatus.innerHTML = ''
+    
+    if (data.message) {
+        // 페르소나 없는 경우
+        personaStatus.innerHTML = `
+            <div class="text-center py-4">
+                <i class="fas fa-robot text-3xl text-gray-400 mb-2"></i>
+                <p class="text-gray-600">${data.message}</p>
+            </div>
+        `
+    } else {
+        // 페르소나가 있는 경우
+        const persona = data.pet_persona
+        const traits = data.traits
+        
+        const container = document.createElement('div')
+        container.className = 'space-y-4'
+        
+        // 페르소나 기본 정보
+        const infoSection = document.createElement('div')
+        infoSection.className = 'bg-white p-4 rounded-lg border border-gray-200'
+        
+        const infoTitle = document.createElement('h5')
+        infoTitle.className = 'font-semibold text-gray-700 mb-3 flex items-center'
+        infoTitle.innerHTML = '<i class="fas fa-user-circle text-primary-500 mr-2"></i>페르소나 정보'
+        infoSection.appendChild(infoTitle)
+        
+        // 정보 그리드
+        const infoGrid = document.createElement('div')
+        infoGrid.className = 'grid grid-cols-1 gap-2 text-sm'
+        
+        // 유용한 정보만 표시
+        const displayInfo = {
+            'user_call': '호칭',
+            'politeness': '말투',
+            'speech_habit': '말버릇',
+            'likes': '좋아하는 것',
+            'dislikes': '싫어하는 것',
+            'habits': '습관',
+            'family_info': '가족 정보',
+            'special_note': '특별한 사항'
+        }
+        
+        for (const [key, label] of Object.entries(displayInfo)) {
+            let value = persona[key]
+            if (value && value !== '' && value !== null && value !== 'undefined') {
+                // 말투 표시 변환
+                if (key === 'politeness') {
+                    value = value === 'formal' ? '존댓말' : '반말'
+                }
+                
+                const infoRow = document.createElement('div')
+                infoRow.className = 'flex justify-between items-start py-1'
+                infoRow.innerHTML = `
+                    <span class="text-gray-600 font-medium min-w-[80px]">${label}:</span>
+                    <span class="text-gray-800 text-right flex-1 ml-2">${value}</span>
+                `
+                infoGrid.appendChild(infoRow)
+            }
+        }
+        
+        infoSection.appendChild(infoGrid)
+        container.appendChild(infoSection)
+        
+        // 성격 특성 섹션
+        if (traits && traits.length > 0) {
+            const traitsSection = document.createElement('div')
+            traitsSection.className = 'bg-white p-4 rounded-lg border border-gray-200'
+            
+            const traitsTitle = document.createElement('h5')
+            traitsTitle.className = 'font-semibold text-gray-700 mb-3 flex items-center'
+            traitsTitle.innerHTML = '<i class="fas fa-heart text-primary-500 mr-2"></i>성격 및 특징'
+            traitsSection.appendChild(traitsTitle)
+            
+            const traitsContainer = document.createElement('div')
+            traitsContainer.className = 'flex flex-wrap gap-2'
+            
+            traits.forEach(trait => {
+                const tag = document.createElement('span')
+                tag.className = 'inline-block px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium'
+                tag.textContent = trait.trait_name
+                traitsContainer.appendChild(tag)
+            })
+            
+            traitsSection.appendChild(traitsContainer)
+            container.appendChild(traitsSection)
+        }
+        
+        // 상태 표시
+        const statusBadge = document.createElement('div')
+        statusBadge.className = 'text-center'
+        statusBadge.innerHTML = `
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                <i class="fas fa-check-circle mr-2"></i>
+                페르소나 생성 완료
+            </span>
+        `
+        container.appendChild(statusBadge)
+        
+        personaStatus.appendChild(container)
+    }
+}
+
+// 페르소나 생성 모달 데이터 로드
 async function loadPersonaData() {
 
     try {

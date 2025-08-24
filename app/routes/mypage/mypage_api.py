@@ -142,3 +142,24 @@ def save_persona(pet_id):
     logger.debug(new_traits)
 
     return jsonify({'success': '성공적으로 페르소나가 생성되었습니다.'})
+
+
+@mypage_api_bp.route('/get-persona/<pet_id>')
+def get_persona_by_pet_id(pet_id):
+
+    persona = PetPersona.find_by_pet_id(int(pet_id))
+
+    if persona == None:
+        return jsonify({'message': '아직 페르소나가 생성되지 않았습니다.'})
+    
+    logger.debug(f'{pet_id}번 pet의 페르소나 정보 :{persona.to_dict()}')
+
+    # persona가 존재하는지 존재하지 않는지 예외처리 필요
+    persona_id = persona.pet_persona_id
+    logger.debug(f'{pet_id}번의 pet_persona_id는 : {persona_id}')
+
+    traits = PersonaTrait.find_by_persona_id(persona_id)
+    traits = [trait.to_dict() for trait in traits]
+    logger.debug(traits)
+
+    return jsonify({'pet_persona': persona.to_dict(), 'traits': traits})
