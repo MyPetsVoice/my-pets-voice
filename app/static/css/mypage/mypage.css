@@ -1,176 +1,22 @@
-/* 메인 페이지 스타일 */
-/* body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    margin: 0;
-    padding: 20px;
-}
-
-.bg-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-} */
-
-.card {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.card-header {
-    border-radius: 15px 15px 0 0 !important;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    border: none !important;
-    padding: 2rem 1rem 1rem 1rem;
-}
-
-.form-label {
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 0.5rem;
-}
-
-.form-control, .form-select {
-    border-radius: 10px;
-    border: 2px solid #e9ecef;
-    padding: 0.75rem 1rem;
-    transition: all 0.3s ease;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-}
-
-/* 성격 태그 스타일 */
-.personality-tags {
-    max-height: 250px;
-    overflow-y: auto;
-    padding: 20px;
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
-    background-color: #f8f9fa;
-}
-
-.personality-tags .form-check {
-    margin-bottom: 8px;
-}
-
-.personality-tag {
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background-color: #fff;
-    border: 2px solid #667eea;
-    border-radius: 20px;
-    padding: 0.5rem 1rem;
-    color: #667eea;
-    font-size: 0.85rem;
-    font-weight: 500;
-    display: inline-block;
-    margin-left: 5px;
-}
-
-.personality-tag:hover {
-    background-color: #f8f9fa;
-    transform: translateY(-1px);
-}
-
-.form-check-input:checked + .personality-tag {
-    background-color: #667eea !important;
+/* 성격 태그 선택 효과 */
+.personality-tag input:checked + span {
+    background-color: #eab308 !important;
     color: white !important;
-    border-color: #667eea !important;
+    border-color: #eab308 !important;
 }
 
-.form-check-input {
-    display: none; /* 체크박스 숨김 */
+/* 모달 애니메이션 */
+.modal-enter {
+    animation: modalFadeIn 0.3s ease-out;
 }
 
-/* 버튼 스타일 */
-.btn {
-    border-radius: 25px;
-    padding: 0.75rem 2rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-}
-
-.btn-outline-primary {
-    border: 2px solid #667eea;
-    color: #667eea;
-}
-
-.btn-outline-primary:hover {
-    background: #667eea;
-    border-color: #667eea;
-}
-
-/* 아이콘 스타일 */
-.text-primary {
-    color: #667eea !important;
-}
-
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-    .container-fluid {
-        padding: 10px;
-    }
-    
-    .card {
-        margin: 10px;
-    }
-    
-    .card-body {
-        padding: 1.5rem !important;
-    }
-    
-    .personality-tags {
-        max-height: 120px;
-    }
-    
-    .btn {
-        padding: 0.6rem 1.5rem;
-    }
-}
-
-/* 애니메이션 */
-@keyframes fadeIn {
+@keyframes modalFadeIn {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: scale(0.9);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: scale(1);
     }
-}
-
-.card {
-    animation: fadeIn 0.6s ease-out;
-}
-
-/* 스크롤바 스타일 */
-.personality-tags::-webkit-scrollbar {
-    width: 6px;
-}
-
-.personality-tags::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-.personality-tags::-webkit-scrollbar-thumb {
-    background: #667eea;
-    border-radius: 10px;
-}
-
-.personality-tags::-webkit-scrollbar-thumb:hover {
-    background: #5a67d8;
 }
