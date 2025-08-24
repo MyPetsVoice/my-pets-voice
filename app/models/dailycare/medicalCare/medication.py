@@ -19,18 +19,16 @@ class Medication(BaseModel):
     purpose = db.Column(String(500))                          # 복용 목적
     dosage = db.Column(String(100))                           # 용량
     frequency = db.Column(String(20), nullable=False)         # 복용 횟수
-    start_date = db.Column(Date)                              # 복용 시작일
     end_date = db.Column(Date)                                # 복용 종료일
     side_effects_notes = db.Column(Text)                      # 부작용 기록
     hospital_name = db.Column(String(200))                    # 병원명
     
     __table_args__ = (
-        CheckConstraint(frequency.in_(['하루1회', '하루2회', '하루3회', '필요시']), name='check_frequency'),
+        CheckConstraint("frequency IN ('하루1회', '하루2회', '하루3회', '필요시')", name='check_frequency'),
         Index('idx_medications_pet_id', 'pet_id'),
     )
     
     pet = relationship("Pet", back_populates="medications")
-    # daily_medication_logs = relationship("HealthCareLog", back_populates="medication")
-    
+    health_cares = db.relationship('HealthCare', back_populates='medication')
     def __repr__(self):
         return f"<Medication(id={self.medication_id}, name='{self.medication_name}')>"

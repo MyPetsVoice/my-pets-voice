@@ -9,7 +9,7 @@ def init_db(app):
     from app.models.base import BaseModel
     from app.models.user import User
     from app.models.pet_persona import PetPersona
-    from app.models.dailycare.healthCare.healtCare import HealthCare
+    from app.models.dailycare.healthCare.healthCare import HealthCare
     from app.models.dailycare.healthCare.healthcareMedication import HealthCareMedication
     from app.models.dailycare.medicalCare.allergy import Allergy
     from app.models.dailycare.medicalCare.disease import Disease
@@ -30,7 +30,8 @@ from app.models.base import BaseModel
 from app.models.user import User
 from app.models.pet import Pet
 from app.models.pet_persona import PetPersona
-from app.models.dailycare.healthCare.healtCare import HealthCare
+from app.models.dailycare.healthCare.healthCare import HealthCare
+from app.models.dailycare.healthCare.healthcareMedication import HealthCareMedication
 from app.models.dailycare.healthCare.healthcareMedication import HealthCareMedication
 from app.models.dailycare.medicalCare.allergy import Allergy
 from app.models.dailycare.medicalCare.disease import Disease

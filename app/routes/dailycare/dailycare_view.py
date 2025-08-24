@@ -17,7 +17,7 @@ def get_medication_history():
 # 건강기록 모아보기 ('기록보기')
 @dailycare_bp.route('/health-history')
 def get_healthcare_history():
-    return True
+    return render_template('dailycare/healthcare_history.html')
 
 
 

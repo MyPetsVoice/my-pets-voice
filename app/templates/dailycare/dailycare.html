@@ -78,17 +78,17 @@
                             <!-- 먹이 -->
                             <div class="form-group">
                                 <label>🍽️ 먹이</label>
-                                <input type="number" placeholder="g 단위로 입력">
+                                <input type="number" id="food-input" placeholder="g 단위로 입력">
                             </div>
                             <!-- 급수량 -->
                             <div class="form-group">
                                 <label>💧 급수량</label>
-                                <input type="number" placeholder="ml 단위로 입력">
+                                <input type="number" id="water-input" placeholder="ml 단위로 입력">
                             </div>
                             <!-- 배변 -->
                             <div class="form-group">
                                 <label>💩 배변 상태</label>
-                                <select>
+                                <select id="poop-select">
                                     <option>정상</option>
                                     <option>설사</option>
                                     <option>변비</option>
@@ -98,18 +98,20 @@
                             <!-- 몸무게 -->
                             <div class="form-group">
                                 <label>⚖️ 몸무게</label>
-                                <input type="number" step="0.1" placeholder="kg 단위로 입력">
+                                <input type="number" step="0.1" id="weight-input" placeholder="kg 단위로 입력">
                             </div>
                             <!-- 산책시간 -->
                             <div class="form-group">
                                 <label>🚶 산책 시간</label>
-                                <input type="number" placeholder="분 단위로 입력">
+                                <input type="number" id="walk-input" placeholder="분 단위로 입력">
                             </div>
                             <!-- 영양제 -->
-                            <div class="form-group">
+                             <div class="form-group">
                                 <label>💊 약/영양제</label>
-                                <textarea placeholder="복용한 약물이나 영양제를 기록하세요"></textarea>
-                            </div>
+                                <select id="medication-select">
+                                    <option value="">선택</option>
+                                </select>
+                        </div>
                         </form>
                         <div class="quick-actions">
                             <button class="btn btn-primary">📝 기록 저장</button>
@@ -180,10 +182,12 @@
 
 
 
-  
-   
+
 <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
- <script src=".././../static/js/dailycare/dailycare.js"></script>
+<script src="../../static/js/dailycare/care_base.js"></script>
+<script src=".././../static/js/dailycare/dailycare.js"></script>
+<script src="../../static/js/dailycare/care_chatbot.js"></script>
+<script src="../../static/js/dailycare/calender.js"></script>
       
 
 {% endblock %}
