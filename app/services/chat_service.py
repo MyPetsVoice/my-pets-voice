@@ -13,6 +13,7 @@ llm = ChatOpenAI(model='gpt-3.5-turbo')
 
 memory = ConversationBufferWindowMemory(k=50, return_messages=True, memory_key='chat_history', input_key='user_input', output_key='ai_response')
 
+# 프롬프트에 날짜, 시간, 날씨 넣기
 
 def get_system_prompt():
     system_prompt = f"""
