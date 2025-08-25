@@ -30,24 +30,24 @@
                     </h2>
                     
                     <div class="health-grid">
-                        <div class="health-item" onclick="openModal('allergy')">
+                        <div class="health-item" data-modal="allergy" >
                             <h4>🤧 알러지 정보</h4>
                             <p>음식, 환경 알러지 등록</p>
                         </div>
-                        <div class="health-item" onclick="openModal('disease')">
+                        <div class="health-item mdc" data-modal="disease" >
                             <h4>🏥 질병 이력</h4>
                             <p>과거 질병 및 치료 기록</p>
                         </div>
-                        <div class="health-item" onclick="openModal('surgery')">
+                        <div class="health-item mdc"  data-modal="surgery" >
                             <h4>⚕️ 수술 이력</h4>
                             <p>수술 날짜 및 내용 기록</p>
                         </div>
                       
-                        <div class="health-item" onclick="openModal('vaccination')">
+                        <div class="health-item mdc" data-modal="vaccination">
                             <h4>💉 예방접종</h4>
                             <p>접종 기록 및 일정 관리</p>
                         </div>
-                        <div class="health-item" onclick="openModal('medication')">
+                        <div class="health-item mdc" data-modal="medication" >
                             <h4>💊 복용약물</h4>
                             <p>현재 복용 중인 약물 정보</p>
                         </div>
@@ -185,6 +185,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
 <script src="../../static/js/dailycare/care_base.js"></script>
+<script src="../../static/js/dailycare/modal/modal.js"></script>
 <script src=".././../static/js/dailycare/dailycare.js"></script>
 <script src="../../static/js/dailycare/care_chatbot.js"></script>
 <script src="../../static/js/dailycare/calender.js"></script>

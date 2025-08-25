@@ -25,6 +25,7 @@ async function getPetInfo(pet_id){
         const pet_info_div = document.getElementById("pet_info");
     pets.forEach((i) => {
       const result = document.createElement("div");
+      
       result.innerHTML = ` 
          <!-- Pet Tags -->
                 <div class="flex flex-wrap justify-center gap-3 mb-8">
@@ -58,6 +59,7 @@ async function getAllHealthcareLog(pet_id) {
         data.forEach(i => {
             const history = document.getElementById('history')
             const result = document.createElement('div')
+            result.style.marginBottom = "15px";
             result.innerHTML = `
               <div class="card-hover bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-200">
                                 <div class="flex items-center mb-4">

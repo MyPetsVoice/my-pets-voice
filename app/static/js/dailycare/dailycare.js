@@ -11,20 +11,15 @@ async function getAllPetsById(user_id) {
     console.log("회원의 petList입니다. ", pets);
 
     // pet-card 생성 (전체 pet)
-    pets.forEach((pet, i) => {
+    pets.forEach((pet) => {
       const card = document.createElement("div");
       card.className = "pet-card";
-      // if (i === 0) {
-      //   card.classList.add("active");
-      //   current_pet_id = pet.pet_id; // 첫 번째 pet 기본 active 시 current_pet_id 설정
-      // }
       card.dataset.petId = pet.pet_id;
-      
       card.innerHTML = `<strong>${pet.pet_name}</strong><small>${pet.pet_breed}</small>`;
       pet_selector.appendChild(card);
     });
 
-    // 클릭 (개별 pet 정보)
+    // 클릭 이벤트 (개별 pet 정보)
     pet_selector.querySelectorAll(".pet-card").forEach((card) => {
       card.addEventListener("click", async function () {
         // active 표시
@@ -33,45 +28,53 @@ async function getAllPetsById(user_id) {
           .forEach((c) => c.classList.remove("active"));
         this.classList.add("active");
 
-        current_pet_id = this.dataset.petId;
-        // 버튼에도 현재 pet_id 세팅
-        const historyBtn = document.getElementById("link_healthcare_history");
-        historyBtn.addEventListener('click',()=>{
-          current_pet_id = this.dataset.petId;
-          localStorage.setItem("currentPetId", current_pet_id);
-          console.log(localStorage.getItem("currentPetId"));
-          window.location.href = `/dailycare/health-history`
-        })
-      
-        
+        // 현재 선택된 pet_id 숫자로 변환
+        current_pet_id = Number(this.dataset.petId);
+
         // 개별 펫 조회
-        const response = await fetch(
-          `/api/dailycares/get-pet/${user_id}/${current_pet_id}`
-        );
-        if (!response.ok) {
-          pet_detail.innerHTML = "<p>Pet 정보를 불러올 수 없습니다.</p>";
-          return;
+        try {
+          const response = await fetch(
+            `/api/dailycares/get-pet/${user_id}/${current_pet_id}`
+          );
+          if (!response.ok) {
+            pet_detail.innerHTML = "<p>Pet 정보를 불러올 수 없습니다.</p>";
+            return;
+          }
+          const petData = await response.json();
+          console.log("선택된 pet 데이터:", petData);
+          getMedications(current_pet_id);
+
+          pet_detail.innerHTML = `
+            <h3>${petData.pet_name} (${petData.pet_species})</h3>
+            <p>종: ${petData.pet_breed}</p>
+            <p>나이: ${petData.pet_age}</p>
+            <p>성별: ${petData.pet_gender}</p>
+            <p>중성화 여부: ${petData.is_neutered ? "Yes" : "No"}</p>
+          `;
+        } catch (err) {
+          console.error(err);
+          pet_detail.innerHTML =
+            "<p>Pet 정보를 불러오는 중 오류가 발생했습니다.</p>";
         }
-        const petData = await response.json();
-        console.log("선택된 pet 데이터:", petData);
-        getMedications(current_pet_id);
-
-        pet_detail.innerHTML = `
-          <h3>${petData.pet_name} (${petData.pet_species})</h3>
-          <p>종: ${petData.pet_breed}</p>
-          <p>나이: ${petData.pet_age}</p>
-          <p>성별: ${petData.pet_gender}</p>
-          <p>중성화 여부: ${petData.is_neutered ? "Yes" : "No"}</p>
-        `;
       });
+    });
 
-      
+    const historyBtn = document.getElementById("link_healthcare_history");
+    historyBtn.addEventListener("click", () => {
+      if (!current_pet_id || current_pet_id < 0) {
+        alert("펫을 선택해주세요");
+        return;
+      }
+      localStorage.setItem("currentPetId", current_pet_id);
+      console.log(localStorage.getItem("currentPetId"));
+      window.location.href = `/dailycare/health-history`;
     });
   } catch (error) {
     console.error(error);
     pet_selector.innerHTML = "<p>Pet 리스트를 불러올 수 없습니다.</p>";
   }
-}// end getAllPetsById
+}
+
 
 // 페이지 로딩 시 실행
 getAllPetsById(user_id);

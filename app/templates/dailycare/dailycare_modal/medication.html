@@ -3,8 +3,11 @@
 <head>
     <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="../../../static/css/dailycare/modal.css">
+
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div data-pet-id="{{ pet_id }}"></div>
+     <input type="hidden" id="modal-pet-id" value="{{pet_id}}">
     <!-- Modal Backdrop -->
     <div class="modal-backdrop fixed inset-0 flex items-center justify-center z-50">
         <!-- Modal Content -->
@@ -36,12 +39,14 @@
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700 label-required">약물명</label>
                             <input type="text" 
+                                   id="medication_name_input" 
                                    placeholder="복용 중인 약물명을 입력하세요" 
                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400">
                         </div>
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700 label-required">복용 목적</label>
                             <input type="text" 
+                                   id="purpose_input"
                                    placeholder="질병명 또는 증상을 입력하세요" 
                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400">
                         </div>
@@ -52,17 +57,18 @@
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700 label-required">용량</label>
                             <input type="text" 
+                                   id="dosage_input"
                                    placeholder="예: 5mg, 1정" 
                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400">
                         </div>
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700 label-required">복용 횟수</label>
-                            <select class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 bg-white">
+                            <select id="frequency_option" class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 bg-white">
                                 <option value="">복용 횟수를 선택하세요</option>
-                                <option value="1">하루 1회</option>
-                                <option value="2">하루 2회</option>
-                                <option value="3">하루 3회</option>
-                                <option value="needed">필요시</option>
+                                <option value="하루1회">하루 1회</option>
+                                <option value="하루2회">하루 2회</option>
+                                <option value="하루3회">하루 3회</option>
+                                <option value="필요시">필요시</option>
                             </select>
                         </div>
                     </div>
@@ -72,11 +78,13 @@
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700">복용 시작일</label>
                             <input type="date" 
+                                   id="start_date_input"
                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700">
                         </div>
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-gray-700">복용 종료일</label>
                             <input type="date" 
+                                   id="end_date_input"
                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700">
                         </div>
                     </div>
@@ -85,6 +93,7 @@
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-gray-700">부작용/주의사항</label>
                         <textarea rows="3" 
+                                  id="side_effects_notes_input"
                                   placeholder="복용 중 주의사항이나 부작용을 기록하세요" 
                                   class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400 resize-none"></textarea>
                     </div>
@@ -93,6 +102,7 @@
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-gray-700">처방 병원</label>
                         <input type="text" 
+                               id="hospital_name_input"
                                placeholder="병원명을 입력하세요" 
                                class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400">
                     </div>
@@ -106,14 +116,16 @@
                     취소
                 </button>
                 <button type="submit" 
+                        id="save_medication_button"
                         class="btn-primary px-8 py-3 text-white rounded-lg font-medium flex items-center space-x-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
-                    <span>저장</span>
+                    <span >저장</span>
                 </button>
             </div>
         </div>
     </div>
+    <script src="../../../static/js/dailycare/modal/medication.js" defer></script>
 </body>
 </html>

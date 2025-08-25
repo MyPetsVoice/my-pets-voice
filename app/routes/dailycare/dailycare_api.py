@@ -3,6 +3,7 @@ from app.services.pet_service import PetService
 from app.services.dailycare.healthcare_service import HealthCareService
 from app.services.dailycare.medicalcare_service import MedicationService
 import logging
+from datetime import datetime
 
 dailycare_api_bp = Blueprint('dailycare_api_bp', __name__, url_prefix= '/api/dailycares')
 
@@ -10,8 +11,9 @@ dailycare_api_bp = Blueprint('dailycare_api_bp', __name__, url_prefix= '/api/dai
 # 모달 html렌더링
 @dailycare_api_bp.route("/modal/<string:name>")
 def load_modal(name):
-    print('###### name :' , name) 
-    return render_template(f"dailycare/dailycare_modal/{name}.html")
+    pet_id = request.args.get('pet_id')
+    print('###### name :' , name ,'###### pet_id :' , pet_id) 
+    return render_template(f"dailycare/dailycare_modal/{name}.html" , pet_id = pet_id)
 
 
 logging.basicConfig(level=logging.INFO)
@@ -113,3 +115,41 @@ def get_healthcare(care_id):
     result['medications'] = meds
 
     return jsonify(result), 200
+
+@dailycare_api_bp.route('/save/allergy/<pet_id>', methods = ['POST'])
+def saveAllergy(pet_id):
+    data = request.json
+    record = MedicationService.create_medication(
+        pet_id = pet_id,
+        allergy_type = data.get('allergy_type'),
+        allergen = data.get('allergen'),
+        symptoms = data.get('symptoms'),
+        severity = data.get('severity')
+    )
+    
+    return jsonify(record.to_dict()),200
+
+@dailycare_api_bp.route('/save/medication/<pet_id>', methods = ['POST'])
+def saveMedication(pet_id):
+    data = request.json
+    start_date_str = request.json.get("start_date")  # '2025-08-19'
+    end_date_str = request.json.get("end_date")      # '2025-08-22'
+
+    start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else None
+    end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else None
+    
+    record = MedicationService.create_medication(
+    pet_id = pet_id,
+    medication_name = data.get('medication_name'),
+    purpose = data.get('purpose'),
+    dosage = data.get('dosage'),
+    frequency = data.get('frequency'),
+    end_date = end_date,
+    start_date = start_date,
+    side_effects_notes = data.get('side_effects_notes'),
+    hospital_name = data.get('hospital_name')
+    )
+    
+    return jsonify(record.to_dict()), 200
+
+
