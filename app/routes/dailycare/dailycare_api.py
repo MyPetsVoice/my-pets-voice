@@ -56,8 +56,10 @@ def save_healthcare(pet_id):
         walk_time_minutes=data.get('walk_time_minutes'),
     )
      # 2. Medication 연결 (여러 개 가능)
-    medication_ids = data.get('medication_ids', [])
-    HealthCareService.link_medications(record.care_id, medication_ids)
+    medication_ids = data.get('medication_ids') or []
+    if medication_ids:
+        HealthCareService.link_medications(record.care_id, medication_ids)
+        
     return jsonify(record.to_dict()), 201
 
 #Healthcare조회

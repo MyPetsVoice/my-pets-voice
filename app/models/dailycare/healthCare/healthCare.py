@@ -18,7 +18,6 @@ class HealthCare(BaseModel):
     
     care_id = db.Column(Integer, primary_key=True, autoincrement=True)
     pet_id = db.Column(Integer, ForeignKey('pets.pet_id', ondelete='CASCADE'), nullable=False)
-    
     food = db.Column(Integer)                  # 음식 섭취량
     water = db.Column(DECIMAL(6, 2))           # 수분 섭취량 (ml)
     excrement_status = db.Column(String(20))   # 배변 상태
