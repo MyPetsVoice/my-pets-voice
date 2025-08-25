@@ -126,7 +126,8 @@ def get_personality_traits():
 def save_persona(pet_id):
 
     user_id = session.get('user_id')
-
+    logger.debug(f'ㅍ르소나 생성할 pet_id : {pet_id}')
+    
     persona_info = request.get_json()
     logger.debug(f'저장해야할 페르소나 정보 : {persona_info}')
 

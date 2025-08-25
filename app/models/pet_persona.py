@@ -28,7 +28,7 @@ class PetPersona(BaseModel):
         return f'<PetPersona {self.pet.pet_name}>'
 
     @classmethod
-    def create_persona(cls, pet_id, user_id, **kwargs):
+    def create_persona(cls, user_id, pet_id, **kwargs):
         existing = cls.find_by_pet_id(pet_id)
         if existing:
             raise ValueError(f'Pet Id {pet_id}에 대한 페르소나가 이미 존재합니다.')
