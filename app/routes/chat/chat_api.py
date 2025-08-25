@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session
 from flask_socketio import SocketIO, emit, join_room, leave_room
-from services import chat_service
+from app.services import chat_service
 import os
 import json
 import threading
