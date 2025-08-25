@@ -31,6 +31,11 @@ def get_my_pet(user_id):
     
     return jsonify(pets.to_dict()), 200
 
+@dailycare_api_bp.route('/pet-info/<pet_id>')
+def get_pet_info(pet_id):
+    pet = PetService.get_pet(pet_id)
+    return jsonify(pet.to_dict()) , 200
+
 # 개별 펫 조회
 @dailycare_api_bp.route('/get-pet/<user_id>/<pet_id>')
 def get_my_pet_by_user_id(user_id,pet_id):

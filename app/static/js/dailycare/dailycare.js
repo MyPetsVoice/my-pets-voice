@@ -33,8 +33,17 @@ async function getAllPetsById(user_id) {
           .forEach((c) => c.classList.remove("active"));
         this.classList.add("active");
 
-  
         current_pet_id = this.dataset.petId;
+        // 버튼에도 현재 pet_id 세팅
+        const historyBtn = document.getElementById("link_healthcare_history");
+        historyBtn.addEventListener('click',()=>{
+          current_pet_id = this.dataset.petId;
+          localStorage.setItem("currentPetId", current_pet_id);
+          console.log(localStorage.getItem("currentPetId"));
+          window.location.href = `/dailycare/health-history`
+        })
+      
+        
         // 개별 펫 조회
         const response = await fetch(
           `/api/dailycares/get-pet/${user_id}/${current_pet_id}`
@@ -46,9 +55,7 @@ async function getAllPetsById(user_id) {
         const petData = await response.json();
         console.log("선택된 pet 데이터:", petData);
         getMedications(current_pet_id);
-       
 
-       
         pet_detail.innerHTML = `
           <h3>${petData.pet_name} (${petData.pet_species})</h3>
           <p>종: ${petData.pet_breed}</p>
@@ -138,15 +145,25 @@ async function saveHealthcare(pet_id){
   } else {
     console.log("기록저장완료");
   }
-  // ✅ 입력값 초기화
-  document.getElementById("food-input").value = "";
-  document.getElementById("water-input").value = "";
-  document.getElementById("poop-select").selectedIndex = 0; // select 첫 옵션으로
-  document.getElementById("weight-input").value = "";
-  document.getElementById("walk-input").value = "";
-  medicationSelect.selectedIndex = -1; // multi select 초기화
+  resetHealthcareForm();
   
 } // end saveHealthCares
+
+function resetHealthcareForm() {
+  document.getElementById("food-input").value = "";
+  document.getElementById("water-input").value = "";
+  document.getElementById("poop-select").selectedIndex = 0;
+  document.getElementById("weight-input").value = "";
+  document.getElementById("walk-input").value = "";
+
+  // 다중 선택 select 초기화
+  const medicationSelect = document.getElementById("medication-select");
+  Array.from(medicationSelect.options).forEach(
+    (option) => (option.selected = false)
+  );
+}
+
+
 
 
 

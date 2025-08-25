@@ -1,0 +1,36 @@
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+    
+    * {
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+    
+    .gradient-hero {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+    }
+    
+    .card-hover {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .pet-tag {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .section-border {
+        border-left: 4px solid #ff6b6b;
+    }
+    
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
