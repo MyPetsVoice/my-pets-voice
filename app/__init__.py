@@ -26,7 +26,15 @@ def create_app(config_name=None):
 
     # SocketIO 초기화
     app.logger.info('SocketIO를 초기화합니다.')
-    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+    socketio = SocketIO(
+        app, 
+        cors_allowed_origins="*", 
+        async_mode='threading',
+        engineio_logger=False,
+        socketio_logger=False,
+        ping_timeout=60,
+        ping_interval=25
+    )
     
     # chat_api_bp의 socketio 초기화
     from app.routes.chat.chat_api import init_socketio

@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, session, current_app
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from langchain_openai import ChatOpenAI
 from langchain.schema import SystemMessage, HumanMessage
-from app.models.pet_persona import PetPersona
+from app.models.pet_persona import PetPersona, PersonaTrait, SpeechStyle
 from app.models.pet import Pet
 import os
 import json
@@ -225,6 +225,63 @@ def create_pet_system_prompt(pet_info):
 """
     
     return prompt
+
+@chat_api_bp.route('/set_pet_info/<int:pet_id>', methods=['POST'])
+def set_pet_info(pet_id):
+    """선택한 펫의 정보와 페르소나를 세션에 설정"""
+    try:
+        if 'user_id' not in session:
+            return jsonify({'success': False, 'error': '로그인이 필요합니다.'})
+        
+        user_id = session.get('user_id')
+        
+        # 펫 정보 가져오기
+        pet = Pet.get_pet_by_pet_id(pet_id)
+        if not pet or pet.user_id != user_id:
+            return jsonify({'success': False, 'error': '펫을 찾을 수 없습니다.'})
+        
+        # 페르소나 정보 가져오기
+        persona = PetPersona.find_by_pet_id(pet_id)
+        if not persona:
+            return jsonify({'success': False, 'error': '페르소나가 생성되지 않았습니다.'})
+        
+        # 성격 특성 가져오기
+        traits = PersonaTrait.find_by_persona_id(persona.pet_persona_id)
+        trait_names = [trait.personality.trait_name for trait in traits]
+        
+        # 말투 스타일 가져오기
+        speech_style = SpeechStyle.query.filter_by(style_id=persona.style_id).first()
+        
+        # 세션에 저장할 펫 정보 구성
+        pet_info = {
+            'pet_id': pet.pet_id,
+            'name': pet.pet_name,
+            'species': pet.species.species_name if pet.species else '알 수 없음',
+            'breed': pet.breeds.breed_name if pet.breeds else '믹스',
+            'age': pet.pet_age,
+            'gender': pet.pet_gender,
+            'owner_call': persona.user_call,
+            'personality': trait_names,
+            'speech_style': speech_style.style_name if speech_style else '일반적인',
+            'politeness': persona.politeness,
+            'speech_habit': persona.speech_habit,
+            'likes': persona.likes.split(', ') if persona.likes else [],
+            'dislikes': persona.dislikes.split(', ') if persona.dislikes else [],
+            'habits': persona.habits.split(', ') if persona.habits else [],
+            'family_info': persona.family_info,
+            'special_notes': persona.special_note
+        }
+        
+        session['pet_info'] = pet_info
+        logger.info(f"펫 정보 설정 완료: {pet.pet_name} (사용자: {user_id})")
+        
+        return jsonify({'success': True, 'pet_info': pet_info})
+        
+    except Exception as e:
+        logger.error(f"펫 정보 설정 중 오류: {str(e)}")
+        import traceback
+        logger.error(f"펫 정보 설정 상세 오류: {traceback.format_exc()}")
+        return jsonify({'success': False, 'error': f'펫 정보 설정 중 오류가 발생했습니다: {str(e)}'})
 
 @chat_api_bp.route('/get_pet_info')
 def get_pet_info():
