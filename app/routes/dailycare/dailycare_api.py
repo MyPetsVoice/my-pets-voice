@@ -100,6 +100,7 @@ def get_healthcare(care_id):
         }
         for link in record.medication_links
     ]
+    print(f'##### meds : {meds}')
 
     result = record.to_dict()
     result['medications'] = meds

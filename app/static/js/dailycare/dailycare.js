@@ -34,13 +34,14 @@ async function getAllPetsById(user_id) {
   
         const pet_id = this.dataset.petId;
         // 개별 펫 조회
-        const res = await fetch(`/api/dailycares/get-pet/${user_id}/${pet_id}`);
-        if (!res.ok) {
+        const response = await fetch(`/api/dailycares/get-pet/${user_id}/${pet_id}`);
+        if (!response.ok) {
           pet_detail.innerHTML = "<p>Pet 정보를 불러올 수 없습니다.</p>";
           return;
         }
-        const petData = await res.json();
+        const petData = await response.json();
         console.log("선택된 pet 데이터:", petData);
+        getMedications(pet_id);
 
        
         pet_detail.innerHTML = `
@@ -51,6 +52,8 @@ async function getAllPetsById(user_id) {
           <p>중성화 여부: ${petData.is_neutered ? "Yes" : "No"}</p>
         `;
       });
+
+      
     });
   } catch (error) {
     console.error(error);
@@ -62,9 +65,24 @@ async function getAllPetsById(user_id) {
 getAllPetsById(user_id);
 const medicationSelect = document.getElementById("medication-select");
 
-async function getMedications(pet_id) {
-  medicationSelect.innerHTML=`<option value =''> 선택 </option>`
-}
+async function getMedications(pet_id){
+  const response = await fetch(`/api/dailycares/medications/${pet_id}`)
+  if (!response.ok){
+    throw new Error('영양제 목록을 불러오는데 실패했습니다.')
+  }
+  const data = await response.json()
+  console.log(data)
+
+  medicationSelect.innerHTML = ''
+  data.forEach((med)=>{
+    const option = document.createElement('option')
+    option.value = med.medication_id
+    option.textContent = med.medication_name
+    medicationSelect.appendChild(option)
+  })
+}// end getMedications(pet_id)
+
+
 
 
 

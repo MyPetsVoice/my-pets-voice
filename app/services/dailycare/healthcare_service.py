@@ -28,6 +28,8 @@ class HealthCareService:
             if pet_id is not None and record.pet_id != pet_id:
                 return None
             return record
+        
+        
         @staticmethod
         def link_medications(care_id, medication_ids):
             for med_id in medication_ids:
