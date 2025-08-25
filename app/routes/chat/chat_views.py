@@ -9,7 +9,9 @@ def chat():
         return redirect(url_for('index'))
     
     user_id = session.get('user_id')
-    
+    user = session.get('user')
+    user_nickname = user['kakao_account']['profile']['nickname']
+
     # 사용자의 반려동물 목록 가져오기 (페르소나가 있는 것만)
     pets_with_persona = []
     user_pets = Pet.get_pets_by_user_id(user_id)
@@ -21,6 +23,6 @@ def chat():
             pet_data['has_persona'] = True
             pets_with_persona.append(pet_data)
     
-    return render_template('chat/chat.html', pets=pets_with_persona)
+    return render_template('chat/chat.html', user=user_nickname, pets=pets_with_persona)
 
 # 필요에 따라 추가 라우트
