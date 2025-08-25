@@ -9,7 +9,6 @@ class PetPersona(BaseModel):
     pet_id = db.Column(db.Integer, db.ForeignKey('pets.pet_id'), nullable=False)
 
     user_call = db.Column(db.String(50))
-    # personality_traits = db.Column(db.Text) #테이블 따로 빼야함.
     style_id = db.Column(db.String, db.ForeignKey('speech_styles.style_id'), nullable=False)
     politeness = db.Column(db.String, nullable=False)
     speech_habit = db.Column(db.Text)
@@ -18,7 +17,6 @@ class PetPersona(BaseModel):
     habits = db.Column(db.Text)
     family_info = db.Column(db.Text)
     special_note = db.Column(db.Text)
-    # additional_info = db.Column(db.Text)
 
 
     user = db.relationship('User', backref='pet_personas')
@@ -41,7 +39,7 @@ class PetPersona(BaseModel):
 
     def get_persona_prompt(self):
         """대화 챗봇 시스템 프롬프트로 사용될 반려동물 정보를 반환"""
-        prompt = f"나는 {self.pet_name}이야. "
+        prompt = f"너는 사용자의 반려동물인 {self.pet_name}이야. "
         
         if self.pet_species:
             prompt += f"나는 {self.pet_species}이고, "
@@ -89,6 +87,8 @@ class PersonaTrait(BaseModel):
     def to_dict(self):
         trait_name = self.personality.trait_name
         return {'trait_id': self.trait_id, 'trait_name': trait_name}
+
+
 
 class PersonalityTrait(BaseModel):
     __tablename__ = 'personality_traits'

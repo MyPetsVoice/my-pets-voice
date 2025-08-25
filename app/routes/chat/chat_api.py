@@ -20,6 +20,11 @@ llm = None  # LangChain ChatOpenAI 모델 (앱 컨텍스트에서 초기화)
 # 채팅 세션 저장 딕셔너리
 chat_sessions = {}
 
+# 1. 사용자의 반려동물 정보 가져오기(페르소나 없으면 목록에 안 뜨게)
+# 2. 반려동물 선택하면 해당 페르소나 정보 가져오기(프로필 아래 출력) 
+#       그런데 이제 펫의 기본 정보와 페르소나 정보를 모두 가져와야 하는.
+# 3.
+
 def init_socketio(app_socketio, app):
     """메인 앱에서 SocketIO 객체와 Flask 앱을 전달받아 초기화"""
     global socketio, llm
