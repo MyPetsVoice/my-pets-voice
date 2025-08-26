@@ -2,6 +2,7 @@ const user_id = 1;
 const pet_selector = document.getElementById("pet-selector");
 const pet_detail = document.getElementById("pet-detail");
 let current_pet_id = null;
+
 // 전체 펫 조회
 async function getAllPetsById(user_id) {
   try {
@@ -165,6 +166,82 @@ function resetHealthcareForm() {
     (option) => (option.selected = false)
   );
 }
+
+
+async function getTodo(user_id) {
+  try {
+    const response = await fetch(`/api/dailycares/todo/${user_id}`);
+    const todos = await response.json();
+    console.log("todo data", todos);
+
+    const resultDiv = document.getElementById("todo_div");
+    if (!resultDiv) return;
+    resultDiv.innerHTML = ""; // 초기화
+
+    todos.forEach((e) => {
+      const todoCard = document.createElement("div");
+
+      todoCard.innerHTML = `
+        <div class="card-hover bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-200">
+          <!-- Header -->
+          <div class="flex items-center mb-4">
+            <div class="bg-yellow-100 p-3 rounded-full">
+              <span class="text-2xl">📝</span>
+            </div>
+            <div class="ml-3">
+              <h3 class="font-semibold text-gray-800">${e.title}</h3>
+              <p class="text-sm text-gray-600">${e.description || ""}</p>
+            </div>
+          </div>
+          
+          <!-- Record Details -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div class="text-center">
+              <div class="text-2xl font-bold text-gray-800">${e.priority}</div>
+              <div class="text-sm text-gray-600">우선순위</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-gray-800">${e.status}</div>
+              <div class="text-sm text-gray-600">상태</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-gray-800">${
+                e.created_at
+              }</div>
+              <div class="text-sm text-gray-600">등록일</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-gray-800">${
+                e.updated_at
+              }</div>
+              <div class="text-sm text-gray-600">수정일</div>
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <div class="pt-4 border-t border-yellow-200">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm text-gray-500">할일 상태</span>
+              <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                <i class="fas fa-check-circle mr-1"></i>${e.status}
+              </span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      resultDiv.appendChild(todoCard);
+    });
+  } catch (err) {
+    console.error("Todo 조회 실패:", err);
+  }
+}
+
+
+
+getTodo(user_id)
+
+
 
 
 

@@ -2,6 +2,7 @@ from flask import Flask, Blueprint, jsonify, render_template, request
 from app.services.pet_service import PetService
 from app.services.dailycare.healthcare_service import HealthCareService
 from app.services.dailycare.medicalcare_service import MedicationService
+
 import logging
 from datetime import datetime
 
@@ -130,7 +131,7 @@ def saveAllergy(pet_id):
     return jsonify(record.to_dict()),200
 
 @dailycare_api_bp.route('/save/medication/<pet_id>', methods = ['POST'])
-def saveMedication(pet_id):
+def save_medication(pet_id):
     data = request.json
     start_date_str = request.json.get("start_date")  # '2025-08-19'
     end_date_str = request.json.get("end_date")      # '2025-08-22'
@@ -151,5 +152,34 @@ def saveMedication(pet_id):
     )
     
     return jsonify(record.to_dict()), 200
+
+@dailycare_api_bp.route('/todo/<user_id>')
+def get_todo(user_id):
+    todos= HealthCareService.get_todo_records_by_user_limit3(user_id)
+    todo_list = [t.to_dict() for t in todos]
+    return jsonify(todo_list), 200
+
+@dailycare_api_bp.route('/save/todo/<user_id>', methods = ['POST'])
+def save_todo(user_id):
+    data = request.json
+    start_date_str = request.json.get("start_date")  # '2025-08-19'
+    end_date_str = request.json.get("end_date")      # '2025-08-22'
+
+    start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else None
+    end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else None
+    record = HealthCareService.create_todo_record(
+    
+    user_id = user_id,
+    todo_date = data.get('todo_date'),
+    title = data.get('title'),
+    description = data.get('description'),
+    status = data.get('status'),
+    priority = data.get('priority'),
+    start_date = start_date,
+    end_date = end_date
+    )
+    
+    return jsonify(record.to_dict()), 200
+    
 
 

@@ -18,6 +18,8 @@ class User(BaseModel):
     def __repr__(self):
         return f'<User {self.username}>'
     
+    todos = db.relationship('TodoList', back_populates='user', cascade = 'all, delete-orphan')
+    
     @classmethod
     def create_user(cls, **kwargs):
         user = cls(**kwargs)

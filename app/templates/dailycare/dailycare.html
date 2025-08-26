@@ -3,6 +3,7 @@
 {% block content %}
 
 <link rel="stylesheet" href=".././../static/css/dailycare/dailcare.css">
+<link rel="stylesheet" href="../../static/css/dailycare/todo.css">
 </head>
 <body style=" padding: 0;">
     <div class="container" style="padding: 30px;">
@@ -69,8 +70,8 @@
                     </h2>
                     
                     <div class="nav-tabs">
-                        <button class="nav-tab active" onclick="switchTab('daily')">일상 기록</button>
-                        <button class="nav-tab" onclick="switchTab('schedule')">케어 일정</button>
+                        <button class="nav-tab active" onclick="switchTab(event,'daily')">건강 기록</button>
+                        <button class="nav-tab" onclick="switchTab(event,'schedule')">TODO</button>
                     </div>
                     
                     <div id="daily-tab" class="tab-content active">
@@ -122,12 +123,12 @@
                     
                     <div id="schedule-tab" class="tab-content">
                         <div class="form-group">
-                            <label>📅 케어 일정 추가</label>
-                            <input type="text" placeholder="케어 내용을 입력하세요">
+
                         </div>
-                        <div class="quick-actions">
-                            <button class="btn btn-primary">➕ 일정 추가</button>
-                            <button class="btn btn-secondary">📋 전체 일정</button>
+                        <div class="quick-actions" >
+                            <div id="todo_div"></div>
+                            <button class="btn btn-primary" id="create_todo" data-user-id="{{ user }}">➕ 일정 추가</button>
+                            <a href="/dailycare/todo" class="btn btn-secondary">📋 전체 일정</a>
                         </div>
                     </div>
                 </div>
@@ -185,7 +186,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
 <script src="../../static/js/dailycare/care_base.js"></script>
-<script src="../../static/js/dailycare/modal/modal.js"></script>
+<script src="../../static/js/dailycare/modal.js"></script>
+<script src="../../static/js/dailycare/todo.js"></script>
 <script src=".././../static/js/dailycare/dailycare.js"></script>
 <script src="../../static/js/dailycare/care_chatbot.js"></script>
 <script src="../../static/js/dailycare/calender.js"></script>

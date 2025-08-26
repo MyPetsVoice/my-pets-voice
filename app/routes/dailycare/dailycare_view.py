@@ -4,7 +4,8 @@ dailycare_bp = Blueprint('dailycare_bp', __name__)
 # 데일리케어페이지
 @dailycare_bp.route('/', methods=['GET'])
 def get_dailycare():
-    return render_template('dailycare/dailycare.html')
+    current_user = 1 # 임시
+    return render_template('dailycare/dailycare.html', user = current_user)
 # 건강분석 페이지
 @dailycare_bp.route('/analysis')
 def get_analysis():
@@ -18,6 +19,12 @@ def get_medication_history():
 @dailycare_bp.route('/health-history')
 def get_healthcare_history():
     return render_template('dailycare/healthcare_history.html')
+
+# Todo 전체 리스트
+@dailycare_bp.route('/todo')
+def get_todo():
+    return render_template('dailycare/todo_history.html')
+
 
 
 

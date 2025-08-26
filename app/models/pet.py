@@ -23,7 +23,6 @@ class Pet(BaseModel):
     surgeries = db.relationship('Surgery', back_populates='pet', cascade = 'all, delete-orphan')
     vaccinations = db.relationship('Vaccination', back_populates='pet', cascade = 'all, delete-orphan')
     health_care = db.relationship('HealthCare', back_populates='pet', cascade = 'all, delete-orphan')
-    todo = db.relationship('TodoList', back_populates='pet', cascade = 'all, delete-orphan')
     
     
     
