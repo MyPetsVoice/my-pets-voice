@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, session, current_app
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from langchain_openai import ChatOpenAI
-from langchain.schema import SystemMessage, HumanMessage
+from langchain.schema import SystemMessage, HumanMessage, AIMessage
 from app.models.pet_persona import PetPersona, PersonaTrait, SpeechStyle
 from app.models.pet import Pet
 import os
@@ -49,22 +49,21 @@ def init_socketio(app_socketio, app):
     def on_connect():
         logger.info(f"클라이언트 연결됨: {request.sid}")
         
-        # 세션에 펫 정보가 있는지 확인
-        if 'pet_info' not in session:
-            logger.warning(f"펫 정보 없이 연결 시도: {request.sid}")
-            emit('error', {'message': '펫 정보가 없습니다. 다시 설정해주세요.'})
-            return
-        
-        # 채팅 세션 초기화
+        # 채팅 세션 초기화 (펫 정보가 없어도 세션 생성)
         chat_sessions[request.sid] = {
-            'pet_info': session['pet_info'],
+            'pet_info': session.get('pet_info', None),
             'messages': [],
             'created_at': time.time()
         }
         
         join_room(request.sid)
-        pet_name = session['pet_info'].get('name', '알 수 없음')
-        logger.info(f"펫 정보 로드됨: {pet_name} (세션: {request.sid})")
+        
+        # 펫 정보가 있으면 로드 완료 로그
+        if 'pet_info' in session:
+            pet_name = session['pet_info'].get('name', '알 수 없음')
+            logger.info(f"펫 정보 로드됨: {pet_name} (세션: {request.sid})")
+        else:
+            logger.info(f"펫 정보 대기 중 (세션: {request.sid})")
 
     @socketio.on('disconnect')  
     def on_disconnect():
@@ -102,6 +101,11 @@ def init_socketio(app_socketio, app):
             chat_session = chat_sessions[client_sid]
             pet_info = chat_session['pet_info']
             
+            # 펫 정보가 설정되지 않은 경우
+            if not pet_info:
+                emit('error', {'message': '반려동물을 먼저 선택해주세요.'})
+                return
+            
             logger.debug(f"메시지 수신 - 사용자: {user_message[:50]}...")
             
             # 사용자 메시지 저장 및 브로드캐스트
@@ -133,7 +137,7 @@ def init_socketio(app_socketio, app):
                         if msg['role'] == 'user':
                             messages.append(HumanMessage(content=msg['content']))
                         else:
-                            messages.append(SystemMessage(content=msg['content']))
+                            messages.append(AIMessage(content=msg['content']))
                     
                     logger.debug(f"AI 응답 생성 시작 - 펫: {pet_info.get('name', '알 수 없음')}")
                     
@@ -250,35 +254,63 @@ def set_pet_info(pet_id):
         if not persona:
             return jsonify({'success': False, 'error': '페르소나가 생성되지 않았습니다.'})
         
-        # 성격 특성 가져오기
+        # 성격 특성 가져오기 (안전한 접근)
         traits = PersonaTrait.find_by_persona_id(persona.pet_persona_id)
-        trait_names = [trait.personality.trait_name for trait in traits]
+        trait_names = []
+        if traits:
+            for trait in traits:
+                try:
+                    if hasattr(trait, 'personality') and trait.personality:
+                        trait_names.append(trait.personality.trait_name)
+                except Exception as trait_error:
+                    logger.warning(f"성격 특성 접근 오류: {trait_error}")
         
-        # 말투 스타일 가져오기
-        speech_style = SpeechStyle.query.filter_by(style_id=persona.style_id).first()
+        # 말투 스타일 가져오기 (안전한 접근)
+        speech_style = None
+        try:
+            speech_style = SpeechStyle.query.filter_by(style_id=persona.style_id).first()
+        except Exception as style_error:
+            logger.warning(f"말투 스타일 접근 오류: {style_error}")
         
-        # 세션에 저장할 펫 정보 구성
+        # 세션에 저장할 펫 정보 구성 (안전한 접근)
+        try:
+            species_name = '알 수 없음'
+            if hasattr(pet, 'species') and pet.species:
+                species_name = pet.species.species_name
+        except Exception:
+            species_name = '알 수 없음'
+            
+        try:
+            breed_name = '믹스'
+            if hasattr(pet, 'breeds') and pet.breeds:
+                breed_name = pet.breeds.breed_name
+        except Exception:
+            breed_name = '믹스'
+        
         pet_info = {
-            'pet_id': pet.pet_id,
-            'name': pet.pet_name,
-            'species': pet.species.species_name if pet.species else '알 수 없음',
-            'breed': pet.breeds.breed_name if pet.breeds else '믹스',
-            'age': pet.pet_age,
-            'gender': pet.pet_gender,
-            'owner_call': persona.user_call,
+            'pet_id': getattr(pet, 'pet_id', 0),
+            'name': getattr(pet, 'pet_name', '알 수 없음'),
+            'species': species_name,
+            'breed': breed_name,
+            'age': getattr(pet, 'pet_age', 0),
+            'gender': getattr(pet, 'pet_gender', '알 수 없음'),
+            'owner_call': getattr(persona, 'user_call', '주인'),
             'personality': trait_names,
             'speech_style': speech_style.style_name if speech_style else '일반적인',
-            'politeness': persona.politeness,
-            'speech_habit': persona.speech_habit,
-            'likes': persona.likes.split(', ') if persona.likes else [],
-            'dislikes': persona.dislikes.split(', ') if persona.dislikes else [],
-            'habits': persona.habits.split(', ') if persona.habits else [],
-            'family_info': persona.family_info,
-            'special_notes': persona.special_note
+            'politeness': getattr(persona, 'politeness', 0),
+            'speech_habit': getattr(persona, 'speech_habit', '일반적인'),
+            'likes': persona.likes.split(', ') if getattr(persona, 'likes', None) else [],
+            'dislikes': persona.dislikes.split(', ') if getattr(persona, 'dislikes', None) else [],
+            'habits': persona.habits.split(', ') if getattr(persona, 'habits', None) else [],
+            'family_info': getattr(persona, 'family_info', ''),
+            'special_notes': getattr(persona, 'special_note', '')
         }
         
         session['pet_info'] = pet_info
         logger.info(f"펫 정보 설정 완료: {pet.pet_name} (사용자: {user_id})")
+        
+        # 기존 채팅 세션들 업데이트 (세션 ID는 브라우저 세션과 다를 수 있음)
+        # 여기서는 새로운 소켓 연결 시 업데이트될 것으로 처리
         
         return jsonify({'success': True, 'pet_info': pet_info})
         

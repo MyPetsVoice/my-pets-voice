@@ -171,7 +171,7 @@ function selectPet(petData) {
     updateDropdownButton(petData);
     
     // 펫 정보를 서버에 설정
-    fetch(`/set_pet_info/${petData.pet_id}`, {
+    fetch(`/api/set_pet_info/${petData.pet_id}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -196,6 +196,15 @@ function selectPet(petData) {
             clearMessages();
             showWelcomeMessage(data.pet_info.name);
             
+            // 소켓 재연결 (펫 정보가 세션에 설정된 후)
+            if (socket.connected) {
+                socket.disconnect();
+                setTimeout(() => {
+                    socket.connect();
+                }, 100);
+            } else {
+                socket.connect();
+            }
         } else {
             console.error('펫 정보 설정 실패:', data.error);
             showError(`펫 정보를 불러오는데 실패했습니다: ${data.error}`);
