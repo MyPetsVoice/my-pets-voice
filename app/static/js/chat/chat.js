@@ -25,17 +25,12 @@ const chatHeaderTitle = document.getElementById('chat-header-title')
 const chatHeaderStatus = document.getElementById('chat-header-status')
 const chatMessages = document.getElementById('chat-messages')
 const chatForm = document.getElementById('chat-form')
-const messageInput = document.getEleyId('message-input')
+const messageInput = document.getElementById('message-input')
 
 
 petDropdownBtn.addEventListener('click', () => {
     petDropdownMenu.classList.remove('hidden')
 })
-
-
-
-
-
 
 
 let socket = null;
@@ -51,8 +46,8 @@ function connectSocket() {
 
     console.log('SocketIO 연결 시도...');
     socket = io();
-
 }
+
 // 이벤트 핸들러 등록
 function setupEventHandlers() {
     // 연결 성공
@@ -103,10 +98,9 @@ function updateConnectionStatus() {
 function initializeDropDown() {
     petDropdownMenu.addEventListener('click', (e) => {
         if (e.target.tagName === 'BUTTON') {
-            const petData = e.target.dataset.pet 
+            const petData = JSON.parse(e.target.dataset.pet);
             console.log(petData)
             selectPet(petData)
-
             petDropdownMenu.classList.add('hidden')
         }
     })
@@ -118,6 +112,9 @@ function initializeChat() {
 
 function selectPet(petData) {
     selectedPet = petData;
+    
+    const petDropdownBtnText = document.getElementById('pet-dropdown-btn-text')
+    petDropdownBtnText.innerText = selectedPet.pet_name
 
     // UI 업데이트
     updatePetInfoSection(petData);
@@ -128,9 +125,8 @@ function selectPet(petData) {
 }
 
 function updatePetInfoSection(petData) {
-    console.log('pet 정보로 렌더링')
 
-
+    
 }
 
 function updateChatHeader(petData) {
