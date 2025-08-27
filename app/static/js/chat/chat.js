@@ -13,6 +13,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 })
 
+const petDropdownBtn = document.getElementById('pet-dropdown-btn')
+const petDropdownMenu = document.getElementById('pet-dropdown-menu')
+const dropdownArrow = document.getElementById('dropdown-arrow')
+const petInfoSection = document.getElementById('pet-info-section')
+const chatMessage = document.getElementById('chat-message')
+const chatForm = document.getElementById('chat-form')
+const messageInput = document.getElementById('message-input')
+const resetChatBtn = document.getElementById('reset-chat-btn')
+
+
+
+
 
 let socket = null;
 let selectedPet = null;
@@ -69,13 +81,87 @@ function setupEventHandlers() {
     
 
     // send message
-    // reset chat
-    // disconnect
+    socket.on('send_message', () => {
+        addMessage(data.message, 'user')
 
+    })
+    
+    socket.on('bot_typing', function(data) {
+        showTypingIndicator(data.pet_name)
+    })
+
+    socket.on('bot_response', function(data) {
+        hideTypingIndicator();
+        addMessage(data.message, 'bot, data.pet_name');
+    })
+
+    socket.on('error', function(data) {
+        hideTypingIndicator();
+        addMessage(data.message, 'error');
+    })
+
+    // reset chat
+    socket.on('reset_message', function(data) {
+        clearChatMessage();
+        if (selectedPet) {
+            showWelcomeMesaage(seletedPet);
+        }
+    })
+    
+    // disconnect
+    socket.on('disconnect', () => {
+        isConnected = false;
+        updateConnectionStatus(false);
+    })
 
 
 }
-function updateConnectionStatus() {
+function updateConnectionStatus(connected) {
+    const headerStatus = document.getElementById('chat-header-status');
+    if (connected) {
+        headerStatus.textContent = '온라인'
+    } else {
+        headerStatus.textContent = '연결 중'
+    }
+}
+
+function sendMessage() {
+    const message = messageInput.value.trim()
+
+    if (!message) return;
+    if (!selectedPet) {
+        alert('반려동물 먼저 선택하세요')
+        return;
+    }
+    if (!socket || !isConnected) {
+        alert('서버와 연결이 끊어짐. 페이지 새로고침')
+        return;
+    }
+
+    // 입력창 클리어
+    messageInput.value = '';
+    
+    // 서버로 메시지 전송
+    socket.emit('send_message', {
+        message: message,
+        pet_id: selectedPet.pet_id
+    });
+};
+
+function addMessage(text, type, petName = null) {
+    const messageDiv = document.createElement('div');
+    const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+
+    if (type === 'user') {
+        messageDiv.innerHTML = '사용자 메시지 박스 렌더링'
+    } else if (type ===' bot'){
+        messageDiv.innerHTML = '봇 메시지 박스 렌더링'
+    }
+
+}
+
+function showTypingIndicator(petName) {
+    hideTypingIndicator(); // 기존 인디케이터 제거
 
 }
 
