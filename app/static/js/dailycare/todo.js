@@ -6,7 +6,7 @@ document.getElementById("create_todo").addEventListener("click", (e) => {
 
 // 모달 열기 함수
 function openModalTodo(name, user_id) {
-  console.log(`##### name ${name}, pet_id ${user_id}`);
+  console.log(`##### name ${name}, user_id ${user_id}`);
   fetch(`/api/dailycares/modal/${name}?user_id=${user_id}`)
     .then((res) => {
       if (!res.ok) throw new Error("네트워크 오류");

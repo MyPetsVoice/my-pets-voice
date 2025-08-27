@@ -223,31 +223,64 @@ async function getTodo(user_id) {
           <!-- Footer -->
           <div class="pt-4 border-t border-yellow-200">
             <div class="flex justify-between items-center mb-2">
-              <span class="text-sm text-gray-500">할일 상태</span>
-              <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                <i class="fas fa-check-circle mr-1"></i>${e.status}
-              </span>
-            </div>
+       <span class="text-sm text-gray-500">할일 상태</span>
+      <span class="todo-status bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium" data-id="${
+       e.todo_id
+      }">
+    <i class="fas fa-check-circle mr-1"></i>${e.status}
+  </span>
+</div>
           </div>
         </div>
       `;
 
       resultDiv.appendChild(todoCard);
     });
+
+
+   resultDiv.addEventListener("click", async (event) => {
+     const target = event.target.closest(".todo-status"); // 클릭한 요소가 상태 span인지 확인
+     if (!target) return;
+
+     const todoId = target.dataset.id;
+     console.log('TODO ID', todoId)
+     let newStatus;
+     if(target.textContent.trim() === "완료") {
+       newStatus = "미완료";
+     } else {
+       newStatus = "완료";
+     }
+
+     try {
+       const response = await fetch(`/api/dailycares/todo/${todoId}`, {
+         method: "PUT", // PUT 또는 PATCH
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({ status: newStatus }),
+       });
+
+       if (response.ok) {
+         target.textContent = newStatus; // 화면 업데이트
+         alert('상태가 변경되었습니다.')
+         getTodo(user_id)
+         if(newStatus === "완료") {
+           target.classList.remove("bg-green-100", "text-green-800");
+           target.classList.add("bg-gray-200", "text-gray-600"); // 완료된 스타일 변경
+         } else {
+           target.classList.remove("bg-gray-200", "text-gray-600");
+           target.classList.add("bg-green-100", "text-green-800"); // 미완료된 스타일 복구
+         }
+       } else {
+         alert("상태 변경 실패");
+       }
+     } catch (err) {
+       console.error("상태 변경 실패:", err);
+     }
+   });
+
   } catch (err) {
     console.error("Todo 조회 실패:", err);
   }
 }
 
-
-
 getTodo(user_id)
-
-
-
-
-
-
-
-
 

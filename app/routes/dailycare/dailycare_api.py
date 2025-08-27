@@ -213,6 +213,14 @@ def save_todo(user_id):
     )
     
     return jsonify(record.to_dict()), 200
-    
 
-
+@dailycare_api_bp.route('/todo/<todo_id>', methods=['PUT'])
+def updateTodo(todo_id):
+  print(todo_id)
+  data = request.get_json()
+  if not data:
+      return jsonify({'message' : '잘못된 요청입니다'}), 400
+  print('\n\n\n#### input Data : ' , data)
+  HealthCareService.update_todo_record(todo_id, **data)
+  return jsonify('성공'),200
+  

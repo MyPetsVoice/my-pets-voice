@@ -112,7 +112,9 @@ class HealthCareService:
                 return None
             for key, value in kwargs.items():
                 setattr(record, key, value)
-            return record.save  
+                
+            db.session.commit()
+            return record
         
         @staticmethod
         def delete_todo_record(todo_id: int):
