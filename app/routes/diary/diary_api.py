@@ -69,8 +69,11 @@ def convert_to_ai():
 # 새 일기 생성
 @diary_api_bp.route("/create", methods=["POST"])
 def create_diary():
-    pet_persona_id = request.form.get('pet_persona_id')
     user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({"success": False, "message": "로그인이 필요합니다."})
+    
+    pet_persona_id = request.form.get('pet_persona_id')
     diary_date = request.form.get('diary_date')
     title = request.form.get('title')
     content_user = request.form.get('content_user')
@@ -144,8 +147,13 @@ def get_diary_detail(diary_id):
     })
 
 # 사용자의 모든 펫 페르소나 조회
-@diary_api_bp.route("/personas/<int:user_id>")
-def get_user_personas(user_id):
+@diary_api_bp.route("/personas")
+def get_user_personas():
+    
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({"success": False, "message": "로그인이 필요합니다."})
+    
     personas = PetPersona.query.filter_by(user_id=user_id).all()
     
     persona_list = []
@@ -155,7 +163,9 @@ def get_user_personas(user_id):
             'pet_name': persona.pet.pet_name,
             'pet_species': persona.pet.pet_species,
             'pet_breed': persona.pet.pet_breed,
-            'personality_traits': persona.personality_traits
+            'personality_traits': persona.personality_traits,
+            'user_profile_img': persona.user.profile_img_url, 
+            'user_nickname': persona.user.nickname 
         }
         persona_list.append(persona_data)
     

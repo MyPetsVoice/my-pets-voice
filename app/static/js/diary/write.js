@@ -1,9 +1,6 @@
-// write.js
-
 // 전역 변수
 let selectedPetPersonaId = null;
 let currentAIContent = null;
-let currentUser = { user_id: 1 }; // 임시 사용자 (나중에 세션에서 가져오기)
 
 // 페이지 로드 시 초기화
 document.addEventListener("DOMContentLoaded", async function () {
@@ -54,7 +51,7 @@ async function setupEventListeners() {
 
 // 사용자의 펫 페르소나 로드
 async function loadUserPersonas() {
-  const response = await fetch(`/api/diary/personas/1`);
+  const response = await fetch(`/api/diary/personas`);
   const data = await response.json();
 
   const petSelection = document.getElementById("petSelection");
