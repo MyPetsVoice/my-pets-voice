@@ -189,15 +189,87 @@ function updatePetInfoSection(petData , personaInfo) {
     // 기본 정보 업데이트
     document.getElementById('pet-name').textContent = petData.pet_name
     document.getElementById('pet-species').textContent = petData.species_name
-    document.getElementById('pet-age').textContent = petData.pet_age
+    document.getElementById('pet-age').textContent = `${petData.pet_age}살`
     document.getElementById('pet-gender').textContent = petData.pet_gender
-    document.getElementById('pet-breed').textContent = petData.breed_name
+    document.getElementById('pet-breed').textContent = petData.breed_name || '믹스'
+    
+    // 페르소나 정보 업데이트
+    document.getElementById('pet-user-call').textContent = personaInfo.user_call || '-'
 
-    // 성격
-    document.getElementById('pet-personality').textContent = personaInfo.traits
+    // 성격 특성을 예쁜 태그로 표시
+    const personalityContainer = document.getElementById('pet-personality')
+    if (personaInfo.traits && personaInfo.traits.length > 0) {
+        personalityContainer.innerHTML = personaInfo.traits.map((trait) => {
+            return `
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 shadow-sm">
+                    ${trait}
+                </span>
+            `
+        }).join('')
+    } else {
+        personalityContainer.innerHTML = `
+            <span class="text-gray-500 text-xs italic">설정된 성격 특성이 없습니다</span>
+        `
+    }
 
-    // 말투
-    document.getElementById('pet-speech-style').textContent = personaInfo.style_name
+    // 말투 (formal/informal에 따라 존댓말/반말 표시 + 원래 스타일명)
+    const speechStyleElement = document.getElementById('pet-speech-style')
+    let speechStyleText = ''
+    
+    if (personaInfo.politeness) {
+        const politenessText = personaInfo.politeness.toLowerCase() === 'formal' ? '존댓말' : '반말'
+        speechStyleText = politenessText
+        
+        if (personaInfo.style_name) {
+            speechStyleText += ` · ${personaInfo.style_name}`
+        }
+    } else if (personaInfo.style_name) {
+        speechStyleText = personaInfo.style_name
+    } else {
+        speechStyleText = '-'
+    }
+    
+    speechStyleElement.textContent = speechStyleText
+    
+    // 좋아하는 것 표시
+    const likesSection = document.getElementById('pet-likes-section')
+    const likesContainer = document.getElementById('pet-likes')
+    if (personaInfo.likes && personaInfo.likes.trim()) {
+        const likesArray = personaInfo.likes.split(',').map(item => item.trim()).filter(item => item)
+        if (likesArray.length > 0) {
+            likesSection.classList.remove('hidden')
+            likesContainer.innerHTML = likesArray.map(like => `
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <i class="fas fa-heart text-xs mr-1"></i>
+                    ${like}
+                </span>
+            `).join('')
+        } else {
+            likesSection.classList.add('hidden')
+        }
+    } else {
+        likesSection.classList.add('hidden')
+    }
+    
+    // 싫어하는 것 표시
+    const dislikesSection = document.getElementById('pet-dislikes-section')
+    const dislikesContainer = document.getElementById('pet-dislikes')
+    if (personaInfo.dislikes && personaInfo.dislikes.trim()) {
+        const dislikesArray = personaInfo.dislikes.split(',').map(item => item.trim()).filter(item => item)
+        if (dislikesArray.length > 0) {
+            dislikesSection.classList.remove('hidden')
+            dislikesContainer.innerHTML = dislikesArray.map(dislike => `
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    <i class="fas fa-times text-xs mr-1"></i>
+                    ${dislike}
+                </span>
+            `).join('')
+        } else {
+            dislikesSection.classList.add('hidden')
+        }
+    } else {
+        dislikesSection.classList.add('hidden')
+    }
 
 }
 
