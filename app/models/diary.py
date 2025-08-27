@@ -1,70 +1,97 @@
 from datetime import datetime
 from app.models import db
+from app.models.base import BaseModel
 
-class Diary(db.Model):
-    
+class Diary(BaseModel):
     __tablename__ = 'diary'
 
     diary_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    pet_id = db.Column(db.Integer, nullable=False, default=1)  # 임시
-    user_id = db.Column(db.Integer, nullable=False, default=1)  # 임시
+    
+    # 페르소나 직접 참조로 변경
+    pet_persona_id = db.Column(db.Integer, db.ForeignKey('pet_personas.pet_persona_id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
 
-    diary_date = db.Column(db.Date, nullable=False, default=datetime.today)  # 일기 날짜
+    diary_date = db.Column(db.Date, nullable=False, default=datetime.today)
     title = db.Column(db.String(200), nullable=False) 
     content_user = db.Column(db.Text)  # 사용자가 작성한 원본
     content_ai = db.Column(db.Text)  # AI가 변환한 반려동물 내용
-    weather = db.Column(db.String(50))  # 날씨
-    mood = db.Column(db.String(50))  # 기분
+    weather = db.Column(db.String(50))
+    mood = db.Column(db.String(50))
 
-    created_at = db.Column(db.DateTime, default=datetime.now)  # 생성 시간
-    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now) # 뺄 생각
-
+    # 관계 설정
+    user = db.relationship('User', backref=db.backref('diaries', lazy=True))
+    pet_persona = db.relationship('PetPersona', backref=db.backref('diaries', lazy=True))
     photos = db.relationship('DiaryPhoto', backref='diary', lazy=True, cascade='all, delete-orphan')
 
-def to_dict(self):
-    """
-    JSON 응답을 위해 딕셔너리로 변환
-    """
-    return {
-        'diary_id': self.diary_id,
-        'pet_id': self.pet_id,
-        'user_id': self.user_id,
-        'diary_date': self.diary_date.isoformat() if self.diary_date else None,
-        'title': self.title,
-        'content_user': self.content_user,
-        'content_ai': self.content_ai,
-        'weather': self.weather,
-        'mood': self.mood,
-        'photos': [photo.to_dict() for photo in self.photos],  
-        'created_at': self.created_at.isoformat() if self.created_at else None,
-        'updated_at': self.updated_at.isoformat() if self.updated_at else None
-    }
-        
-class DiaryPhoto(db.Model):
+    def to_dict(self):
+        result = super().to_dict()
+        result.update({
+            'diary_date': self.diary_date.isoformat() if self.diary_date else None,
+            'photos': [photo.to_dict() for photo in self.photos],
+        })
+        return result
+
+    #쿼리메소드
+    @classmethod
+    # 새 일기 생성
+    def create_diary(cls, pet_persona_id, user_id, **kwargs):
+        diary = cls(pet_persona_id=pet_persona_id, user_id=user_id, **kwargs)
+        diary.save()
+        return diary
     
+    @classmethod
+    # 전체 일기 목록 (최신순)
+    def get_all_diaries(cls):
+        return cls.query.order_by(cls.diary_date.desc()).all()
+    
+    @classmethod
+    # 특정 펫 페르소나의 일기 목록
+    def get_by_pet_persona(cls, pet_persona_id):
+        return cls.query.filter_by(pet_persona_id=pet_persona_id).order_by(cls.diary_date.desc()).all()
+    
+    @classmethod
+    # 특정 사용자의 모든 일기
+    def get_by_user(cls, user_id):
+        return cls.query.filter_by(user_id=user_id).order_by(cls.diary_date.desc()).all()
+    
+    @classmethod
+    # 날짜 범위로 일기 조회
+    def get_by_date_range(cls, start_date, end_date):
+        return cls.query.filter(cls.diary_date.between(start_date, end_date)).order_by(cls.diary_date.desc()).all()
+    
+    @classmethod
+    # 최근 일기 목록
+    def get_recent_diaries(cls, limit=10):
+        return cls.query.order_by(cls.diary_date.desc()).limit(limit).all()
+    
+    @classmethod
+    # 제목으로 일기 검색
+    def search_by_title(cls, search_term):
+        return cls.query.filter(cls.title.contains(search_term)).order_by(cls.diary_date.desc()).all()
+
+class DiaryPhoto(BaseModel):
     __tablename__ = 'diary_photo'
     
     photo_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    
-    # (어느 일기의 사진인지)
     diary_id = db.Column(db.Integer, db.ForeignKey('diary.diary_id'), nullable=False)
     
-    # 사진 정보
-    photo_url = db.Column(db.String(500), nullable=False)  # 사진 파일 경로나 URL
-    original_filename = db.Column(db.String(255))  # 원본 파일명
-    display_order = db.Column(db.Integer, default=0)  # 표시 순서
+    photo_url = db.Column(db.String(500), nullable=False)
+    original_filename = db.Column(db.String(255))
+    display_order = db.Column(db.Integer, default=0)
+
+    def to_dict(self):
+        result = super().to_dict()
+        return result
     
-    # 생성 시간
-    created_at = db.Column(db.DateTime, default=datetime.now)
+    # 쿼리 메th드
+    @classmethod
+    # 새 일기 사진 생성
+    def create_photo(cls, diary_id, **kwargs):
+        photo = cls(diary_id=diary_id, **kwargs)
+        photo.save()
+        return photo
     
-def to_dict(self):
-    """딕셔너리로 변환"""
-    return {
-        'photo_id': self.photo_id,
-        'diary_id': self.diary_id,
-        'photo_url': self.photo_url,
-        'original_filename': self.original_filename,
-        'display_order': self.display_order,
-        'created_at': self.created_at.isoformat() if self.created_at else None
-    }
-    
+    @classmethod
+    # 특정 일기의 모든 사진
+    def get_by_diary(cls, diary_id):
+        return cls.query.filter_by(diary_id=diary_id).order_by(cls.display_order).all()
