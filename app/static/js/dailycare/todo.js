@@ -48,3 +48,17 @@ function closeModal() {
   document.getElementById("common-modal").classList.add("hidden");
   location.reload();
 }
+
+function create_todo(user_id){
+  const send_data = {
+    user_id : user_id,
+    todo_date : document.getElementById(),
+    title : document.getElementById(),
+    description : document.getElementById(),
+    status : document.getElementById(),
+    priority : document.getElementById(),
+    
+  }
+  fetch(`/api/dailycares/save/todo/${user_id}`)
+  .then()
+}

@@ -162,11 +162,6 @@ def get_todo(user_id):
 @dailycare_api_bp.route('/save/todo/<user_id>', methods = ['POST'])
 def save_todo(user_id):
     data = request.json
-    start_date_str = request.json.get("start_date")  # '2025-08-19'
-    end_date_str = request.json.get("end_date")      # '2025-08-22'
-
-    start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else None
-    end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else None
     record = HealthCareService.create_todo_record(
     
     user_id = user_id,
@@ -175,8 +170,7 @@ def save_todo(user_id):
     description = data.get('description'),
     status = data.get('status'),
     priority = data.get('priority'),
-    start_date = start_date,
-    end_date = end_date
+   
     )
     
     return jsonify(record.to_dict()), 200
