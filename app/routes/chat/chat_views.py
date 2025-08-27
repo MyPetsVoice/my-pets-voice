@@ -22,7 +22,7 @@ def chat():
     for pet in user_pets:
         logger.debug(f'펫 : {pet}')
         logger.debug(f'펫 아이디 : {pet.pet_id}')
-        persona = PetPersona.find_by_pet_id(pet.pet_id)
+        persona = PetPersona.find_persona_by_pet_id(pet.pet_id)
         logger.debug(f'딕셔너리로 변경한 페르소나 : {persona}')
         if persona:
             # Pet 정보와 Persona 정보를 합쳐서 전달

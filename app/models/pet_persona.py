@@ -32,13 +32,13 @@ class PetPersona(BaseModel):
 
     @classmethod
     def create_persona(cls, user_id, pet_id, **kwargs):
-        existing = cls.find_by_pet_id(pet_id)
+        existing = cls.find_persona_by_pet_id(pet_id)
         if existing:
             raise ValueError(f'Pet Id {pet_id}에 대한 페르소나가 이미 존재합니다.')
         return cls.create(pet_id=pet_id, user_id=user_id, **kwargs)
 
     @classmethod
-    def find_by_pet_id(cls, pet_id):
+    def find_persona_by_pet_id(cls, pet_id):
         persona = cls.query.filter_by(pet_id=pet_id).first()
         logger.debug(f'find by pet id로 찾은 페르소나 객체 : {persona}')
         
@@ -49,8 +49,11 @@ class PetPersona(BaseModel):
     
     @classmethod
     def get_persona_info(cls, pet_id):
-        persona = PetPersona.find_by_pet_id(pet_id)
+        persona = PetPersona.find_persona_by_pet_id(pet_id)
         logger.debug(f'페르소나 기본 정보 : {persona}')
+
+        if not persona:
+            return persona
 
         persona_id = persona['pet_persona_id']
         logger.debug(f'페르소나 아이디 : {persona_id}')

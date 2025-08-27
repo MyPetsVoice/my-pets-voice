@@ -69,7 +69,7 @@ def create_pet():
             special_note=special_notes
         )
         
-        # 세션에 펫 정보 저장 (채팅에서 사용)
+        # 세션에 펫 정보 저장 (채팅에서 사용) -------> 수정 필요
         pet_info = {
             'pet_id': pet.pet_id,
             'name': pet.pet_name,

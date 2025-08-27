@@ -88,9 +88,8 @@ def get_pet_profile(pet_id):
     logger.debug(pet)
     
     if pet:
-        pet_data = pet.to_dict()
-        logger.debug(pet_data)
-        return jsonify(pet_data)
+        logger.debug(pet)
+        return jsonify(pet)
     else:
         return jsonify({'error': 'Pet not found'}), 404
 
@@ -148,19 +147,13 @@ def save_persona(pet_id):
 @mypage_api_bp.route('/get-persona/<pet_id>')
 def get_persona_by_pet_id(pet_id):
 
-    persona = PetPersona.find_by_pet_id(int(pet_id))
+    persona = PetPersona.get_persona_info(int(pet_id))
 
     if persona == None:
         return jsonify({'message': '아직 페르소나가 생성되지 않았습니다.'})
     
-    logger.debug(f'{pet_id}번 pet의 페르소나 정보 :{persona.to_dict()}')
+    logger.debug(f'{pet_id}번 pet의 페르소나 정보 :{persona}')
 
-    # persona가 존재하는지 존재하지 않는지 예외처리 필요
-    persona_id = persona.pet_persona_id
-    logger.debug(f'{pet_id}번의 pet_persona_id는 : {persona_id}')
+    # persona가 존재하는지 존재하지 않는지 예외처리 필요?
 
-    traits = PersonaTrait.find_by_persona_id(persona_id)
-    traits = [trait.to_dict() for trait in traits]
-    logger.debug(traits)
-
-    return jsonify({'pet_persona': persona.to_dict(), 'traits': traits})
+    return jsonify({'pet_persona': persona})

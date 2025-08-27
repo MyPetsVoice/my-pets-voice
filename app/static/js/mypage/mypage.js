@@ -337,7 +337,6 @@ async function getPersonaInfo(petId) {
     const data = await response.json()
     console.log(data)
     console.log(data.pet_persona)
-    console.log(data.traits)
     return data
 }
 
@@ -358,7 +357,7 @@ function renderPersona(data) {
     } else {
         // 페르소나가 있는 경우
         const persona = data.pet_persona
-        const traits = data.traits
+        const traits = persona.traits
         
         const container = document.createElement('div')
         container.className = 'space-y-4'
@@ -425,7 +424,7 @@ function renderPersona(data) {
             traits.forEach(trait => {
                 const tag = document.createElement('span')
                 tag.className = 'inline-block px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium'
-                tag.textContent = trait.trait_name
+                tag.textContent = trait
                 traitsContainer.appendChild(tag)
             })
             
