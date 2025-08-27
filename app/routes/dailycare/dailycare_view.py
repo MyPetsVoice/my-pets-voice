@@ -23,7 +23,9 @@ def get_healthcare_history():
 # Todo 전체 리스트
 @dailycare_bp.route('/todo')
 def get_todo():
-    return render_template('dailycare/todo_history.html')
+    current_user = 1 #임시 나중에 로그인한 user가져오는 거 할거임
+    return render_template('dailycare/todo_history.html', user = current_user )
+ 
 
 
 

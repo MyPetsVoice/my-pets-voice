@@ -1,7 +1,9 @@
 {% extends "base.html" %}
-{% block title %}반려동물의 목소리가 들려 - 의료기록{% endblock %}
+{% block title %}반려동물의 목소리가 들려 - TODO{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="../../static/css/dailycare/todo_history.css">
 <div >
+  <div id="userInfo" data-user-id="{{ user }}"></div>
   <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
     <!-- 헤더 -->
     <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-8 text-center text-white">
@@ -11,10 +13,10 @@
 
     <!-- 필터 버튼 -->
     <div class="flex flex-wrap gap-3 p-6 border-b border-gray-200">
-      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 hover:bg-orange-100 hover:border-orange-400 active:bg-orange-500 active:text-white transition" onclick="filterTodos('all')">전체</button>
-      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 hover:bg-orange-100 hover:border-orange-400 active:bg-orange-500 active:text-white transition" onclick="filterTodos('미완료')">대기중</button>
-      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 hover:bg-orange-100 hover:border-orange-400 active:bg-orange-500 active:text-white transition" onclick="filterTodos('완료')">완료</button>
-      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 hover:bg-orange-100 hover:border-orange-400 active:bg-orange-500 active:text-white transition" onclick="filterTodos('높음')">높은 우선순위</button>
+      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 " onclick="filterTodos('all')" data-filter="all" >전체</button>
+      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 " onclick="filterTodos('미완료')" data-filter="미완료">대기중</button>
+      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 " onclick="filterTodos('완료')" data-filter="완료">완료</button>
+      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 " onclick="filterTodos('높음')" data-filter="높음">높은 우선순위</button>
     </div>
 
     <!-- 일정 목록 -->
@@ -43,4 +45,5 @@
     </div>
   </div>
 </div>
+<script src="../../static/js/dailycare/todo_history.js"></script>
 {% endblock %}

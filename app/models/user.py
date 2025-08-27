@@ -14,11 +14,11 @@ class User(BaseModel):
     social_provider = db.Column(db.String(100))
     social_id = db.Column(db.String(100))
     last_login_at = db.Column(db.DateTime(timezone=True))
+    
+    todos = db.relationship("TodoList", back_populates="user", lazy=True)
 
     def __repr__(self):
         return f'<User {self.username}>'
-    
-    todos = db.relationship('TodoList', back_populates='user', cascade = 'all, delete-orphan')
     
     @classmethod
     def create_user(cls, **kwargs):
@@ -30,7 +30,6 @@ class User(BaseModel):
     @classmethod
     def create_user_from_kakao(cls, user):
         username = f'kakao_{user['id']}'
-
         profile = user['kakao_account']['profile']
         kakao_account = user['kakao_account']
 

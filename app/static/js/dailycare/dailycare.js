@@ -205,15 +205,17 @@ async function getTodo(user_id) {
               <div class="text-sm text-gray-600">상태</div>
             </div>
             <div class="text-center">
-              <div class="text-2xl font-bold text-gray-800">${
-                e.created_at
-              }</div>
+              <div class="text-2xl font-bold text-gray-800">${e.created_at.slice(
+                0,
+                10
+              )}</div>
               <div class="text-sm text-gray-600">등록일</div>
             </div>
             <div class="text-center">
-              <div class="text-2xl font-bold text-gray-800">${
-                e.updated_at
-              }</div>
+              <div class="text-2xl font-bold text-gray-800">${e.updated_at.slice(
+                0,
+                10
+              )}</div>
               <div class="text-sm text-gray-600">수정일</div>
             </div>
           </div>

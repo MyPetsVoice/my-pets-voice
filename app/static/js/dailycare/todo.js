@@ -24,16 +24,12 @@ function openModalTodo(name, user_id) {
       const closeBtn = document.getElementById("modal-close-btn");
       closeBtn.onclick = () => modal.classList.add("hidden");
 
-      // ---- 여기서 모달 내부 요소 접근 ----
-      const hiddenInput = document.getElementById("modal-pet-id");
-      const currentUserId = hiddenInput ? Number(hiddenInput.value) : user_id;
-
-      // 저장 버튼 이벤트 등록 (중복 방지 위해 먼저 초기화)
-      const saveBtn = document.getElementById("save_todo_button");
+      const saveBtn = document.getElementById("save_schedule_button");
       if (saveBtn) {
-        saveBtn.onclick = () => {
-          console.log("click button");
-          saveTodo(currentUserId);
+        saveBtn.onclick = (e) => {
+          e.preventDefault();
+          console.log("click");
+          createTodo(user_id);
         };
       }
     })
@@ -49,16 +45,34 @@ function closeModal() {
   location.reload();
 }
 
-function create_todo(user_id){
+
+
+
+async function createTodo(user_id){
   const send_data = {
     user_id : user_id,
-    todo_date : document.getElementById(),
-    title : document.getElementById(),
-    description : document.getElementById(),
-    status : document.getElementById(),
-    priority : document.getElementById(),
+    todo_date : document.getElementById('todo_date_input').value,
+    title : document.getElementById('title_input').value,
+    description : document.getElementById('description_input').value,
+    status : document.getElementById('status_option').value,
+    priority : document.getElementById('priority_option').value,
     
   }
-  fetch(`/api/dailycares/save/todo/${user_id}`)
-  .then()
+
+  console.log('보낼 데이터 ', send_data)
+  const response = await fetch(`/api/dailycares/save/todo/${user_id}`,{
+    method : 'POST',
+    headers : {'Content-type' : 'application/json'},
+    body : JSON.stringify(send_data)
+    
+  })
+
+    if (!response.ok) {
+    alert("기록 저장에 실패했습니다.");
+  } else {
+    console.log("기록 저장 완료");
+    closeModal();
+  }
+  
 }
+

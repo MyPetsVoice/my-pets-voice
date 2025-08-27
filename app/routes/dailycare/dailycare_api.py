@@ -159,13 +159,22 @@ def get_todo(user_id):
     todo_list = [t.to_dict() for t in todos]
     return jsonify(todo_list), 200
 
+@dailycare_api_bp.route('/todo/all/<user_id>')
+def get_all_todo(user_id):
+    todos= HealthCareService.get_todo_records_by_user(user_id)
+    todo_list = [t.to_dict() for t in todos]
+    return jsonify(todo_list), 200
+
+
 @dailycare_api_bp.route('/save/todo/<user_id>', methods = ['POST'])
 def save_todo(user_id):
     data = request.json
+    todo_date_str = data.get("todo_date")  # '2025-08-16'
+    todo_date = datetime.strptime(todo_date_str, "%Y-%m-%d").date() if todo_date_str else None
     record = HealthCareService.create_todo_record(
     
     user_id = user_id,
-    todo_date = data.get('todo_date'),
+    todo_date = todo_date,
     title = data.get('title'),
     description = data.get('description'),
     status = data.get('status'),
