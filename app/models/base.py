@@ -10,6 +10,13 @@ class BaseModel(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), default=get_utc_now, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), default=get_utc_now, onupdate=get_utc_now, nullable=False)
 
+    @classmethod
+    def create(cls, **kwargs):
+        instance = cls(**kwargs)
+        db.session.add(instance)
+        db.session.commit()
+        return instance
+
     def save(self):
         db.session.add(self)
         db.session.commit()
