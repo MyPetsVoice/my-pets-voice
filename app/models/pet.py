@@ -31,12 +31,13 @@ class Pet(BaseModel):
         return cls.create(user_id=user_id, **kwargs)
     
     @classmethod
-    def get_pets_by_user_id(cls, user_id):
+    def find_pets_by_user_id(cls, user_id):
         return cls.query.filter_by(user_id=user_id).all()
     
     @classmethod
-    def get_pet_by_pet_id(cls, pet_id):
-        return cls.query.filter_by(pet_id=pet_id).first()
+    def find_pet_by_pet_id(cls, pet_id):
+        pet = cls.query.filter_by(pet_id=pet_id).first()
+        return pet.to_dict()
 
     def to_dict(self):
         return {

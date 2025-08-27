@@ -25,7 +25,7 @@ class ChatService:
     # 0. 사용자의 펫 목록을 가져옴.
     def get_user_pets(self, user_id):
         try:
-            pets_list = Pet.get_pets_by_user_id(user_id) # to_dict 해야하는데... 걍. 아예 모델의 메서드에서 다 to_dict 해서 반환하도록 변경하는게 나을 듯.
+            pets_list = Pet.find_pets_by_user_id(user_id) # to_dict 해야하는데... 걍. 아예 모델의 메서드에서 다 to_dict 해서 반환하도록 변경하는게 나을 듯.
             return pets_list
         
         except Exception as e:
@@ -35,15 +35,16 @@ class ChatService:
     # 1. 선택된 펫의 정보를 통합(기본 정보+페르소나 정보)
     def get_pet_info(self, pet_id):
         # 1-1. 선택된 펫의 정보를 가져옴.( 이름, 종류, 품종, 나이, 생일 등 걍 다 가져와....)
-        pet_info = Pet.get_pet_by_pet_id(pet_id)
+        pet_info = Pet.find_pet_by_pet_id(pet_id)
         print(f'선택된 반려동물의 기본 정보 : {pet_info}')
 
         # 1-2. 페르소나 정보를 가져옴.( 사용자 호칭, 말투, 성격 및 특징, 그 외 기타 사항)
-        persona_info = [persona.to_dict() for persona in PetPersona.find_by_pet_id('pet_id')]
-        persona_id = persona_info.pet_persona_id
-        persona_traits = PersonaTrait.find_by_persona_id(persona_id)
+        persona_info = PetPersona.get_persona_info(pet_id)
+        # persona_info = [persona.to_dict() for persona in PetPersona.find_by_pet_id('pet_id')]
+        # persona_id = persona_info.pet_persona_id
+        # persona_traits = PersonaTrait.find_by_persona_id(persona_id)
         print(f'선택된 반려동물의 페르소나 정보 : {persona_info}')
-        print(f'선택된 반려동물의 페르소나 성격 및 특징 : {persona_traits}')
+        # print(f'선택된 반려동물의 페르소나 성격 및 특징 : {persona_traits}')
 
         return pet_info
 

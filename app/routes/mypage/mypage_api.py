@@ -74,7 +74,7 @@ def add_pet():
 @mypage_api_bp.route('/pets/')
 def get_pets_info():
     user_id = session.get('user_id')
-    pets = Pet.get_pets_by_user_id(user_id)
+    pets = Pet.find_pets_by_user_id(user_id)
 
     pets_info = [pet.to_dict() for pet in pets]
 
@@ -84,7 +84,7 @@ def get_pets_info():
 
 @mypage_api_bp.route('/pet-profile/<pet_id>')
 def get_pet_profile(pet_id):
-    pet = Pet.get_pet_by_pet_id(pet_id)
+    pet = Pet.find_pet_by_pet_id(pet_id)
     logger.debug(pet)
     
     if pet:

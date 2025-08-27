@@ -1,5 +1,8 @@
 from app.models import db
 from app.models.base import BaseModel
+import logging
+
+logger = logging.getLogger(__name__)
 
 class PetPersona(BaseModel):
     __tablename__ = 'pet_personas'
@@ -23,6 +26,7 @@ class PetPersona(BaseModel):
     pet = db.relationship('Pet', backref=db.backref('persona', uselist=False)) # uselist=False => 1:1 관계
     speech_style = db.relationship('SpeechStyle', backref=db.backref('persona', uselist=False))
 
+
     def __repr__(self):
         return f'<PetPersona {self.pet.pet_name}>'
 
@@ -35,7 +39,36 @@ class PetPersona(BaseModel):
 
     @classmethod
     def find_by_pet_id(cls, pet_id):
-        return cls.query.filter_by(pet_id=pet_id).first()
+        persona = cls.query.filter_by(pet_id=pet_id).first()
+        logger.debug(f'find by pet id로 찾은 페르소나 객체 : {persona}')
+        
+        if persona:
+            return persona.to_dict()
+
+        return persona # 결과 없음..
+    
+    @classmethod
+    def get_persona_info(cls, pet_id):
+        persona = PetPersona.find_by_pet_id(pet_id)
+        logger.debug(f'페르소나 기본 정보 : {persona}')
+
+        persona_id = persona['pet_persona_id']
+        logger.debug(f'페르소나 아이디 : {persona_id}')
+
+        traits = PersonaTrait.find_by_persona_id(persona_id)
+        logger.debug(f'성격 및 특징 : {traits}')
+
+        style_id = persona['style_id']
+        speech_style = SpeechStyle.find_by_style_id(style_id)
+        speech_style_name = speech_style['style_name']
+        logger.debug(f'말투 : {speech_style_name} ')
+
+        persona_info = persona
+        persona_info['traits'] = [trait['trait_name'] for trait in traits]
+        persona_info['style_name'] = speech_style_name
+
+        logger.debug(persona_info)
+        return persona_info
 
 
     def get_persona_prompt(self):
@@ -83,7 +116,8 @@ class PersonaTrait(BaseModel):
     
     @classmethod
     def find_by_persona_id(cls, pet_persona_id):
-        return cls.query.filter_by(pet_persona_id=pet_persona_id).all()
+        traits = cls.query.filter_by(pet_persona_id=pet_persona_id).all()
+        return [trait.to_dict() for trait in traits]
 
     def to_dict(self):
         trait_name = self.personality.trait_name
@@ -139,7 +173,8 @@ class SpeechStyle(BaseModel):
     
     @classmethod
     def find_by_style_id(cls, style_id):
-        return cls.query.filter_by(style_id=style_id).first()
+        speech_style = cls.query.filter_by(style_id=style_id).first()
+        return speech_style.to_dict()
     
     @classmethod
     def create_speech_style(cls, style_name, style_description=None, example_phrases=None):

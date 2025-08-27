@@ -1,8 +1,7 @@
 from flask import Blueprint, request, jsonify, session
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from app.services.chat_service import chat_service
-from app.models import PetPersona
-from app.models import PersonaTrait, SpeechStyle
+from app.models import Pet, PetPersona
 import os
 import json
 import threading
@@ -61,31 +60,33 @@ def init_socketio(app_socketio, app):
     @socketio.on('send_message')
     def handle_message(data):
         logger.debug(f'사용자 메시지로 받은 내용 :  {data}')
-        try:
-            # 입력값 검증
-            if not data or 'message' not in data:
-                logger.warning(f'잘못된 메시지 형식: {data}')
-                emit('error', {'message': '메시지 형식이 올바르지 않습니다.'})
-            
-            user_message = data['message'].strip()
-            logger.debug(f'사용자 메시지를 받음 : {user_message}')
-            if not user_message:
-                emit('error', {'message': '빈 메시지는 보낼 수 없습니다.'})
-                return
-            
-            if len(user_message) > 1000: # 메시지 길이 제한
-                emit('error', {'message': '메세지가 너무 깁니다. (최대 1000자)'})
-                return
-            
-            client_sid = request.sid
+        
+        # 입력값 검증
+        if not data or 'message' not in data:
+            logger.warning(f'잘못된 메시지 형식: {data}')
+            emit('error', {'message': '메시지 형식이 올바르지 않습니다.'})
+            return
+        
+        user_message = data['message'].strip()
+        logger.debug(f'사용자 메시지를 받음 : {user_message}')
 
+        if not user_message:
+            emit('error', {'message': '빈 메시지는 보낼 수 없습니다.'})
+            return
+        
+        if len(user_message) > 1000: # 메시지 길이 제한
+            emit('error', {'message': '메세지가 너무 깁니다. (최대 1000자)'})
+            return
+        
+        try:
+            client_sid = request.sid
             chat_session = chat_service.get_chat_session(client_sid) # 메서드 구현 필요
             if not chat_session:
                 logger.error(f'존재하지 않는 채팅 세션: {client_sid}')
                 emit('error', {'message': '채팅 세션이 존재하지 않습니다.'})
                 return
             
-            pet_info = session['pet_info']
+            pet_info = session['pet_info'] ## 세션에서 가져오면 안 되고.. 아님.. 그 전에 가져온 걸 저장해뒀으면 괜찮
 
             logger.debug(f'메시지 수신 - 사용자: {user_message[:50]}...')
 
@@ -157,43 +158,23 @@ def init_socketio(app_socketio, app):
             emit('error', {'message': '채팅 초기화 중 오류가 발생했습니다.'})
 
 
-@chat_api_bp.route('/save_pet_session/', methods=['POST'])
-def save_pet_session():
-    pet_data = request.get_json()
-    logger.debug(f'펫 데이터 받음 : {pet_data}')
 
-    session['pet_info'] = pet_data
-
-    return jsonify({'success': True})
 
 @chat_api_bp.route('/get_persona/<pet_id>')
 def get_persona_info(pet_id):
     try:
-        persona_obj = PetPersona.find_by_pet_id(pet_id)
-        persona = persona_obj.to_dict()
-        persona_id = persona['pet_persona_id']
-        logger.debug(f'페르소나 아이디 : {persona_id}')
+        logger.debug(f'선택된 반려동물의 아이디 : {pet_id}')
+        # 펫 기본정보와 페르소나 정보 모두 가져와서 전달
+        pet_info = Pet.find_pet_by_pet_id(pet_id)
+        logger.debug(f'펫 아이디 {pet_id}의 기본 정보 : {pet_info}')
 
-        if not persona:
-            logger.warning(f'페르소나 정보 요청 실패 - DB에 정보 없음')
-            return jsonify({'success': False, 'error': '펫 정보가 없습니다.'})
+        persona_info = PetPersona.get_persona_info(pet_id)
+        logger.debug(f'펫 아이디 {pet_id}의 페르소나 정보 : {persona_info}')
 
-        # 말투랑 성격 가져와야함.
-        persona_traits = PersonaTrait.find_by_persona_id(persona_id)
-        traits = [trait.to_dict() for trait in persona_traits]
-        logger.debug(f'성격 및 특징 : {traits}')
+        persona_info.update(pet_info)
+        session['pet_info'] = persona_info
 
-        speech_style = SpeechStyle.find_by_style_id(persona['style_id'])
-        style_info = speech_style.to_dict()
-        logger.debug(f'speech_style : {style_info}')
-
-        persona['traits'] = [trait['trait_name'] for trait in traits]
-        persona['style_name'] = style_info['style_name']
-
-        session['pet_info'] = persona
-
-        logger.debug(f'페르소나 정보 요청 성공 : {persona}')
-        return jsonify({'success': True, 'persona_info': persona})
+        return jsonify({'success': True, 'persona_info': persona_info})
 
     except Exception as e:
         logger.error(f'페르소나 정보 조회 중 오류: {str(e)}')

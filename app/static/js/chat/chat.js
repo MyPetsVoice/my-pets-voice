@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeDropDown();
     initializeChat();
 
-    console.log(`전체 펫 목록 : ${allPets}`)
+    console.log('전체 펫 목록:', allPets)
     
     // 첫번째 펫 자동 선택
     if (allPets && allPets.length > 0) {
@@ -85,33 +85,40 @@ function setupEventHandlers() {
         // 사용자 메시지 전송
         console.log('서버로부터 받은 사용자 메시지 : ', data.message)
         // 사용자 메시지 렌더링
+        addMessage('user', data.message)
     })
     
     socket.on('bot_typing', (data) => {        
         // 봇 타이핑 렌더링
-        console.log('봇 타이핑 인디케이터 : ', data)
+        console.log('봇 타이핑 인디케이터 : ', data.pet_name)
         // 봇 응답 렌더링
+        showTypingIndicator(data.pet_name)
     })
     
     socket.on('bot_response', (data) => {
         console.log('펫의 응답 : ', data.message)
+        hideTypingIndicator()
+        addMessage('bot', data.message, data.pet_name)
     })
     
     // reset chat
     socket.on('reset_chat', () => {
-
+        console.log('채팅 내용 리셋')
+        resetChat()
     })
 }
 
 
 function updateConnectionStatus(status) {
+    const statusText = document.getElementById('status-text')
+    const chatStatusIcon = document.getElementById('chat-status-icon')
     if (status) {
-
-        const statusText = document.getElementById('status-text')
-        const chatStatusIcon = document.getElementById('chat-status-icon')
-        
         statusText.textContent = '온라인'
         chatStatusIcon.classList.add('text-green-500')
+    } else {
+        statusText.textContent = '대기중'
+        chatStatusIcon.classList.remove('text-green-500')
+
     }
 }
 
@@ -169,12 +176,11 @@ async function selectPet(petData) {
     updatePetInfoSection(petData, personaInfo);
     updateChatHeader(petData);
     
-    // 웹소켓 연결 시작
+    // 웹소켓 연결 시작 - await 필요한가?
     connectSocket();
     socket.emit('join_chat', {'pet_info': selectedPet})
     
     enableChat()
-    // 
 }
 
 function updatePetInfoSection(petData , personaInfo) {
@@ -213,46 +219,104 @@ function updateChatHeader(petName) {
 
 }
 
-function showNoPetsMessages() {
-
-}
 
 function enableChat() {
     const msgSubmitBtn = document.getElementById('msg-submit-btn')
     
     messageInput.placeholder = `${selectedPet.pet_name}(이)에게 메시지를 보내 대화를 시작하세요.`
     messageInput.disabled = false;
-
+    
     msgSubmitBtn.disabled = false;
     msgSubmitBtn.className = 'px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg hover:from-primary-600 hover:to-secondary-600 transition-all';
-
-    messageInput.focus();
     
+    messageInput.focus();
 }
 
 
 function sendMessage() {
     const userMsg = messageInput.value;
-    console.log(userMsg)
-
     socket.emit('send_message', {'message': userMsg})
     messageInput.value = ''
 }
 
-// async function savePetToSession(petData) {
-//     try {
-//         const response = await fetch('/api/save_pet_session/', {
-//             method: 'POST',
-//             headers: {'Content-Type': 'application/json'},
-//             body: JSON.stringify(petData)
-//         });
+function addMessage(type, content, senderName = null) {
+    const welcomeMsg = document.getElementById('welcome-msg')
+    if (!welcomeMsg.classList.contains('hidden')) {
+        welcomeMsg.classList.add('hidden')
+    }
 
-//         const result = await response.json()
-//         if (!result.success) {
-//             console.error('펫 정보 세션 저장 실패 : ', result.error);
-//         }
-//     } catch (error) {
-//         console.error('펫 정보 세션 저장 중 오류 : ', error)
-//     }
-// }
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `flex ${type === 'user' ? 'justify-end' : 'justify-start'} mb-4`;
+    
+    const messageContent = document.createElement('div');
+    messageContent.className = `max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+        type === 'user' 
+            ? 'bg-primary-500 text-white' 
+            : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
+    }`;
+    
+    if (type === 'bot' && senderName) {
+        const nameSpan = document.createElement('div');
+        nameSpan.className = 'text-xs text-gray-500 mb-1';
+        nameSpan.textContent = senderName;
+        messageContent.appendChild(nameSpan);
+    }
+    
+    const textDiv = document.createElement('div');
+    textDiv.textContent = content;
+    messageContent.appendChild(textDiv);
+    
+    messageDiv.appendChild(messageContent);
+    chatMessages.appendChild(messageDiv);
+    
+    // 스크롤을 맨 아래로
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
+// 타이핑 인디케이터 표시
+function showTypingIndicator(petName) {
+    hideTypingIndicator();
+    
+    const typingDiv = document.createElement('div');
+    typingDiv.id = 'typing-indicator';
+    typingDiv.className = 'flex justify-start mb-4';
+    
+    const typingContent = document.createElement('div');
+    typingContent.className = 'max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-gray-100 border border-gray-200';
+    
+    const nameSpan = document.createElement('div');
+    nameSpan.className = 'text-xs text-gray-500 mb-1';
+    nameSpan.textContent = petName;
+    typingContent.appendChild(nameSpan);
+    
+    const dotsDiv = document.createElement('div');
+    dotsDiv.className = 'flex space-x-1';
+    dotsDiv.innerHTML = `
+        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms;"></div>
+        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms;"></div>
+        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms;"></div>
+    `;
+    typingContent.appendChild(dotsDiv);
+    
+    typingDiv.appendChild(typingContent);
+    chatMessages.appendChild(typingDiv);
+    
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// 타이핑 인디케이터 숨기기
+function hideTypingIndicator() {
+    const typingIndicator = document.getElementById('typing-indicator');
+    if (typingIndicator) {
+        typingIndicator.remove();
+    }
+}
+
+function resetChat() {
+    chatMessages.innerHTML = '';
+    // 기존에 있던 거 추가하기
+}
+
+function showNoPetsMessages() {
+
+}
