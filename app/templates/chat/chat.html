@@ -109,6 +109,7 @@
                             </h4>
                             <div id="pet-personality" class="flex flex-wrap gap-1">
                                 <!-- 성격 태그들이 여기에 추가됩니다 -->
+                                 활동적인
                             </div>
                         </div>
                         
@@ -164,21 +165,26 @@
                         </div>
                         <div>
                             <h4 id="chat-header-title" class="font-semibold text-gray-800">반려동물을 선택하세요</h4>
-                            <p id="chat-header-status" class="text-sm text-gray-500">
-                                <i class="fas fa-circle text-xs mr-1"></i>
-                                대기중
-                            </p>
+                            <div id="chat-header-status" class="text-sm text-gray-500">
+                                <i id="chat-status-icon" class="fas fa-circle text-xs mr-1"></i>
+                                <span id="status-text" class="text-sm text-gray-500">대기중</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- 채팅 메시지 영역 -->
                 <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gray-50">
-                    <div class="text-center py-12">
+                    <div id="welcome-on-boarding" class="text-center py-12">
                         <i class="fas fa-comments text-6xl text-gray-300 mb-4"></i>
-                        <h3 class="text-xl font-bold text-gray-600 mb-2">반려동물과 대화하기</h3>
+                        <h3 id="chat-with-pet" class="text-xl font-bold text-gray-600 mb-2">반려동물과 대화하기</h3>
                         <p class="text-gray-500">왼쪽에서 반려동물을 선택하고 대화를 시작해보세요!</p>
                     </div>
+                    <div id="welcome-msg" class="text-center py-8 hidden">
+                        <i class="fas fa-heart text-4xl text-primary-400 mb-4"></i>
+                        <p class="text-gray-600"><span id="welcome-pet"></span>(이)와 대화를 시작해보세요!</p>
+                    </div>
+
                 </div>
                 
                 <!-- 메시지 입력 영역 -->
@@ -186,7 +192,7 @@
                     <form id="chat-form" class="flex gap-2">
                         <input type="text" id="message-input" placeholder="반려동물을 선택하고 메시지를 입력하세요..." 
                                class="flex-1 p-3 border border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all" disabled>
-                        <button type="submit" class="px-6 py-3 bg-gray-300 text-gray-500 rounded-lg transition-all" disabled>
+                        <button type="submit" id="msg-submit-btn" class="px-6 py-3 bg-gray-300 text-gray-500 rounded-lg transition-all" disabled>
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </form>

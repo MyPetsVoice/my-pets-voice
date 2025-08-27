@@ -33,7 +33,7 @@ class ChatService:
             return []
 
     # 1. 선택된 펫의 정보를 통합(기본 정보+페르소나 정보)
-    def get_pet_info(pet_id):
+    def get_pet_info(self, pet_id):
         # 1-1. 선택된 펫의 정보를 가져옴.( 이름, 종류, 품종, 나이, 생일 등 걍 다 가져와....)
         pet_info = Pet.get_pet_by_pet_id(pet_id)
         print(f'선택된 반려동물의 기본 정보 : {pet_info}')
@@ -66,21 +66,21 @@ class ChatService:
         """펫 정보를 바탕으로 시스템 프롬프트 생성"""
         context = self.get_current_context()
         
-        # 기본 정보 구성
-        name = pet_info['name']
-        species = pet_info['species']
-        breed = pet_info['breed'] if pet_info['breed'] else '믹스'
-        age = pet_info['age']
-        gender = pet_info['gender']
-        owner_call = pet_info['owner_call']
+        # 기본 정보 구성 (세션 데이터 구조에 맞춤)
+        name = pet_info.get('pet_name', '펫')
+        species = pet_info.get('species_name', '') 
+        breed = pet_info.get('breed_name')
+        age = pet_info.get('pet_age')  
+        gender = pet_info.get('pet_gender')  # 세션에 없는 정보
+        owner_call = pet_info.get('user_call', '주인')
         
-        # 성격 및 특성
-        personality = ', '.join(pet_info['personality']) if pet_info['personality'] else '귀여운'
-        speech_style = pet_info['speech_style']
-        likes = ', '.join(pet_info['likes']) if pet_info['likes'] else ''
-        dislikes = ', '.join(pet_info['dislikes']) if pet_info['dislikes'] else ''
-        habits = ', '.join(pet_info['habits']) if pet_info['habits'] else ''
-        special_notes = pet_info['special_notes']
+        # 성격 및 특성 (세션 데이터 구조에 맞춤)
+        personality = ', '.join(pet_info.get('traits', [])) if pet_info.get('traits') else '귀여운'
+        speech_style = pet_info.get('style_name', '다정한 말투')
+        likes = pet_info.get('likes', '')
+        dislikes = pet_info.get('dislikes', '')
+        habits = pet_info.get('habits', '')
+        special_notes = pet_info.get('special_note', '')
 
         prompt = f"""
             당신은 {name}라는 이름의 {species}입니다.
@@ -93,7 +93,7 @@ class ChatService:
             - 말투: {speech_style}
 
             [현재 상황]
-            - 오늘: {context['date']} {context['day_of_week']}요일
+            - 오늘: {context['date']} {context['day of weekday']}요일
             - 시간: {context['time']}
             - 날씨: {context['weather']}
 
@@ -159,10 +159,61 @@ class ChatService:
         # memory = ConversationBufferWindowMemory(k=50, return_messages=True, memory_key='chat_history', input_key='user_input', output_key='ai_response')
         return self.memories[session_key]
 
-    # 메인 채팅 함수
-    def chat(self, pet_id, user_input, session_key):
+    # 채팅 세션 생성
+    def create_chat_session(self, session_key, pet_info):
+        """새로운 채팅 세션을 생성하고 메모리 초기화"""
         try:
-            pet_info = self.get_pet_info(pet_id)
+            # 기존 세션이 있으면 정리
+            if session_key in self.memories:
+                self.memories[session_key].clear()
+            
+            # 새로운 메모리 생성
+            memory = self.get_or_create_memory(session_key)
+            
+            logger.info(f'채팅 세션 생성 완료 - Session: {session_key}, Pet: {pet_info.get("name", "Unknown")}')
+            return True
+            
+        except Exception as e:
+            logger.error(f'채팅 세션 생성 중 오류: {str(e)}')
+            return False
+    
+    # 채팅 세션 삭제
+    def delete_chat_session(self, session_key):
+        """채팅 세션 삭제"""
+        try:
+            if session_key in self.memories:
+                del self.memories[session_key]
+                logger.info(f'채팅 세션 삭제 완료 - Session: {session_key}')
+                return True
+            return False
+        except Exception as e:
+            logger.error(f'채팅 세션 삭제 중 오류: {str(e)}')
+            return False
+    
+    # 채팅 세션 조회
+    def get_chat_session(self, session_key):
+        """채팅 세션 존재 여부 확인"""
+        return session_key in self.memories
+    
+    # 채팅 기록 초기화
+    def reset_chat_history(self, session_key):
+        """특정 세션의 채팅 기록만 초기화 (세션은 유지)"""
+        try:
+            if session_key in self.memories:
+                self.memories[session_key].clear()
+                logger.info(f'채팅 기록 초기화 완료 - Session: {session_key}')
+                return True
+            return False
+        except Exception as e:
+            logger.error(f'채팅 기록 초기화 중 오류: {str(e)}')
+            return False
+        
+
+
+    # 메인 채팅 함수
+    def chat(self, pet_info, user_input, session_key):
+        logger.debug(f'입력된 펫 정보 : {pet_info}')
+        try:
             system_prompt = self.create_system_prompt(pet_info)
 
             memory = self.memories[session_key]
@@ -176,12 +227,12 @@ class ChatService:
 
             response = chain.predict(user_input=user_input)
 
-            logger.info(f'채팅 응답 생성 완료 - Pet: {pet_info['name']}, Response length: {len(response)}')
+            logger.info(f'채팅 응답 생성 완료 - Pet: {pet_info.get("pet_name", "Unknown")}, Response length: {len(response)}')
 
             return {
                 'success': True,
                 'response': response,
-                'pet_name': pet_info['name']
+                'pet_name': pet_info.get('pet_name', 'Pet')
             }
 
         except Exception as e:

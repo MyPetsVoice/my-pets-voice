@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify, session
 from flask_socketio import SocketIO, emit, join_room, leave_room
-from app.services import chat_service
+from app.services.chat_service import chat_service
+from app.models import PetPersona
+from app.models import PersonaTrait, SpeechStyle
 import os
 import json
 import threading
@@ -22,19 +24,6 @@ def init_socketio(app_socketio, app):
     def on_connect():
         logger.info(f'클라이언트 연결됨: {request.sid}')
 
-        # 세션에 펫 정보 있는지 확인
-        if 'pet_info' not in session:
-            logger.warning(f'펫 정보가 세션에 없음. {request.sid}')
-            emit('error', {'message': '펫 정보가 없습니다. 다시 설정해주세요.'})
-            return
-        
-        # 채팅 세션 생성
-        pet_info = session['pet_info']
-        chat_service.create_chat_session(request.sid, pet_info) # 메서드 구현 필요
-
-        join_room(request.sid)
-        pet_name = pet_info.get('name', '알 수 없음')
-        logger.info(f'펫 정보 로드됨: {pet_name} (세션: {request.sid})')
 
     @socketio.on('disconnect')
     def on_disconnect():
@@ -43,8 +32,35 @@ def init_socketio(app_socketio, app):
         chat_service.delete_chat_session(request.sid)
         leave_room(request.sid)
 
+    @socketio.on('join_chat')
+    def join_chat(data):
+        logger.debug(f'클라이언트로부터 받은 pet 정보 : {data}')
+        
+
+        # 세션에 펫 정보 있는지 확인
+        if 'pet_info' not in session:
+            logger.warning(f'펫 정보가 세션에 없음. {request.sid}')
+            emit('error', {'message': '펫 정보가 없습니다. 다시 설정해주세요.'})
+            return
+        
+        pet_info = session['pet_info']
+        # 채팅 세션 생성
+        chat_service.create_chat_session(request.sid, pet_info) # 메서드 구현 필요
+        # 채팅 세션 생성 성공 시 클라이언트에 알림
+        emit('chat_ready', {
+            'success': True,
+            'message': '채팅 준비 완료',
+            'pet_name': pet_info.get('pet_name', '펫')
+        })
+
+        join_room(request.sid)
+        pet_name = pet_info.get('pet_name', '알 수 없음')
+        logger.info(f'펫 정보 로드됨: {pet_name} (세션: {request.sid})')
+
+
     @socketio.on('send_message')
     def handle_message(data):
+        logger.debug(f'사용자 메시지로 받은 내용 :  {data}')
         try:
             # 입력값 검증
             if not data or 'message' not in data:
@@ -52,6 +68,7 @@ def init_socketio(app_socketio, app):
                 emit('error', {'message': '메시지 형식이 올바르지 않습니다.'})
             
             user_message = data['message'].strip()
+            logger.debug(f'사용자 메시지를 받음 : {user_message}')
             if not user_message:
                 emit('error', {'message': '빈 메시지는 보낼 수 없습니다.'})
                 return
@@ -68,7 +85,7 @@ def init_socketio(app_socketio, app):
                 emit('error', {'message': '채팅 세션이 존재하지 않습니다.'})
                 return
             
-            pet_info = chat_session['pet_info']
+            pet_info = session['pet_info']
 
             logger.debug(f'메시지 수신 - 사용자: {user_message[:50]}...')
 
@@ -76,7 +93,7 @@ def init_socketio(app_socketio, app):
             emit('user_message', {'message': user_message})
 
             # 타이핑 인디케이터 표시
-            emit('bot_typing', {'pet_name': pet_info['name']})
+            emit('bot_typing', {'pet_name': pet_info['pet_name']})
 
             # 백그라운드에서 AI 응답 생성
             def generate_response():
@@ -86,7 +103,7 @@ def init_socketio(app_socketio, app):
                         # pet_id가 없는 경우 어떻게 처리함? 임시 정보 생성...? 굳이..? 왜? 걍 잘못됐다 그러든가...
                         return 'pet_id가 없음'
                     else:
-                        response_data = chat_service.chat(pet_id, user_message, client_sid)
+                        response_data = chat_service.chat(pet_info, user_message, client_sid)
 
 
                     if not response_data['success']:
@@ -94,6 +111,7 @@ def init_socketio(app_socketio, app):
                         bot_message = response_data.get('response', '죄송해요, 지금은 대답하기 어려워요...')
                     else:
                         bot_message = response_data['response']
+                        logger.debug(f'AI 응답 : {bot_message}')
 
                     
                     if not bot_message:
@@ -104,11 +122,11 @@ def init_socketio(app_socketio, app):
                     socketio.emit(
                         'bot_response', {
                             'message': bot_message,
-                            'pet_name': pet_info.get('name', '펫')
+                            'pet_name': pet_info.get('pet_name', '펫')
                             }, 
                         room=client_sid)
                     
-                    logger.debug(f'AI 응답 완료 - 길이: {len(bot_message)}자')
+                    logger.debug(f'AI 응답 - 길이: {len(bot_message)}자')
 
                 except Exception as e:
                     logger.error(f'AI 응답 생성 중 오류: {str(e)}')
@@ -139,19 +157,47 @@ def init_socketio(app_socketio, app):
             emit('error', {'message': '채팅 초기화 중 오류가 발생했습니다.'})
 
 
-@chat_api_bp.route('/get_pet_info')
-def get_pet_info():
+@chat_api_bp.route('/save_pet_session/', methods=['POST'])
+def save_pet_session():
+    pet_data = request.get_json()
+    logger.debug(f'펫 데이터 받음 : {pet_data}')
+
+    session['pet_info'] = pet_data
+
+    return jsonify({'success': True})
+
+@chat_api_bp.route('/get_persona/<pet_id>')
+def get_persona_info(pet_id):
     try:
-        if 'pet_info' not in session:
-            logger.warning(f'펫 정보 요청 실패 - 세션에 정보 없음')
+        persona_obj = PetPersona.find_by_pet_id(pet_id)
+        persona = persona_obj.to_dict()
+        persona_id = persona['pet_persona_id']
+        logger.debug(f'페르소나 아이디 : {persona_id}')
+
+        if not persona:
+            logger.warning(f'페르소나 정보 요청 실패 - DB에 정보 없음')
             return jsonify({'success': False, 'error': '펫 정보가 없습니다.'})
-        
-        logger.debug('펫 정보 요청 성공')
-        return jsonify({'success': True, 'pet_info': session['pet_info']})
+
+        # 말투랑 성격 가져와야함.
+        persona_traits = PersonaTrait.find_by_persona_id(persona_id)
+        traits = [trait.to_dict() for trait in persona_traits]
+        logger.debug(f'성격 및 특징 : {traits}')
+
+        speech_style = SpeechStyle.find_by_style_id(persona['style_id'])
+        style_info = speech_style.to_dict()
+        logger.debug(f'speech_style : {style_info}')
+
+        persona['traits'] = [trait['trait_name'] for trait in traits]
+        persona['style_name'] = style_info['style_name']
+
+        session['pet_info'] = persona
+
+        logger.debug(f'페르소나 정보 요청 성공 : {persona}')
+        return jsonify({'success': True, 'persona_info': persona})
 
     except Exception as e:
-        logger.error(f'펫 정보 조회 중 오류: {str(e)}')
-        return jsonify({'success': False, 'error': '펫 정보 조회 중 오류가 발생했습니다.'})
+        logger.error(f'페르소나 정보 조회 중 오류: {str(e)}')
+        return jsonify({'success': False, 'error': '페르소나 정보 조회 중 오류가 발생했습니다.'})
 
 
 @chat_api_bp.route('/get_chat_history/<session_key>')

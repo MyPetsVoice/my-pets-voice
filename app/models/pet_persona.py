@@ -21,6 +21,7 @@ class PetPersona(BaseModel):
 
     user = db.relationship('User', backref='pet_personas')
     pet = db.relationship('Pet', backref=db.backref('persona', uselist=False)) # uselist=False => 1:1 관계
+    speech_style = db.relationship('SpeechStyle', backref=db.backref('persona', uselist=False))
 
     def __repr__(self):
         return f'<PetPersona {self.pet.pet_name}>'
@@ -135,6 +136,10 @@ class SpeechStyle(BaseModel):
     @classmethod
     def get_speech_styles(cls):
         return cls.query.all()
+    
+    @classmethod
+    def find_by_style_id(cls, style_id):
+        return cls.query.filter_by(style_id=style_id).first()
     
     @classmethod
     def create_speech_style(cls, style_name, style_description=None, example_phrases=None):
