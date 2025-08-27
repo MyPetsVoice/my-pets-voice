@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeDropDown();
     initializeChat();
 
+    console.log(allPets)
     // 첫번째 펫 자동 선택
     if (allPets && allPets.length > 0) {
         selectPet(allPets[0])
@@ -13,21 +14,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
 })
 
+
+
 const petDropdownBtn = document.getElementById('pet-dropdown-btn')
-const petDropdownMenu = document.getElementById('pet-dropdown-menu')
 const dropdownArrow = document.getElementById('dropdown-arrow')
+const petDropdownMenu = document.getElementById('pet-dropdown-menu')
 const petInfoSection = document.getElementById('pet-info-section')
-const chatMessage = document.getElementById('chat-message')
+const resetChatBtn = document.getElementById('reset-chat-btn')
+const chatHeaderTitle = document.getElementById('chat-header-title')
+const chatHeaderStatus = document.getElementById('chat-header-status')
+const chatMessages = document.getElementById('chat-messages')
 const chatForm = document.getElementById('chat-form')
 const messageInput = document.getElementById('message-input')
-const resetChatBtn = document.getElementById('reset-chat-btn')
 
 
-
+petDropdownBtn.addEventListener('click', () => {
+    petDropdownMenu.classList.remove('hidden')
+})
 
 
 let socket = null;
-let selectedPet = null;
+// let selectedPet = null; chat.html에서 선언되어있음.
 let isConnected = false;
 
 // 웹소켓 연결 및 이벤트 핸들러 등록 함수
@@ -39,9 +46,9 @@ function connectSocket() {
 
     console.log('SocketIO 연결 시도...');
     socket = io();
-
 }
 
+// 이벤트 핸들러 등록
 function setupEventHandlers() {
     // 연결 성공
     socket.on('connect', () => {
@@ -57,117 +64,46 @@ function setupEventHandlers() {
         }
     })
 
-    // 굳이...? 연결 상태 확인...?
-    socket.on('connected', function(date) {
-        console.log('서버 연결 확인 수신 : ', data.message);
-    })
-
-    // 웹소켓 연결 후 선택된 펫 정보 서버로 보낸 후 다시 받은 경우인가?
-    socket.on('pet_selected', function(data) {
-        if (data.success) {
-            console.log('펫 선택 성공: ', data.pet_name);
-            showWelcomeMesaage(selectedPet);
-            enableChat();
-        }
-    })
-
-    // 굳이...? 채팅 연결상태....? 위에 꺼랑 뭔 차이? 처음에 연결됐느냐와 채팅 연결이 됐느냐..?
-    socket.on('chat_status', function(data) {
-        console.log('채팅 상태: ', data);
-        if (data.pet_selected) {
-            updateChatStatus($)
-        }
-    })
-    
-
-    // send message
-    socket.on('send_message', () => {
-        addMessage(data.message, 'user')
-
-    })
-    
-    socket.on('bot_typing', function(data) {
-        showTypingIndicator(data.pet_name)
-    })
-
-    socket.on('bot_response', function(data) {
-        hideTypingIndicator();
-        addMessage(data.message, 'bot, data.pet_name');
-    })
-
-    socket.on('error', function(data) {
-        hideTypingIndicator();
-        addMessage(data.message, 'error');
-    })
-
-    // reset chat
-    socket.on('reset_message', function(data) {
-        clearChatMessage();
-        if (selectedPet) {
-            showWelcomeMesaage(seletedPet);
-        }
-    })
-    
-    // disconnect
     socket.on('disconnect', () => {
+        console.log('SocketIO 연결 해제');
         isConnected = false;
         updateConnectionStatus(false);
     })
 
 
+    // send message
+    socket.on('send_message', () => {
+        // 사용자 메시지 전송
+        // 사용자 메시지 렌더링
+        // 봇 타이핑 렌더링
+        // 봇 응답 렌더링
+    })
+
+
+
+
+    // reset chat
+    socket.on('reset_chat', () => {
+
+    })
+
+
+
 }
-function updateConnectionStatus(connected) {
-    const headerStatus = document.getElementById('chat-header-status');
-    if (connected) {
-        headerStatus.textContent = '온라인'
-    } else {
-        headerStatus.textContent = '연결 중'
-    }
-}
-
-function sendMessage() {
-    const message = messageInput.value.trim()
-
-    if (!message) return;
-    if (!selectedPet) {
-        alert('반려동물 먼저 선택하세요')
-        return;
-    }
-    if (!socket || !isConnected) {
-        alert('서버와 연결이 끊어짐. 페이지 새로고침')
-        return;
-    }
-
-    // 입력창 클리어
-    messageInput.value = '';
-    
-    // 서버로 메시지 전송
-    socket.emit('send_message', {
-        message: message,
-        pet_id: selectedPet.pet_id
-    });
-};
-
-function addMessage(text, type, petName = null) {
-    const messageDiv = document.createElement('div');
-    const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-
-    if (type === 'user') {
-        messageDiv.innerHTML = '사용자 메시지 박스 렌더링'
-    } else if (type ===' bot'){
-        messageDiv.innerHTML = '봇 메시지 박스 렌더링'
-    }
+function updateConnectionStatus() {
 
 }
 
-function showTypingIndicator(petName) {
-    hideTypingIndicator(); // 기존 인디케이터 제거
-
-}
-
-
+// 펫 선택 드롭다운 메뉴 이벤트 리스너 등록 - 이벤트 위임
 function initializeDropDown() {
-
+    petDropdownMenu.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            const petData = JSON.parse(e.target.dataset.pet);
+            console.log(petData)
+            selectPet(petData)
+            petDropdownMenu.classList.add('hidden')
+        }
+    })
 }
 
 function initializeChat() {
@@ -176,6 +112,9 @@ function initializeChat() {
 
 function selectPet(petData) {
     selectedPet = petData;
+    
+    const petDropdownBtnText = document.getElementById('pet-dropdown-btn-text')
+    petDropdownBtnText.innerText = selectedPet.pet_name
 
     // UI 업데이트
     updatePetInfoSection(petData);
@@ -183,6 +122,15 @@ function selectPet(petData) {
 
     // 웹소켓 연결 시작
     connectSocket();
+}
+
+function updatePetInfoSection(petData) {
+
+    
+}
+
+function updateChatHeader(petData) {
+    console.log('pet 이름 채팅창에 표시')
 }
 
 function showNoPetsMessages() {
