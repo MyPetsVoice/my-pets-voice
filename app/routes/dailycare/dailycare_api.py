@@ -70,10 +70,40 @@ def save_healthcare(pet_id):
         
     return jsonify(record.to_dict()), 201
 
+@dailycare_api_bp.route('/update/healthcare/<int:care_id>', methods=['PUT'])
+def update_healthcare(care_id):
+    data = request.get_json() or {}
+    # 중복 방지: data에 care_id가 있으면 제거
+    data.pop('care_id', None)
+
+    updated_record = HealthCareService.update_health_record(care_id, **data)
+    
+    if updated_record is None:
+        return jsonify({"error": "healthcare record not found"}), 404
+
+    # updated_record가 dict이면 그대로 반환, 아니면 to_dict 호출
+    if isinstance(updated_record, dict):
+        return jsonify(updated_record), 200
+    elif hasattr(updated_record, 'to_dict'):
+        return jsonify(updated_record.to_dict()), 200
+    else:
+        return jsonify({"error": "updated record has invalid type"}), 500
+
+
+
+@dailycare_api_bp.route('/delete/healthcare/<int:care_id>', methods=['DELETE'])
+def delete_healthcare(care_id):
+    """특정 care_id 기록 삭제"""
+    record_deleted = HealthCareService.delete_health_record(care_id)
+    if not record_deleted:
+        return jsonify({"error": "Health record not found"}), 404
+    return jsonify({"message": "Health record deleted successfully"}), 200
+
 #Healthcare조회
-@dailycare_api_bp.route('/healthcare/<pet_id>' )
+@dailycare_api_bp.route('/healthcare/pet/<pet_id>' )
 def get_health_log(pet_id):
     log = HealthCareService.get_health_records_by_pet(pet_id)
+    print('###### log : ', log)
     if isinstance(log, list):
         return jsonify([l.to_dict() for l in log]), 200
     else:
@@ -81,9 +111,9 @@ def get_health_log(pet_id):
 
 
 # HealthCare 단일 조회
-@dailycare_api_bp.route('/healthcare/<int:pet_id>/<int:care_id>', methods=['GET'])
-def get_health_record(pet_id, care_id):
-    record = HealthCareService.get_health_record_by_id(care_id, pet_id)
+@dailycare_api_bp.route('/healthcare/<int:care_id>', methods=['GET'])
+def get_health_record( care_id):
+    record = HealthCareService.get_health_record_by_id(care_id)
     if not record:
         return jsonify({"error": "Health record not found"}), 404
     return jsonify(record.to_dict()), 200

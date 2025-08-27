@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}반려동물의 목소리가 들려 - 건강 기록 수정{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="../../static/css/dailycare/healtcare_history.css">
+<div id="careElement" class="care" data-care-id="{{care_id}}"></div>
+
+
+<div class="bg-gray-50 min-h-screen">
+    <section class="gradient-hero py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl font-bold text-white mb-4">🐾 건강 기록 수정</h1>
+            <p class="text-xl text-white opacity-90 mb-8">반려동물의 건강 기록을 수정하세요</p>
+        </div>
+    </section>
+
+    <main class="max-w-3xl mx-auto px-4 py-12">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <form id="editHealthForm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-1">체중(kg)</label>
+                    <input type="number" step="0.01" id="weight_kg" name="weight_kg" class="w-full border rounded p-2">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-1">수분 섭취(ml)</label>
+                    <input type="number" step="0.01" id="water" name="water " class="w-full border rounded p-2">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-1">사료량(g)</label>
+                    <input type="number" id="food" name="food" class="w-full border rounded p-2">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-1">산책 시간(분)</label>
+                    <input type="number" id="walk_time_minutes" name="walk_time_minutes" class="w-full border rounded p-2">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-1">배변 상태</label>
+                    <input type="text" id="excrement_status" name="excrement_status" class="w-full border rounded p-2">
+                </div>
+
+                <div class="flex justify-between">
+                    <button type="submit" id="submit" class="bg-blue-500 text-white px-6 py-2 rounded">수정</button>
+                    <button type="button" id="deleteRecord" class="bg-red-500 text-white px-6 py-2 rounded">삭제</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+</div>
+
+<script src="../../static/js/dailycare/healtcare_update.js" defer></script>
+{% endblock %}

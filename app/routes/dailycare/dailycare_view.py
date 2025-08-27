@@ -1,4 +1,5 @@
-from flask import Flask, Blueprint, jsonify, render_template
+from flask import Flask, Blueprint, jsonify, render_template,request
+from app.services.dailycare.healthcare_service import HealthCareService
 
 dailycare_bp = Blueprint('dailycare_bp', __name__)
 # 데일리케어페이지
@@ -18,7 +19,20 @@ def get_medication_history():
 # 건강기록 모아보기 ('기록보기')
 @dailycare_bp.route('/health-history')
 def get_healthcare_history():
-    return render_template('dailycare/healthcare_history.html')
+    care_id = request.args.get('care_id')  # URL에서 ?care_id=값 가져오기
+    if care_id:
+        record = HealthCareService.get_health_record_by_id(care_id)
+        return render_template(
+            'dailycare/healthcare_detail.html', record =record
+        )
+    else:
+        return render_template('dailycare/healthcare_history.html')
+
+@dailycare_bp.route('/update/health-care')
+def getUpdateHealthcare():
+    care_id = request.args.get('care_id')
+    return render_template('dailycare/healthcare_edit.html', care_id = care_id)
+
 
 # Todo 전체 리스트
 @dailycare_bp.route('/todo')

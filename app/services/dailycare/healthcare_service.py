@@ -21,15 +21,56 @@ class HealthCareService:
             return HealthCare.query.filter_by(pet_id=pet_id).order_by(HealthCare.created_at.desc()).all()
 
         @staticmethod
-        def get_health_record_by_id(care_id: int, pet_id: int = None):
-            """특정 care_id 조회, 필요 시 pet_id 체크"""
+        def get_health_record_by_id(care_id: int):
+            """특정 care_id 조회"""
+            return HealthCare.query.get(care_id)
+
+        @staticmethod
+        def update_health_record(care_id: int, **kwargs):
+            """특정 care_id 기록 갱신 + 연관 약물 처리"""
             record = HealthCare.query.get(care_id)
             if not record:
                 return None
-            if pet_id is not None and record.pet_id != pet_id:
-                return None
+
+            # 문자열 datetime을 datetime 객체로 변환
+            for key in ['updated_at', 'created_at']:
+                if key in kwargs and isinstance(kwargs[key], str):
+                    kwargs[key] = datetime.fromisoformat(kwargs[key])
+
+            # HealthCare 필드 업데이트
+            for key, value in kwargs.items():
+                if hasattr(record, key) and key != 'medication_id':
+                    setattr(record, key, value)
+
+            # Medication 업데이트
+            medication_id = kwargs.get('medication_id')
+            if medication_id:
+                med = HealthCareMedication.query.get(medication_id)
+                if med:
+                    med.record_id = record.care_id
+                    med.updated_at = datetime.now()
+                    db.session.add(med)
+
+            db.session.commit()
             return record
-      
+
+        @staticmethod
+        def delete_health_record(care_id: int):
+            """특정 care_id 기록 삭제 + 연관 약물 처리"""
+            record = HealthCare.query.get(care_id)
+            if not record:
+                return None
+
+            # 연관된 Medication 처리: record_id 제거
+            medications = HealthCareMedication.query.filter_by(record_id=record.care_id).all()
+            for med in medications:
+                db.session.delete(med)
+
+            # HealthCare 삭제
+            db.session.delete(record)
+            db.session.commit()
+            return True
+    
         @staticmethod
         def link_medications(care_id, medication_ids):
             for med_id in medication_ids:
@@ -72,6 +113,7 @@ class HealthCareService:
             for key, value in kwargs.items():
                 setattr(record, key, value)
             return record.save  
+        
         @staticmethod
         def delete_todo_record(todo_id: int):
             """특정 todo_id 기록 삭제"""

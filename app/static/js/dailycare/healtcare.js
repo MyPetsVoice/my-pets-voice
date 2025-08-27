@@ -1,14 +1,25 @@
-document.addEventListener('DOMContentLoaded', ()=>{
-    const pet_id = localStorage.getItem("currentPetId");
-    console.log('petId : ',pet_id)
-    if(!pet_id){
-        alert('펫 정보가 존재하지 않습니다')
-        return
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    const history = document.getElementById("history");
+    if (!history) return;
 
-    getAllHealthcareLog(pet_id)
-    getPetInfo(pet_id)
-})
+    // 이벤트 위임
+    history.addEventListener("click", (e) => {
+        const card = e.target.closest(".card-hover");
+        if (!card) return;
+        const care_id = card.dataset.careId;
+        window.location.href = `/dailycare/health-history?care_id=${care_id}`;
+    });
+
+    const pet_id = localStorage.getItem("currentPetId");
+    console.log('petId : ', pet_id)
+    if (!pet_id) {
+        alert('펫 정보가 존재하지 않습니다');
+        return;
+    }
+    getAllHealthcareLog(pet_id);
+    getPetInfo(pet_id);
+});
+
 
 async function getPetInfo(pet_id){
   // 개별 펫 조회
@@ -52,7 +63,7 @@ async function getPetInfo(pet_id){
 }
 
 async function getAllHealthcareLog(pet_id) {
-    const response  = await fetch(`/api/dailycares/healthcare/${pet_id}`)
+    const response  = await fetch(`/api/dailycares/healthcare/pet/${pet_id}`)
     const data = await response.json()
     console.log(data)
     if(data.length > 0 ){
@@ -61,7 +72,7 @@ async function getAllHealthcareLog(pet_id) {
             const result = document.createElement('div')
             result.style.marginBottom = "15px";
             result.innerHTML = `
-              <div class="card-hover bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-200">
+              <div id='health_info' data-care-id="${i.care_id}" class="card-hover bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-200">
                                 <div class="flex items-center mb-4">
                                     <div class="bg-yellow-100 p-3 rounded-full">
                                         <span class="text-2xl">📊</span>
@@ -111,6 +122,9 @@ async function getAllHealthcareLog(pet_id) {
             
             
         });
+
     }
 }
+
+
 

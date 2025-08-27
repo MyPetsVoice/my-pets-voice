@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}반려동물의 목소리가 들려 - 의료기록{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="../../static/css/dailycare/healtcare_history.css">
+<div class="pet" data-pet-id="{{record.pet_id}}"></div>
+
+<div class="bg-gray-50 min-h-screen">
+    <section class="gradient-hero py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl font-bold text-white mb-4">🐾 건강 기록 상세</h1>
+            <p class="text-xl text-white opacity-90 mb-8">반려동물의 건강 기록을 확인하세요</p>
+        </div>
+    </section>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden p-6">
+                    <div class="card-hover bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-200">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-yellow-100 p-3 rounded-full">
+                                <span class="text-2xl">📊</span>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="font-semibold text-gray-800">건강기록</h3>
+                                <p class="text-sm text-gray-600">음식, 운동, 배변 등 상세 정보</p>
+                            </div>
+                        </div>
+
+                        <!-- Record Details -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-gray-800">{{ record.weight_kg }}kg</div>
+                                <div class="text-sm text-gray-600">체중</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-gray-800">{{ record.water }}ml</div>
+                                <div class="text-sm text-gray-600">수분 섭취</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-gray-800">{{ record.food }}g</div>
+                                <div class="text-sm text-gray-600">사료량</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-gray-800">{{ record.walk_time_minutes }}분</div>
+                                <div class="text-sm text-gray-600">산책 시간</div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-yellow-200">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm text-gray-500">배변 상태</span>
+                                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                                    <i class="fas fa-check-circle mr-1"></i>{{ record.excrement_status }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500">기록 일시</span>
+                                <span class="text-sm text-gray-600">{{ record.updated_at }}</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-yellow-200 mt-4 text-sm text-gray-500">
+                            <p>기록 ID: {{ record.care_id }}</p>
+                            <p>생성일: {{ record.created_at }}</p>
+                            {% if record.medication_id %}
+                                <p>복용 약물 ID: {{ record.medication_id }}</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- 수정 / 삭제 버튼 -->
+                        <div class="mt-4 flex space-x-4">
+                            <button id="edit-btn" data-care-id="{{ record.care_id }}"
+                                class="w-1/2 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-xl font-medium transition-all">
+                                <i class="fas fa-edit mr-2"></i>수정
+                            </button>
+                            <button id="delete-btn" data-care-id="{{ record.care_id }}"
+                                class="w-1/2 bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-medium transition-all">
+                                <i class="fas fa-trash mr-2"></i>삭제
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Section - AI Health Consultant -->
+            <div class="lg:col-span-1">
+                <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-6 text-white sticky top-6">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-white bg-opacity-20 p-3 rounded-full">
+                            <span class="text-2xl">🤖</span>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="font-semibold">AI 건강상담</h3>
+                        </div>
+                    </div>
+                    
+                    <p class="text-purple-100 mb-6">반려동물 전문 AI가 24시간 상담해드려요</p>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                            <h4 class="font-medium mb-2">오늘의 건강 팁 💡</h4>
+                            <p class="text-sm text-purple-100">산책 시간을 조금 더 늘려보세요. 푸들은 활발한 견종이라 더 많은 운동이 도움됩니다.</p>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm border border-white border-opacity-30 text-white py-3 rounded-xl font-medium transition-all">
+                        <i class="fas fa-comments mr-2"></i>AI 상담 시작하기
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="../../static/js/dailycare/healtcare_detail.js"></script>
+{% endblock %}
