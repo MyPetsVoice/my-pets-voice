@@ -241,7 +241,7 @@ class ChatService:
             }
         
     # 특정 세션의 메모리 초기화
-    def clear_meemory(self, session_key):
+    def clear_memory(self, session_key):
         if session_key in self.memories:
             self.memories[session_key].clear()
             logger.info(f'메모리 초기화 완료 - Session: {session_key}')
