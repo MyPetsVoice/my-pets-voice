@@ -24,23 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 반려동물 등록 모달 열기 및 동물 종류 데이터 가져오기
     addPetBtn.addEventListener('click', async () => {
-        petModal.classList.remove('hidden');
-        petModal.querySelector('.bg-white').classList.add('modal-enter');
-        
-        const response = await fetch('/api/species/')
-        const data = await response.json()
-        
-        petSpecies.innerHTML = ''
-        const opt = document.createElement('option')
-        opt.textContent = '동물을 선택하세요.'
-        petSpecies.appendChild(opt)
-        
-        data.data.forEach((species) => {
-            const opt = document.createElement('option')
-            opt.textContent = species.species_name
-            opt.value = species.species_id
-            petSpecies.appendChild(opt)
-        })
+        showPetModal();
     });
     
     // 반려동물 등록 모달 닫기
@@ -62,10 +46,19 @@ document.addEventListener('DOMContentLoaded', function() {
         viewPetModal.classList.add('hidden');
     });
     
-    // 페르소나 모달 열기??????
+    // 반려동물 등록 모달 열어서 수정
+    editPetBtn.addEventListener('click', () => {
+
+    })
+
+    // 반려동물 삭제
+    deletePetBtn.addEventListener('click', async(e) => {
+        //
+        const petId = e.target.
+    })
+
     // 프로필 모달에서 페르소나 생성 버튼 클릭
-    createPersonaBtn.addEventListener('click', async (e) => {
-        
+    createPersonaBtn.addEventListener('click', async (e) => {        
         const petModal = e.target.closest('[data-current-pet-id]') // 펫 프로필 모달창... 여기서 펫 아이디 가져와야할 듯.
         console.log(petModal.dataset.currentPetId)
         addPersonaForm.dataset.currentPetId = petModal.dataset.currentPetId
@@ -150,8 +143,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // 폼 리셋
             e.target.reset()
         }
-
     })
+
     
     addPersonaForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -186,14 +179,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // 폼 리셋
             e.target.reset()
         }
-
-
-
-
-
-
-
-
     })
 
     // 기존 성격 태그 클릭 효과는 동적 렌더링에서 처리됩니다
@@ -214,76 +199,172 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 
     getPetInfo()
-
 });
 
+/////////////////////////////함수/////////////////////////////////
 
-// 반려동물 프로필 렌더링
+// 반려동물 등록/수정 모달창 여는 함수
+async function showPetModal() {
+    petModal.classList.remove('hidden');
+        petModal.querySelector('.bg-white').classList.add('modal-enter');
+        
+        const response = await fetch('/api/species/')
+        const data = await response.json()
+        
+        petSpecies.innerHTML = ''
+        const opt = document.createElement('option')
+        opt.textContent = '동물을 선택하세요.'
+        petSpecies.appendChild(opt)
+        
+        data.data.forEach((species) => {
+            const opt = document.createElement('option')
+            opt.textContent = species.species_name
+            opt.value = species.species_id
+            petSpecies.appendChild(opt)
+        })
+}
+
+// 반려동물 프로필 렌더링 (성능 최적화)
 async function getPetInfo() {
-    const response = await fetch('/api/pets')
-    const data = await response.json()
-
-    console.log(data)
-    renderPetsProfile(data)
+    // 로딩 인디케이터 표시
+    showLoadingState();
     
+    try {
+        const response = await fetch('/api/pets');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log(data);
+        
+        
+        // 비동기 렌더링으로 UI 블로킹 방지
+        requestAnimationFrame(() => {
+            renderPetsProfile(data);
+            hideLoadingState();
+        });
+        
+    } catch (error) {
+        console.error('펫 정보 로딩 실패:', error);
+        showErrorState();
+    }
+}
+
+// 로딩 상태 표시
+function showLoadingState() {
+    const petProfile = document.getElementById('pet-profile-grid');
+    petProfile.innerHTML = `
+        <div class="col-span-full flex items-center justify-center py-12">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+                <p class="text-gray-600">반려동물 정보를 불러오는 중...</p>
+            </div>
+        </div>
+    `;
+}
+
+// 에러 상태 표시
+function showErrorState() {
+    const petProfile = document.getElementById('pet-profile-grid');
+    petProfile.innerHTML = `
+        <div class="col-span-full flex items-center justify-center py-12">
+            <div class="text-center">
+                <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+                <p class="text-gray-600">펫 정보를 불러오는 중 오류가 발생했습니다.</p>
+                <button onclick="getPetInfo()" class="mt-4 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600">
+                    다시 시도
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// 로딩 상태 숨김
+function hideLoadingState() {
+    // 필요시 추가 로직
 }
 
 function renderPetsProfile(data) {
-    const petProfile = document.getElementById('pet-profile-grid')
-    petProfile.innerHTML = ''
+    const petProfile = document.getElementById('pet-profile-grid');
     
-    for (let pet of data) {
-        // console.log(pet)
-
-        const div1 = document.createElement('div')
-        div1.className = "bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all cursor-pointer"
-        div1.dataset.petId = pet.pet_id
-        
-        // 프로필 이미지/아이콘
-        const div2 = document.createElement('div')
-        div2.className = "w-16 h-16 bg-gradient-to-r from-primary-100 to-secondary-100 rounded-full mx-auto mb-4 flex items-center justify-center"
-        
-        if (pet.profile_image_url && pet.profile_image_url.trim() !== '') {
-            const img = document.createElement('img')
-            img.src = pet.profile_image_url
-            img.alt = pet.pet_name + ' 프로필'
-            img.className = "w-full h-full rounded-full object-cover"
-            div2.appendChild(img)
-        } else {
-            const icon = document.createElement('i')
-            icon.className = "fa-solid fa-paw fa-2xl"
-            icon.style.color = "#FFD43B"
-            div2.appendChild(icon)
-        }
-        div1.appendChild(div2)
-
-        const p = document.createElement('p')
-        p.textContent = pet.pet_name
-        p.className = "text-gray-700 font-medium"
-        div1.appendChild(p)
-
-        const p2 = document.createElement('p')
-        p2.textContent = `${pet.species_name || '알 수 없음'}`
-        p2.className = "text-sm text-gray-500"
-        div1.appendChild(p2)
-
-        // 클릭 이벤트는 이벤트 위임으로 처리
-
-        petProfile.appendChild(div1)
-    }
-
-    // 반려동물이 없을 때 빈 카드 추가
-    if (data.length === 0) {
-        const emptyDiv = document.createElement('div')
-        emptyDiv.className = "bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all"
-        emptyDiv.innerHTML = `
-            <div class="w-16 h-16 bg-gradient-to-r from-primary-100 to-secondary-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <i class="fas fa-plus text-2xl text-primary-600"></i>
+    // 빈 상태 처리
+    if (!data || data.length === 0) {
+        petProfile.innerHTML = `
+            <div class="col-span-full flex items-center justify-center py-12">
+                <div class="text-center">
+                    <i class="fas fa-heart text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">등록된 반려동물이 없습니다</h3>
+                    <p class="text-gray-500 mb-6">새로운 반려동물을 등록해보세요!</p>
+                    <button id="add-pet-btn-empty" class="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600">
+                        반려동물 등록하기
+                    </button>
+                </div>
             </div>
-            <p class="text-gray-500">첫 번째 반려동물을 등록해보세요</p>
-        `
-        petProfile.appendChild(emptyDiv)
+        `;
+        return;
     }
+    
+    // DocumentFragment 사용으로 DOM 조작 최적화
+    const fragment = document.createDocumentFragment();
+    
+    // 배치 처리로 렌더링 최적화
+    data.forEach((pet, index) => {
+        const petCard = createPetCard(pet);
+        fragment.appendChild(petCard);
+    });
+    
+    // 한 번에 DOM에 추가
+    petProfile.innerHTML = '';
+    petProfile.appendChild(fragment);
+}
+
+// 펫 카드 생성 함수 (재사용성 개선)
+function createPetCard(pet) {
+    const div1 = document.createElement('div');
+    div1.className = "bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all cursor-pointer transform hover:scale-105";
+    div1.dataset.petId = pet.pet_id;
+    
+    // 프로필 이미지/아이콘
+    const avatarDiv = document.createElement('div');
+    avatarDiv.className = "w-16 h-16 bg-gradient-to-r from-primary-100 to-secondary-100 rounded-full mx-auto mb-4 flex items-center justify-center";
+    
+    if (pet.profile_image_url && pet.profile_image_url.trim() !== '') {
+        const img = document.createElement('img');
+        img.src = pet.profile_image_url;
+        img.alt = `${pet.pet_name} 프로필`;
+        img.className = "w-full h-full rounded-full object-cover";
+        img.loading = "lazy"; // 지연 로딩
+        avatarDiv.appendChild(img);
+    } else {
+        avatarDiv.innerHTML = '<i class="fa-solid fa-paw fa-2xl" style="color: #FFD43B"></i>';
+    }
+    
+    // 펫 정보
+    const nameP = document.createElement('p');
+    nameP.textContent = pet.pet_name;
+    nameP.className = "text-gray-700 font-medium mb-1";
+    
+    const speciesP = document.createElement('p');
+    speciesP.textContent = pet.species_name || '알 수 없음';
+    speciesP.className = "text-sm text-gray-500";
+    
+    // 추가 정보 (나이, 품종)
+    if (pet.pet_age || pet.breed_name) {
+        const infoP = document.createElement('p');
+        const ageText = pet.pet_age ? `${pet.pet_age}살` : '';
+        const breedText = pet.breed_name || '';
+        const separator = ageText && breedText ? ' · ' : '';
+        infoP.textContent = ageText + separator + breedText;
+        infoP.className = "text-xs text-gray-400 mt-1";
+        
+        div1.append(avatarDiv, nameP, speciesP, infoP);
+    } else {
+        div1.append(avatarDiv, nameP, speciesP);
+    }
+    
+    return div1;
 }
 
 // 반려동물 프로필 모달 표시
@@ -297,6 +378,7 @@ async function showPetProfile(pet) {
     // 프로필 이미지
     const profileImage = document.getElementById('profile-pet-image')
     const profileIcon = document.getElementById('profile-pet-icon')
+
     if (pet.profile_image_url && pet.profile_image_url.trim() !== '') {
         profileImage.src = pet.profile_image_url
         profileImage.classList.remove('hidden')
@@ -319,9 +401,7 @@ async function showPetProfile(pet) {
     
     // 페르소나 상태 (향후 확장)
     const data = await getPersonaInfo(pet.pet_id)
-    renderPersona(data)
-
-    
+    renderPersona(data)    
     
     // 현재 선택된 펫 ID 저장 (추후 사용)
     viewPetModal.dataset.currentPetId = pet.pet_id
@@ -354,6 +434,8 @@ function renderPersona(data) {
                 <p class="text-gray-600">${data.message}</p>
             </div>
         `
+        toggleCreatePersonaBtn(true)
+        
     } else {
         // 페르소나가 있는 경우
         const persona = data.pet_persona
@@ -400,11 +482,11 @@ function renderPersona(data) {
                 infoRow.innerHTML = `
                     <span class="text-gray-600 font-medium min-w-[80px]">${label}:</span>
                     <span class="text-gray-800 text-right flex-1 ml-2">${value}</span>
-                `
-                infoGrid.appendChild(infoRow)
+                    `
+                    infoGrid.appendChild(infoRow)
+                }
             }
-        }
-        
+            
         infoSection.appendChild(infoGrid)
         container.appendChild(infoSection)
         
@@ -436,20 +518,22 @@ function renderPersona(data) {
         const statusBadge = document.createElement('div')
         statusBadge.className = 'text-center'
         statusBadge.innerHTML = `
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                <i class="fas fa-check-circle mr-2"></i>
-                페르소나 생성 완료
-            </span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+        <i class="fas fa-check-circle mr-2"></i>
+        페르소나 생성 완료
+        </span>
         `
         container.appendChild(statusBadge)
         
         personaStatus.appendChild(container)
+
+        // 페르소나 생성 버튼 비활성화
+        // toggleCreatePersonaBtn(false)
     }
 }
 
 // 페르소나 생성 모달 데이터 로드
 async function loadPersonaData() {
-
     try {
         // 말투 스타일과 성격 특성을 병렬로 가져오기
         const [speechStylesResponse, personalityTraitsResponse] = await Promise.all([
@@ -459,9 +543,6 @@ async function loadPersonaData() {
 
         const speechStyles = await speechStylesResponse.json();
         const personalityTraits = await personalityTraitsResponse.json();
-
-        // console.log('Speech Styles:', speechStyles);
-        // console.log('Personality Traits:', personalityTraits);
 
         // 말투 스타일 렌더링
         renderSpeechStyles(speechStyles);
@@ -624,13 +705,6 @@ function renderPersonalityTraits(personalityTraits) {
         tag.addEventListener('click', function() {
             const checkbox = this.querySelector('input[type="checkbox"]');
             const span = this.querySelector('span');
-            
-            // console.log('클릭된 태그:', span.textContent);
-            // console.log('저장된 색상 데이터:', {
-            //     bgColor: span.dataset.bgColor,
-            //     textColor: span.dataset.textColor,
-            //     borderColor: span.dataset.borderColor
-            // });
             
             checkbox.checked = !checkbox.checked;
             

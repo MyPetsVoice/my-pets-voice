@@ -1,5 +1,6 @@
 from app.models import db
 from app.models.base import BaseModel
+from sqlalchemy.orm import joinedload
 import logging
 
 logger = logging.getLogger(__name__)
@@ -23,6 +24,9 @@ class Pet(BaseModel):
     species = db.relationship('PetSpecies', backref='pets', lazy='joined')
     breeds = db.relationship('PetBreed', backref='pets', lazy='joined')
     
+    # PetPersona와의 관계 - Pet 삭제시 PetPersona도 함께 삭제
+    persona = db.relationship('PetPersona', backref='pet', cascade='all, delete-orphan', uselist=False)
+    
     def __repr__(self):
         return f'<Pet {self.pet_name}>'
     
@@ -32,7 +36,11 @@ class Pet(BaseModel):
     
     @classmethod
     def find_pets_by_user_id(cls, user_id):
-        return cls.query.filter_by(user_id=user_id).all()
+        # N+1 쿼리 문제 해결: 관련 데이터를 한 번에 조회
+        return cls.query.filter_by(user_id=user_id).options(
+            joinedload(cls.species),
+            joinedload(cls.breeds)
+        ).all()
     
     @classmethod
     def find_pet_by_pet_id(cls, pet_id):

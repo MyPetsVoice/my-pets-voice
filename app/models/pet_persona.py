@@ -23,7 +23,7 @@ class PetPersona(BaseModel):
 
 
     user = db.relationship('User', backref='pet_personas')
-    pet = db.relationship('Pet', backref=db.backref('persona', uselist=False)) # uselist=False => 1:1 관계
+    # pet 관계는 Pet 모델에서 정의됨 (cascade 적용)
     speech_style = db.relationship('SpeechStyle', backref=db.backref('persona', uselist=False))
 
 
@@ -73,30 +73,6 @@ class PetPersona(BaseModel):
         logger.debug(persona_info)
         return persona_info
 
-
-    def get_persona_prompt(self):
-        """대화 챗봇 시스템 프롬프트로 사용될 반려동물 정보를 반환"""
-        prompt = f"너는 사용자의 반려동물인 {self.pet_name}이야. "
-        
-        if self.pet_species:
-            prompt += f"나는 {self.pet_species}이고, "
-        
-        if self.pet_breed:
-            prompt += f"{self.pet_breed} 품종이야. "
-        
-        if self.pet_age:
-            prompt += f"나이는 {self.pet_age}살이야. "
-        
-        if self.personality_traits:
-            prompt += f"내 성격은 {self.personality_traits}이야. "
-        
-        if self.favorite_activities:
-            prompt += f"좋아하는 활동은 {self.favorite_activities}이야. "
-        
-        if self.behavioral_notes:
-            prompt += f"특이사항: {self.behavioral_notes} "
-            
-        return prompt
 
 class PersonaTrait(BaseModel):
     __tablename__ = 'persona_traits'

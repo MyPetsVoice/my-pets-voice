@@ -93,6 +93,11 @@ def get_pet_profile(pet_id):
     else:
         return jsonify({'error': 'Pet not found'}), 404
 
+@mypage_api_bp.route('/delete-pet/<pet_id>', methods=['DELETE'])
+def delete_pet(pet_id):
+    
+    return
+
 
 # 페르소나 생성 관련 엔드포인트
 # 1. 말투 데이터 가져오기
