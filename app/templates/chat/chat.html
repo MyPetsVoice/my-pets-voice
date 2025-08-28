@@ -5,7 +5,7 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/chat/chat.css')}}">
 
-<div class="bg-gray-50 pb-20">
+<div class="bg-gray-50 pb-20 chat-page">
     <div class="max-w-7xl mx-auto px-4 py-4">
         
         {% if not pets %}
@@ -25,10 +25,10 @@
         
         {% else %}
         <!-- 채팅 화면 -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6" style="height: calc(100vh - 200px); min-height: 600px; max-height: 85vh;">
+        <div class="chat-main-container">
             
             <!-- 사이드바 - 반려동물 선택 및 정보 -->
-            <div class="lg:col-span-1 bg-white rounded-xl shadow-lg p-4 lg:p-5 flex flex-col">
+            <div class="chat-sidebar">
                 
                 <!-- 반려동물 선택 드롭다운 -->
                 <div class="mb-4">
@@ -80,7 +80,7 @@
                     </div>
                     
                     <!-- 페르소나 정보 -->
-                    <div class="flex-1 space-y-4 text-sm">
+                    <div class="pet-info-scroll-area">
                         <div>
                             <h4 class="font-semibold text-gray-700 mb-2">
                                 <i class="fas fa-user text-primary-500 mr-1"></i>
@@ -159,7 +159,7 @@
             </div>
             
             <!-- 채팅 영역 -->
-            <div class="lg:col-span-3 bg-white rounded-xl shadow-lg flex flex-col">
+            <div class="chat-area">
                 <!-- 채팅 헤더 -->
                 <div class="flex items-center justify-between p-4 border-b border-gray-200">
                     <div class="flex items-center">
@@ -177,7 +177,7 @@
                 </div>
                 
                 <!-- 채팅 메시지 영역 -->
-                <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gray-50">
+                <div id="chat-messages" class="chat-messages-container">
                     <div id="welcome-on-boarding" class="text-center py-12">
                         <i class="fas fa-comments text-6xl text-gray-300 mb-4"></i>
                         <h3 id="chat-with-pet" class="text-xl font-bold text-gray-600 mb-2">반려동물과 대화하기</h3>

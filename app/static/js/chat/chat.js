@@ -341,8 +341,8 @@ function addMessage(type, content, senderName = null) {
     messageDiv.appendChild(messageContent);
     chatMessages.appendChild(messageDiv);
     
-    // 스크롤을 맨 아래로
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    // 스크롤을 맨 아래로 부드럽게
+    scrollToBottom();
 }
 
 // 타이핑 인디케이터 표시
@@ -373,7 +373,7 @@ function showTypingIndicator(petName) {
     typingDiv.appendChild(typingContent);
     chatMessages.appendChild(typingDiv);
     
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    scrollToBottom();
 }
 
 // 타이핑 인디케이터 숨기기
@@ -381,6 +381,16 @@ function hideTypingIndicator() {
     const typingIndicator = document.getElementById('typing-indicator');
     if (typingIndicator) {
         typingIndicator.remove();
+    }
+}
+
+// 채팅 메시지 스크롤 함수
+function scrollToBottom() {
+    if (chatMessages) {
+        chatMessages.scrollTo({
+            top: chatMessages.scrollHeight,
+            behavior: 'smooth'
+        });
     }
 }
 
