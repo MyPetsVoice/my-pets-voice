@@ -5,13 +5,15 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('edit_btn').addEventListener('click',()=>{
         updateTodo(todoId)
     })
+    document.getElementById('redirect_btn').addEventListener('click',(e)=>{
+        e.preventDefault()
+        window.location.href =  `/dailycare/todo`
+    })
+
 
 })
 
 async function updateTodo(todo_id) {
-        document.getElementById('redirect_btn').addEventListener('click',()=>{
-        window.location.href =  `/dailycare/todo`
-    })
 
   // 폼에서 값 읽기
   const title = document.getElementById("title").value;
