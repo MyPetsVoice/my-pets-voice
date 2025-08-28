@@ -182,6 +182,7 @@ def save_disease(pet_id):
         symptoms=data.get('symptoms'),
         treatment_details=data.get('treatment_details'),
         hospital_name=data.get('hospital_name'),
+        doctor_name=data.get('doctor_name'),
         medical_cost=data.get('medical_cost'),
         diagnosis_date=diagnosis_date
     )
@@ -235,6 +236,7 @@ def save_surgery(pet_id):
         surgery_date=surgery_date,
         surgery_summary=data.get('surgery_summary'),
         hospital_name=data.get('hospital_name'),
+        doctor_name=data.get('doctor_name'),
         recovery_status=data.get('recovery_status')
     )
     
@@ -287,7 +289,9 @@ def save_vaccination(pet_id):
         vaccination_date=vaccination_date,
         side_effects=data.get('side_effects'),
         hospital_name=data.get('hospital_name'),
-        next_vaccination_date=next_vaccination_date
+        next_vaccination_date=next_vaccination_date,
+        manufacturer=data.get('manufacturer'),  
+        lot_number=data.get('lot_number'),
     )
     
     return jsonify(record.to_dict()), 200

@@ -124,40 +124,41 @@ function closeModal() {
   location.reload();
 }
 
-// 저장 함수 (주석처리)
-// async function saveMedication(pet_id) {
-//   console.log("saveMedication pet_id:", pet_id);
-//   const send_data = {
-//     pet_id: pet_id,
-//     medication_name: document.getElementById("medication_name_input").value,
-//     purpose: document.getElementById("purpose_input").value,
-//     dosage: document.getElementById("dosage_input").value,
-//     frequency: document.getElementById("frequency_option").value,
-//     start_date: document.getElementById("start_date_input").value,
-//     end_date: document.getElementById("end_date_input").value,
-//     side_effects_notes:
-//       document.getElementById("side_effects_notes_input").value || null,
-//     hospital_name: document.getElementById("hospital_name_input").value || null,
-//   };
+async function saveMedication(pet_id) {
+  console.log("saveMedication pet_id:", pet_id);
+  const send_data = {
+    pet_id: pet_id,
+    medication_name: document.getElementById("medication_name_input").value,
+    purpose: document.getElementById("purpose_input").value,
+    dosage: document.getElementById("dosage_input").value,
+    frequency: document.getElementById("frequency_option").value,
+    start_date: document.getElementById("start_date_input").value,
+    end_date: document.getElementById("end_date_input").value,
+    side_effects_notes:
+      document.getElementById("side_effects_notes_input").value || null,
+    hospital_name: document.getElementById("hospital_name_input").value || null,
+  };
 
-//   const response = await fetch(`/api/dailycares/save/medication/${pet_id}`, {
-//     method: "POST",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify(send_data),
-//   });
+  const response = await fetch(`/api/dailycares/save/medication/${pet_id}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(send_data),
+  });
 
-//   if (!response.ok) {
-//     alert("기록 저장에 실패했습니다.");
-//   } else {
-//     console.log("기록 저장 완료");
-//     closeModal();
-//   }
-// }
+  if (!response.ok) {
+    alert("기록 저장에 실패했습니다.");
+  } else {
+    console.log("기록 저장 완료");
+    closeModal();
+  }
+}
 
 // 의료기록 모달 공통 설정 (목록 로드 제거)
 function setupMedicalModal(modalType, pet_id) {
-  // 저장 버튼 이벤트 등록
-  const saveBtn = document.querySelector(".btn-primary");
+  // 모달 안에서만 찾기
+  const modal = document.getElementById("common-modal");
+  const saveBtn = modal.querySelector(".btn-primary");
+
   if (saveBtn) {
     saveBtn.onclick = (e) => {
       e.preventDefault();
@@ -166,7 +167,7 @@ function setupMedicalModal(modalType, pet_id) {
   }
 }
 
-// 공통 의료기록 저장 함수 (목록 새로고침 제거)
+// 공통 의료기록 저장 함수
 async function saveMedicalRecord(modalType, pet_id) {
   console.log(`save${modalType} pet_id:`, pet_id);
 
