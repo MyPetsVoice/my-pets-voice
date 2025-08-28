@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 
 class Disease(BaseModel):
     """질병 이력 관리
-    - 과거/현재 질병명, 증상, 치료 내역, 병원명, 비용, 진단일 기록
+    - 과거/현재 질병명, 증상, 치료 내역, 병원명, 담당 의사, 비용, 진단일 기록
     """
     __tablename__ = 'diseases'
     
@@ -18,6 +18,7 @@ class Disease(BaseModel):
     symptoms = db.Column(Text)                             # 증상
     treatment_details = db.Column(Text)                    # 치료 내역
     hospital_name = db.Column(String(200))                 # 병원명
+    doctor_name = db.Column(String(100))                   # 담당 의사명
     medical_cost = db.Column(DECIMAL(10, 2))               # 진료비
     diagnosis_date = db.Column(Date)                       # 진단일
     

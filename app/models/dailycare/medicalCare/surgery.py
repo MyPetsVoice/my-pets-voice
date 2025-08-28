@@ -18,7 +18,8 @@ class Surgery(BaseModel):
     surgery_name = db.Column(String(200), nullable=False)  # 수술명
     surgery_date = db.Column(Date, nullable=False)         # 수술일
     surgery_summary = db.Column(Text)                      # 수술 요약
-    hospital_name = db.Column(String(200))                 # 병원명
+    hospital_name = db.Column(String(200))                 # 
+    doctor_name = db.Column(String(100))
     recovery_status = db.Column(String(20), nullable=False) # 회복 상태
     
     __table_args__ = (
