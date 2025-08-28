@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Todo 수정 - 반려동물의 목소리가 들려{% endblock %}
+
+{% block content %}
+<div class="todo" data-todo-id="{{todo_id}}"></div>
+<div class="bg-gray-50 min-h-screen py-10">
+
+  <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Todo 수정</h1>
+
+    <form  class="space-y-6">
+      <!-- 제목 -->
+      <div>
+        <label class="block text-gray-700 font-medium mb-1" for="title">제목</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          value="{{ todo.title }}"
+          required
+          class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+        >
+      </div>
+
+      <!-- 설명 -->
+      <div>
+        <label class="block text-gray-700 font-medium mb-1" for="description">설명</label>
+        <textarea
+          id="description"
+          name="description"
+          rows="4"
+          class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+        >{{ todo.description }}</textarea>
+      </div>
+
+      <!-- 상태 -->
+      <div>
+        <label class="block text-gray-700 font-medium mb-1" for="status">상태</label>
+        <select
+          id="status"
+          name="status"
+          class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+        >
+          <option value="미완료" {% if todo.status == '미완료' %}selected{% endif %}>미완료</option>
+          <option value="완료" {% if todo.status == '완료' %}selected{% endif %}>완료</option>
+        </select>
+      </div>
+
+      <!-- 우선순위 -->
+      <div>
+        <label class="block text-gray-700 font-medium mb-1" for="priority">우선순위</label>
+        <select
+          id="priority"
+          name="priority"
+          class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+        >
+          <option value="낮음" {% if todo.priority == '낮음' %}selected{% endif %}>낮음</option>
+          <option value="보통" {% if todo.priority == '보통' %}selected{% endif %}>보통</option>
+          <option value="높음" {% if todo.priority == '높음' %}selected{% endif %}>높음</option>
+        </select>
+      </div>
+
+      <!-- 제출 버튼 -->
+      <div class="flex justify-end space-x-4">
+        <a id="redirect_btn" class="px-4 py-2 bg-gray-300 rounded-xl hover:bg-gray-400 transition">취소</a>
+        <button
+          id="edit_btn"
+          type="submit"
+          class="px-4 py-2 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition"
+        >
+          수정 완료
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+<script src="../../static/js/dailycare/todo_edit.js"></script>
+{% endblock %}

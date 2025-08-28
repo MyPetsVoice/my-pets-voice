@@ -1,10 +1,15 @@
 document.addEventListener('DOMContentLoaded',()=>{
-    const petElement = document.querySelector(".todo");
-    const todoId = petElement.getAttribute("data-todo-id");
+    const todoElement = document.querySelector(".todo");
+    const todoId = todoElement.getAttribute("data-todo-id");
     console.log("todoId : ", todoId); 
     document.getElementById("delete_btn").addEventListener('click',()=>{
         deleteTodo(todoId)
     });
+
+    const editBtn = document.getElementById('editBtn')
+    editBtn.addEventListener('click',()=>{
+        window.location.href = `/dailycare/update/todo?todo_id=${todoId}`
+    })
 })
 
 async function deleteTodo(todo_id){

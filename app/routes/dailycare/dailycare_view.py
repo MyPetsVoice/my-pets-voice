@@ -46,6 +46,16 @@ def get_todo():
         return render_template('dailycare/todo_detail.html', todo = record)
     else:
         return render_template('dailycare/todo_history.html', user = current_user )
+    
+@dailycare_bp.route('/update/todo')
+def editTodo():
+    todo_id = request.args.get('todo_id')
+    print(todo_id)
+    record = HealthCareService.get_todo_record_by_id(todo_id)
+    print(record)
+    return render_template('dailycare/todo_edit.html', todo_id = todo_id, todo = record)
+    
+    
 
 
     
