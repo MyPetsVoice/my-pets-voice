@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session
 from flask_socketio import SocketIO, emit, join_room, leave_room
-from app.services.chat_service import chat_service
+from app.services.chat.chat_service import chat_service
 from app.models import Pet, PetPersona
 import os
 import json
