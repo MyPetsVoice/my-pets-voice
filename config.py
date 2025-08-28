@@ -61,6 +61,10 @@ config = {
 }
 
 def setup_logging(app):
+    # 기존 핸들러 제거 (중복 방지)
+    if app.logger.handlers:
+        app.logger.handlers.clear()
+    
     # 로그 파일 저장
     if not os.path.exists('logs'):
         os.makedirs('logs')
@@ -82,6 +86,9 @@ def setup_logging(app):
     app.logger.setLevel(log_level)
     app.logger.addHandler(file_handler)
     app.logger.addHandler(console_handler)
+    
+    # 상위 로거로 전파 방지 (중복 로그 방지)
+    app.logger.propagate = False
     
     # Werkzeug 로거 레벨 조정 (개발 환경에서 너무 많은 로그 방지)
     if not app.config['DEBUG']:
