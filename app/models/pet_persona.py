@@ -81,7 +81,7 @@ class PersonaTrait(BaseModel):
     pet_persona_id = db.Column(db.Integer, db.ForeignKey('pet_personas.pet_persona_id'), nullable=False)
     trait_id = db.Column(db.Integer, db.ForeignKey('personality_traits.trait_id'), nullable=False)
 
-    persona = db.relationship('PetPersona', backref='persona_traits')
+    persona = db.relationship('PetPersona', backref=db.backref('persona_traits', cascade='all, delete-orphan'))
     personality = db.relationship('PersonalityTrait', backref='persona_traits')
 
     @classmethod

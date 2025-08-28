@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, session
 from app.models import Pet, PetSpecies, PetBreed, PetPersona, SpeechStyle, PersonalityTrait, PersonaTrait
+from datetime import datetime
 import logging
 
 logger = logging.getLogger(__name__)
@@ -20,50 +21,20 @@ def get_breeds_by_species(species_id):
     pet_breeds = PetBreed.get_by_species(species_id)
     breeds = [breed.to_dict() for breed in pet_breeds]
     logger.debug(f'선택된 speices id : {species_id}')
-    logger.debug(f'선택된 종의 품종 : {breeds}')
     return jsonify({'data': breeds})
 
 @mypage_api_bp.route('/add-pet/', methods=['POST'])
 def add_pet():
-    # formdata로 요청 받은 경우
-    # pet_info = request.form
-    # logger.debug(pet_info)
-    # pet_name = request.form.get('pet-name')
-    # pet_species = request.form.get('pet-species')
-    # pet_breed = request.form.get('pet-breed')
-    # pet_age = request.form.get('pet-age')
-    # birthdate = request.form.get('birthdate')
-    # adoption_date = request.form.get('adoption-date')
-    # pet_gender = request.form.get('pet-gender')
-    # is_neutered = request.form.get('is-neutered') == 'on'
-    # profile_img_url = request.form.get('pet-img')
-
-    # json으로 요청 받은 경우
-    logger.debug(f"요청 메서드: {request.method}")
-    logger.debug(f"Content-Type: {request.content_type}")
-    logger.debug(f"요청 데이터 존재 여부: {bool(request.data)}")
-    logger.debug(f"Raw 데이터: {request.data}")
-
     pet_info = request.get_json()
     logger.debug(f'요청받은 json 데이터 : {pet_info}')
 
-    pet_data = {k: v for k, v in pet_info.items() if v != ''}
+    date_fields = {'birthdate', 'adoption_date'}
+    pet_data = {k: datetime.strptime(v, '%Y-%m-%d') if k in date_fields else v for k, v in pet_info.items() if v != ''}
 
     user_id = session.get('user_id')
     logger.debug(f'세션에 저장된 사용자 아이디 : {user_id}')
 
-    new_pet = Pet.create_pet(user_id, 
-                #    pet_name=pet_name,
-                #    pet_species=pet_species,
-                #    pet_breed=pet_breed,
-                #    pet_age=pet_age,
-                #    birthdate=birthdate,
-                #    adoption_date=adoption_date,
-                #    pet_gender=pet_gender,
-                #    is_neutered=is_neutered,
-                #    profile_img_url=profile_img_url
-                **pet_data
-                 )
+    new_pet = Pet.create_pet(user_id, **pet_data)
 
     logger.debug(f'새로 등록된 반려동물 : {new_pet}')
 
@@ -95,8 +66,22 @@ def get_pet_profile(pet_id):
 
 @mypage_api_bp.route('/delete-pet/<pet_id>', methods=['DELETE'])
 def delete_pet(pet_id):
+    pet = Pet.delete_pet_by_pet_id(pet_id)
+    logger.debug(f'삭제된 펫 : {pet}')    
     
-    return
+    return jsonify({'message':'삭제 완료'})
+
+@mypage_api_bp.route('/update-pet/<pet_id>', methods=['PUT'])
+def update_pet(pet_id):
+    pet_info = request.get_json()
+
+    date_fields = {'birthdate', 'adoption_date'}
+    pet_data = {k: datetime.strptime(v, '%Y-%m-%d') if k in date_fields else v for k, v in pet_info.items() if v != ''}
+    
+    pet = Pet.update_pet_by_pet_id(pet_id, pet_data)
+    logger.debug(f'수정된 펫 : {pet}')
+
+    return jsonify({'success': '수정 완료'})
 
 
 # 페르소나 생성 관련 엔드포인트

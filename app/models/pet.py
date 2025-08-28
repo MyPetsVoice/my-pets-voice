@@ -27,6 +27,9 @@ class Pet(BaseModel):
     # PetPersona와의 관계 - Pet 삭제시 PetPersona도 함께 삭제
     persona = db.relationship('PetPersona', backref='pet', cascade='all, delete-orphan', uselist=False)
     
+    # ChatHistory와의 관계 - Pet 삭제시 채팅 기록도 함께 삭제
+    chat_histories = db.relationship('ChatHistory', backref='pet', cascade='all, delete-orphan')
+    
     def __repr__(self):
         return f'<Pet {self.pet_name}>'
     
@@ -46,6 +49,21 @@ class Pet(BaseModel):
     def find_pet_by_pet_id(cls, pet_id):
         pet = cls.query.filter_by(pet_id=pet_id).first()
         return pet.to_dict()
+    
+    @classmethod
+    def delete_pet_by_pet_id(cls, pet_id):
+        pet = cls.query.filter_by(pet_id=pet_id).first()
+        return pet.delete()
+    
+    @classmethod
+    def update_pet_by_pet_id(cls, pet_id, pet_info):
+        pet = cls.query.filter_by(pet_id=pet_id).first()
+        
+        for k, v in pet_info.items():
+            setattr(pet, k, v)
+
+        db.session.commit()
+        return pet
 
     def to_dict(self):
         return {
@@ -98,7 +116,7 @@ class PetBreed(BaseModel):
     breed_name = db.Column(db.String(50))
 
     def __repr__(self):
-        return f'<PetBreed {self.breed_name}'
+        return f'<PetBreed {self.breed_name}>'
     
     @classmethod
     def get_by_species(cls, species_id):

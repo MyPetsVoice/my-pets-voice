@@ -47,21 +47,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // 반려동물 등록 모달 열어서 수정
-    editPetBtn.addEventListener('click', () => {
+    editPetBtn.addEventListener('click', (e) => {
+        console.log(e.target.dataset.currentPetInfo)
+        const petInfo = JSON.parse(e.target.dataset.currentPetInfo)
 
+        viewPetModal.classList.add('hidden')
+        showPetModal(petInfo)
     })
 
     // 반려동물 삭제
-    deletePetBtn.addEventListener('click', async(e) => {
+    deletePetBtn.addEventListener('click', async (e) => {
         //
-        const petId = e.target.
+        const pet = e.target.closest('[data-current-pet-id]')
+        const petId = pet.dataset.currentPetId
+        console.log(petId)
+
+        const response = await fetch(`/api/delete-pet/${petId}`,
+           {method: 'DELETE'}
+        )
+        const data = await response.json()
+
+        console.log(data.message)
+        // 모달 닫고 새로고침
+        viewPetModal.classList.add('hidden')
+        getPetInfo()
     })
 
     // 프로필 모달에서 페르소나 생성 버튼 클릭
     createPersonaBtn.addEventListener('click', async (e) => {        
-        const petModal = e.target.closest('[data-current-pet-id]') // 펫 프로필 모달창... 여기서 펫 아이디 가져와야할 듯.
-        console.log(petModal.dataset.currentPetId)
-        addPersonaForm.dataset.currentPetId = petModal.dataset.currentPetId
+        const petProfile = e.target.closest('[data-current-pet-id]') // 펫 프로필 모달창... 여기서 펫 아이디 가져와야할 듯.
+        console.log(petProfile.dataset.currentPetId)
+        addPersonaForm.dataset.currentPetId = petProfile.dataset.currentPetId
         console.log(addPersonaForm)
 
         viewPetModal.classList.add('hidden');
@@ -128,21 +144,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log('보낼 데이터:', trimedFormData);
 
-        const response = await fetch('/api/add-pet/', {
-            method: 'POST',
-            body: JSON.stringify(trimedFormData),
-            headers: {'Content-Type': 'application/json'}
-        })
+        const saveBtn = document.getElementById('save-pet-btn')
+        let response;
+        if (saveBtn.dataset.mode === 'add') {
+
+            response = await fetch('/api/add-pet/', {
+                method: 'POST',
+                body: JSON.stringify(trimedFormData),
+                headers: {'Content-Type': 'application/json'}
+            })
+        } else {
+            response = await fetch(`/api/update-pet/${saveBtn.dataset.petId}`, {
+                method: 'PUT',
+                body: JSON.stringify(trimedFormData),
+                headers: {'Content-Type': 'application/json'}
+            })
+        }
         const data = await response.json()
         if (data.success) {
             // 모달 닫기
             petModal.classList.add('hidden');
             // 펫 목록 새로고침 또는 동적 추가
-            getPetInfo()
-            
-            // 폼 리셋
-            e.target.reset()
+            getPetInfo();
         }
+        // 폼 리셋
+        e.target.reset();
     })
 
     
@@ -201,27 +227,76 @@ document.addEventListener('DOMContentLoaded', function() {
     getPetInfo()
 });
 
-/////////////////////////////함수/////////////////////////////////
 
 // 반려동물 등록/수정 모달창 여는 함수
-async function showPetModal() {
+async function showPetModal(pet=null) {
+    const petModal = document.getElementById('add-pet-modal');
+    const petName = document.getElementById('pet_name');
+    const petSpecies = document.getElementById('pet_species')
+    const petBreed = document.getElementById('pet_breed')
+    const petAge = document.getElementById('pet_age')
+    const petBirthDate = document.getElementById('birthdate');
+    const petAdoptionDate = document.getElementById('adoption_date');
+    const petGender = document.getElementById('pet_gender')
+    const isNeutered = document.getElementById('is_neutered')
+    // 프로필 이미지는...?
+    const saveBtn = document.getElementById('save-pet-btn')
+
     petModal.classList.remove('hidden');
-        petModal.querySelector('.bg-white').classList.add('modal-enter');
-        
-        const response = await fetch('/api/species/')
+    petModal.querySelector('.bg-white').classList.add('modal-enter');
+    
+    const response = await fetch('/api/species/')
+    const data = await response.json()
+    
+    petSpecies.innerHTML = ''
+    const opt = document.createElement('option')
+    opt.textContent = '동물을 선택하세요.'
+    petSpecies.appendChild(opt)
+    
+    await data.data.forEach((species) => {
+        const opt = document.createElement('option')
+        opt.textContent = species.species_name
+        opt.value = species.species_id
+        petSpecies.appendChild(opt)
+    })
+
+    // 정보 수정의 경우
+    if (pet) {
+        petName.value = pet.pet_name;
+        petSpecies.value = pet.species_id;
+
+        const response = await fetch(`/api/breeds/${pet.species_id}`)
         const data = await response.json()
         
-        petSpecies.innerHTML = ''
-        const opt = document.createElement('option')
-        opt.textContent = '동물을 선택하세요.'
-        petSpecies.appendChild(opt)
-        
-        data.data.forEach((species) => {
+        petBreed.innerHTML = ''
+        await data.data.forEach((breed) => {
+            // console.log(breed)
             const opt = document.createElement('option')
-            opt.textContent = species.species_name
-            opt.value = species.species_id
-            petSpecies.appendChild(opt)
+            opt.textContent = breed.breed_name
+            opt.value = breed.breed_id
+            petBreed.appendChild(opt)
         })
+
+        petBreed.value = pet.breed_id;
+        petAge.value = pet.pet_age;
+        petBirthDate.value = pet.birthdate;
+        petAdoptionDate.value = pet.adoption_date;
+
+        const petGenderInputs = document.querySelectorAll('input[name="pet_gender"]');
+
+        petGenderInputs.forEach(radio => {
+            radio.checked = (radio.value === pet.pet_gender);
+        });
+        if (pet.is_neutered) {
+            isNeutered.checked = true;
+        }
+
+        saveBtn.dataset.mode = 'edit';
+        saveBtn.dataset.petId = pet.pet_id;
+    } else {
+        saveBtn.dataset.mode = 'add'
+        delete saveBtn.dataset.petId;
+    }
 }
 
 // 반려동물 프로필 렌더링 (성능 최적화)
@@ -242,7 +317,7 @@ async function getPetInfo() {
         
         // 비동기 렌더링으로 UI 블로킹 방지
         requestAnimationFrame(() => {
-            renderPetsProfile(data);
+            renderPetCards(data);
             hideLoadingState();
         });
         
@@ -286,7 +361,7 @@ function hideLoadingState() {
     // 필요시 추가 로직
 }
 
-function renderPetsProfile(data) {
+function renderPetCards(data) {
     const petProfile = document.getElementById('pet-profile-grid');
     
     // 빈 상태 처리
@@ -369,6 +444,7 @@ function createPetCard(pet) {
 
 // 반려동물 프로필 모달 표시
 async function showPetProfile(pet) {
+    console.log('프로필에 표시될 펫 정보 : ', pet)
     const viewPetModal = document.getElementById('view-pet-modal')
     
     // 프로필 정보 업데이트
@@ -405,6 +481,9 @@ async function showPetProfile(pet) {
     
     // 현재 선택된 펫 ID 저장 (추후 사용)
     viewPetModal.dataset.currentPetId = pet.pet_id
+
+    const editBtn = document.getElementById('edit-pet-btn')
+    editBtn.dataset.currentPetInfo = JSON.stringify(pet)
     
     // 모달 표시
     viewPetModal.classList.remove('hidden')
@@ -415,14 +494,12 @@ async function showPetProfile(pet) {
 async function getPersonaInfo(petId) {
     const response = await fetch(`/api/get-persona/${petId}`)
     const data = await response.json()
-    console.log(data)
-    console.log(data.pet_persona)
+    console.log('페르소나 정보 : ', data)
     return data
 }
 
 // 페르소나 정보 렌더링
 function renderPersona(data) {
-    console.log('render persona')
     const personaStatus = document.getElementById('persona-status')
     personaStatus.innerHTML = ''
     
@@ -434,7 +511,6 @@ function renderPersona(data) {
                 <p class="text-gray-600">${data.message}</p>
             </div>
         `
-        toggleCreatePersonaBtn(true)
         
     } else {
         // 페르소나가 있는 경우
