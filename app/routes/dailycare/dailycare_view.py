@@ -38,7 +38,17 @@ def getUpdateHealthcare():
 @dailycare_bp.route('/todo')
 def get_todo():
     current_user = 1 #임시 나중에 로그인한 user가져오는 거 할거임
-    return render_template('dailycare/todo_history.html', user = current_user )
+    todo_id = request.args.get('todo_id')
+    print(todo_id)
+    if todo_id:
+        record = HealthCareService.get_todo_record_by_id(todo_id)
+        print(record)
+        return render_template('dailycare/todo_detail.html', todo = record)
+    else:
+        return render_template('dailycare/todo_history.html', user = current_user )
+
+
+    
  
 
 

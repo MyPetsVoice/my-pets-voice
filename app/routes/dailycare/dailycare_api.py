@@ -224,3 +224,12 @@ def updateTodo(todo_id):
   HealthCareService.update_todo_record(todo_id, **data)
   return jsonify('성공'),200
   
+@dailycare_api_bp.route('/todo/<todo_id>', methods= ['DELETE'])
+def deleteTodo(todo_id):
+    data = HealthCareService.delete_todo_record(todo_id)
+    if not data:
+        return jsonify({"error": "Health record not found"}), 404
+    return jsonify({"message": "Todo record deleted successfully"}), 200
+
+
+    

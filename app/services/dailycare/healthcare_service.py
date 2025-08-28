@@ -96,8 +96,9 @@ class HealthCareService:
         
         @staticmethod
         def get_todo_record_by_id(todo_id: int, user_id: int = None):
-            """특정 todo_id 조회, 필요 시 pet_id 체크"""
+            """특정 todo_id 조회, 필요 시 user_id 체크"""
             record = TodoList.query.get(todo_id)
+            print(record)
             if not record:
                 return None
             if user_id is not None and record.user_id != user_id:

@@ -21,6 +21,7 @@ async function allTodoLog(user_id) {
     const response = await fetch(`/api/dailycares/todo/all/${user_id}`);
     if (!response.ok) throw new Error("Todo 데이터를 가져오지 못했습니다.");
     allTodos = await response.json();
+    console.log(allTodos)
 
     renderTodos(allTodos);
     updateStatistics(allTodos);
@@ -65,7 +66,12 @@ function renderTodos(todos) {
       </div>
     `;
 
+    card.addEventListener('click', ()=>{
+      window.location.href = `/dailycare/todo?todo_id=${todo.todo_id}`
+    })
+
     todoListDiv.appendChild(card);
+
   });
 }
 
