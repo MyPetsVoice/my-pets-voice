@@ -32,10 +32,19 @@ class Config:
 
     @classmethod
     def validate(cls):
+        # 필수 값 있는지 확인
         required_vars = {
             'SESSION_SECRET_KEY': cls.SECRET_KEY,
-            'D'
+            'DATABASE_URL': cls.SQLALCHEMY_DATABASE_URI,
+            'OPENAI_API_KEY': cls.OPENAI_API_KEY,
+            'KAKAO_REST_API_KEY': cls.KAKAO_REST_API_KEY,
+            'KAKAO_CLIENT_SECRET': cls.KAKAO_CLIENT_SECRET,
+            'KAKAO_REDIRECT_URI': cls.KAKAO_REDIRECT_URI
         }
+        missing = [key for key, value in required_vars.items() if not value]
+        if missing:
+            raise ValueError(f"필수 환경변수가 설정되지 않았습니다.: {', '.join(missing)}")
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
