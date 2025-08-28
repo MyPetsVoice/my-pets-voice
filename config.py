@@ -6,10 +6,10 @@ load_dotenv()
 
 class Config:
     # 세션 설정
-    SECRET_KEY = os.getenv('SESSION_SECRET_KEY', 'your-secret-key-here')
+    SECRET_KEY = os.getenv('SESSION_SECRET_KEY')
     
     # 데이터베이스 설정
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///mypetsvoice.db')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # OpenAI API 설정
@@ -19,9 +19,8 @@ class Config:
     KAKAO_REST_API_KEY = os.getenv('KAKAO_REST_API_KEY')
     KAKAO_CLIENT_SECRET = os.getenv('KAKAO_CLIENT_SECRET')
     KAKAO_REDIRECT_URI = os.getenv('KAKAO_REDIRECT_URI')
-
-    KAPI_HOST = "https://kapi.kakao.com"
-    KAUTH_HOST = "https://kauth.kakao.com"
+    KAPI_HOST = os.getenv('KAPI_HOST')
+    KAUTH_HOST = os.getenv('KAUTH_HOST')
     
     # 로깅 모듈 설정
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
@@ -30,6 +29,13 @@ class Config:
     
     # 디버깅 모드
     DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+
+    @classmethod
+    def validate(cls):
+        required_vars = {
+            'SESSION_SECRET_KEY': cls.SECRET_KEY,
+            'D'
+        }
 
 class DevelopmentConfig(Config):
     DEBUG = True
