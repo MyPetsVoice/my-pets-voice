@@ -72,7 +72,7 @@ class ChatService:
         owner_call = pet_info.get('user_call', '주인')
         
         # 성격 및 특성 (세션 데이터 구조에 맞춤)
-        personality = ', '.join(pet_info.get('traits', [])) if pet_info.get('traits') else '귀여운'
+        personality = ','.join([trait['trait_name'] for trait in pet_info.get('traits')])
         speech_style = pet_info.get('style_name', '다정한 말투')
         likes = pet_info.get('likes', '')
         dislikes = pet_info.get('dislikes', '')
