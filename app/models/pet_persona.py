@@ -81,7 +81,7 @@ class PetPersona(BaseModel):
         logger.debug(f'말투 : {speech_style_name} ')
 
         persona_info = persona
-        persona_info['traits'] = traits
+        persona_info['traits'] = [trait['trait_name'] for trait in traits]
         persona_info['style_name'] = speech_style_name
 
         logger.debug(persona_info)
