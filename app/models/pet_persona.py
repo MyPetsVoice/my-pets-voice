@@ -36,6 +36,20 @@ class PetPersona(BaseModel):
         if existing:
             raise ValueError(f'Pet Id {pet_id}에 대한 페르소나가 이미 존재합니다.')
         return cls.create(pet_id=pet_id, user_id=user_id, **kwargs)
+    
+    @classmethod
+    def update_persona(cls, pet_id, persona_info):
+        # 객체를 가져와야 함 (딕셔너리가 아니라)
+        persona = cls.query.filter_by(pet_id=pet_id).first()
+        
+        if not persona:
+            raise ValueError(f'Pet Id {pet_id}에 대한 페르소나를 찾을 수 없습니다.')
+
+        for k, v in persona_info.items():
+            setattr(persona, k, v)
+
+        db.session.commit()
+        return persona
 
     @classmethod
     def find_persona_by_pet_id(cls, pet_id):
@@ -67,7 +81,7 @@ class PetPersona(BaseModel):
         logger.debug(f'말투 : {speech_style_name} ')
 
         persona_info = persona
-        persona_info['traits'] = [trait['trait_name'] for trait in traits]
+        persona_info['traits'] = traits
         persona_info['style_name'] = speech_style_name
 
         logger.debug(persona_info)
@@ -93,6 +107,17 @@ class PersonaTrait(BaseModel):
             created.append(trait)
         return created
     
+    @classmethod
+    def update_traits(cls, persona_id, trait_ids):
+        # 페르소나 아이디에 해당하는거 싹 다 지우고, 새로 싹 다 삽입
+        traits = cls.query.filter_by(pet_persona_id=persona_id).all()
+
+        for trait in traits:
+            cls.delete(trait)
+            
+        updated = cls.create_persona_trait(persona_id, trait_ids)
+        return updated
+
     @classmethod
     def find_by_persona_id(cls, pet_persona_id):
         traits = cls.query.filter_by(pet_persona_id=pet_persona_id).all()

@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 반려동물 등록 모달 열기 및 동물 종류 데이터 가져오기
     addPetBtn.addEventListener('click', async () => {
-        showPetModal();
+        showAddPetModal();
     });
     
     // 반려동물 등록 모달 닫기
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const petInfo = JSON.parse(e.target.dataset.currentPetInfo)
 
         viewPetModal.classList.add('hidden')
-        showPetModal(petInfo)
+        showAddPetModal(petInfo)
     })
 
     // 반려동물 삭제
@@ -74,9 +74,22 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 
     // 프로필 모달에서 페르소나 생성 버튼 클릭
-    createPersonaBtn.addEventListener('click', async (e) => {        
+    createPersonaBtn.addEventListener('click', async (e) => {  
+        // dataset의 데이터에 따라 페르소나 생성 또는 수정으로 분기
+        const mode = e.currentTarget.dataset.mode
+        let personaData;
+        if (mode === 'edit') {
+            personaData = JSON.parse(e.currentTarget.dataset.persona)
+            addPersonaForm.dataset.mode = 'edit';
+        } else {
+            delete personaData;
+            addPersonaForm.dataset.mode = 'add';
+        }
+
+        
         const petProfile = e.target.closest('[data-current-pet-id]') // 펫 프로필 모달창... 여기서 펫 아이디 가져와야할 듯.
         console.log(petProfile.dataset.currentPetId)
+
         addPersonaForm.dataset.currentPetId = petProfile.dataset.currentPetId
         console.log(addPersonaForm)
 
@@ -93,6 +106,94 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 존댓말/반말 태그 클릭 효과 등록
         setupPolitenessTagEvents();
+
+        // 페르소나 수정인 경우
+        if (mode === 'edit') {
+            // DOM 업데이트가 완료될 때까지 기다림
+            requestAnimationFrame(() => {
+            console.log(personaData)
+
+            document.getElementById('user_call').value = personaData.user_call;
+
+            // 존댓말 여부 라디오버튼
+            const politeness = document.querySelectorAll('input[name="politeness"]')
+            console.log(personaData.politeness, typeof(personaData.politeness))
+            politeness.forEach(radio => {
+                if (radio.value == personaData.politeness) {
+                    radio.checked = true;
+                    // 시각적 상태도 함께 업데이트
+                    const span = radio.closest('.politeness-tag').querySelector('span');
+                    span.classList.add('bg-primary-500', 'text-white');
+                    span.classList.remove('bg-white', 'text-primary-500');
+                } else {
+                    radio.checked = false;
+                    // 다른 버튼들은 기본 상태로
+                    const span = radio.closest('.politeness-tag').querySelector('span');
+                    span.classList.remove('bg-primary-500', 'text-white');
+                    span.classList.add('bg-white', 'text-primary-500');
+                }
+            })
+
+            // 말투 스타일
+            const styles = document.querySelectorAll('input[name="style_id"]') // 동적 렌더링... 확인 필요
+            styles.forEach(radio => {
+                if (radio.value == personaData.style_id) {
+                    radio.checked = true;
+                    // 시각적 상태도 함께 업데이트
+                    const span = radio.closest('.speech-style-tag').querySelector('span');
+                    span.style.backgroundColor = span.dataset.bgColor;
+                    span.style.color = '#ffffff';
+                    span.style.borderColor = span.dataset.bgColor;
+                } else {
+                    radio.checked = false;
+                    // 다른 버튼들은 기본 상태로
+                    const span = radio.closest('.speech-style-tag').querySelector('span');
+                    span.style.backgroundColor = '#ffffff';
+                    span.style.color = span.dataset.textColor;
+                    span.style.borderColor = span.dataset.textColor;
+                }
+            })
+
+            document.getElementById('speech_habit').value = personaData.speech_habit;
+            
+            // 성격 특성 (체크박스)
+            const traits = document.querySelectorAll('input[name="trait_id"]')
+            if (personaData.traits && personaData.traits.length > 0) {
+                traits.forEach(checkbox => {
+                    // personaData.traits 배열에서 현재 체크박스의 value와 일치하는 trait_id가 있는지 확인
+                    const isSelected = personaData.traits.some(trait => 
+                        trait.trait_id == parseInt(checkbox.value)
+                    );
+                    
+                    if (isSelected) {
+                        checkbox.checked = true;
+                        // 시각적 상태도 함께 업데이트
+                        const span = checkbox.closest('.personality-tag').querySelector('span');
+                        const bgColor = span.dataset.bgColor || '#FFD43B';
+                        span.style.setProperty('background-color', bgColor, 'important');
+                        span.style.setProperty('color', '#ffffff', 'important');
+                        span.style.setProperty('border-color', bgColor, 'important');
+                    } else {
+                        checkbox.checked = false;
+                        // 선택 해제 상태로
+                        const span = checkbox.closest('.personality-tag').querySelector('span');
+                        const textColor = span.dataset.textColor || '#FFD43B';
+                        span.style.setProperty('background-color', '#ffffff', 'important');
+                        span.style.setProperty('color', textColor, 'important');
+                        span.style.setProperty('border-color', textColor, 'important');
+                    }
+                });
+            }
+
+
+
+            document.getElementById('likes').value = personaData.likes
+            document.getElementById('dislikes').value = personaData.dislikes
+            document.getElementById('habits').value = personaData.habits
+            document.getElementById('family_info').value = personaData.family_info
+            document.getElementById('special_note').value = personaData.special_note
+        })
+        }
     });
 
     // 모달 외부 클릭시 닫기
@@ -176,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         console.log(addPersonaForm.dataset.currentPetId)
         const petId = addPersonaForm.dataset.currentPetId
-
+        const mode = addPersonaForm.dataset.mode
         const formData = new FormData(e.target);
         const trimedFormData = {}
 
@@ -191,19 +292,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log(trimedFormData)
 
-        const response = await fetch(`/api/save-persona/${petId}`,{
+        let response;
+        if (mode === 'add') {
+            response = await fetch(`/api/save-persona/${petId}`,{
             method: 'POST',
             body: JSON.stringify(trimedFormData),
             headers: {'Content-Type': 'application/json'}
         }
         )
+        } else {
+            response = await fetch(`/api/update-persona/${petId}`, {
+            method: 'PUT',
+            body: JSON.stringify(trimedFormData),
+            headers: {'Content-Type': 'application/json'}
+            })
+        }
+
         const data = await response.json()
-                if (data.success) {
-            // 모달 닫기
-            personaModal.classList.add('hidden');
+            if (data.success) {
+                // 모달 닫기
+                personaModal.classList.add('hidden');
+                console.log(data.success)
             
-            // 폼 리셋
-            e.target.reset()
+                // 폼 리셋
+                e.target.reset()
         }
     })
 
@@ -229,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // 반려동물 등록/수정 모달창 여는 함수
-async function showPetModal(pet=null) {
+async function showAddPetModal(pet=null) {
     const petModal = document.getElementById('add-pet-modal');
     const petName = document.getElementById('pet_name');
     const petSpecies = document.getElementById('pet_species')
@@ -237,7 +349,7 @@ async function showPetModal(pet=null) {
     const petAge = document.getElementById('pet_age')
     const petBirthDate = document.getElementById('birthdate');
     const petAdoptionDate = document.getElementById('adoption_date');
-    const petGender = document.getElementById('pet_gender')
+    const petGender = document.querySelectorAll('input[name="pet_gender"]');
     const isNeutered = document.getElementById('is_neutered')
     // 프로필 이미지는...?
     const saveBtn = document.getElementById('save-pet-btn')
@@ -282,9 +394,7 @@ async function showPetModal(pet=null) {
         petBirthDate.value = pet.birthdate;
         petAdoptionDate.value = pet.adoption_date;
 
-        const petGenderInputs = document.querySelectorAll('input[name="pet_gender"]');
-
-        petGenderInputs.forEach(radio => {
+        petGender.forEach(radio => {
             radio.checked = (radio.value === pet.pet_gender);
         });
         if (pet.is_neutered) {
@@ -511,6 +621,8 @@ function renderPersona(data) {
                 <p class="text-gray-600">${data.message}</p>
             </div>
         `
+        // 페르소나 생성 버튼으로 토글
+        toggleCreatePersonaBtn()
         
     } else {
         // 페르소나가 있는 경우
@@ -580,9 +692,10 @@ function renderPersona(data) {
             traitsContainer.className = 'flex flex-wrap gap-2'
             
             traits.forEach(trait => {
+                console.log('확인용 : ', trait)
                 const tag = document.createElement('span')
                 tag.className = 'inline-block px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium'
-                tag.textContent = trait
+                tag.textContent = trait.trait_name
                 traitsContainer.appendChild(tag)
             })
             
@@ -603,8 +716,28 @@ function renderPersona(data) {
         
         personaStatus.appendChild(container)
 
-        // 페르소나 생성 버튼 비활성화
-        // toggleCreatePersonaBtn(false)
+        // 페르소나 수정 버튼으로 토글
+        toggleCreatePersonaBtn(persona)
+        
+    }
+}
+
+function toggleCreatePersonaBtn(persona=null) {
+    const createPersonaBtn = document.getElementById('create-persona-btn')
+    const personaBtnText = document.getElementById('persona-btn-text')
+
+    if (!persona) {
+        // 페르소나 없는 경우 - 추가
+        createPersonaBtn.dataset.mode = 'add';
+        delete createPersonaBtn.dataset.persona;
+        personaBtnText.textContent = '페르소나 생성';
+        
+    } else {
+        // 페르소나 있는 경우 - 수정
+        createPersonaBtn.dataset.mode = 'edit';
+        createPersonaBtn.dataset.persona = JSON.stringify(persona);
+        personaBtnText.textContent = '페르소나 수정';
+
     }
 }
 

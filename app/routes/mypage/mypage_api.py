@@ -134,6 +134,26 @@ def save_persona(pet_id):
     return jsonify({'success': '성공적으로 페르소나가 생성되었습니다.'})
 
 
+@mypage_api_bp.route('/update-persona/<pet_id>', methods=['PUT'])
+def update_persona(pet_id):
+    persona = request.get_json()
+    logger.debug(f'수정할 페르소나 정보 : {persona}')
+
+    traits = persona['trait_id']
+    persona_info = {k:v for k,v in persona.items() if k != 'trait_id'}
+    
+    updated_persona = PetPersona.update_persona(pet_id, persona_info)
+    logger.debug(f'수정된 페르소나 : {updated_persona}')
+
+    persona_id = updated_persona.pet_persona_id
+    updated_traits = PersonaTrait.update_traits(persona_id, traits)
+    logger.debug(updated_traits)
+    
+    return jsonify({'success': '수정 완료'})
+
+
+
+
 @mypage_api_bp.route('/get-persona/<pet_id>')
 def get_persona_by_pet_id(pet_id):
 
