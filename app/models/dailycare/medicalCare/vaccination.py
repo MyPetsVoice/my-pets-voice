@@ -19,6 +19,8 @@ class Vaccination(BaseModel):
     side_effects = db.Column(Text)                          # 부작용
     hospital_name = db.Column(String(200))                  # 병원명
     next_vaccination_date = db.Column(Date)                 # 다음 접종 예정일
+    manufacturer = db.Column(String(200))  # 제조회사 추가
+    lot_number = db.Column(String(100))    # 로트번호 추가
     
     __table_args__ = (
         Index('idx_vaccinations_pet_id', 'pet_id'),
