@@ -31,7 +31,7 @@ let isConnected = false;
 
 // 펫 선택 드롭다운 메뉴 토글
 petDropdownBtn.addEventListener('click', () => {
-    petDropdownMenu.classList.remove('hidden')
+    petDropdownMenu.classList.toggle('hidden')
 })
 
 // 외부 클릭 시 드롭다운 닫기
@@ -165,7 +165,7 @@ async function selectPet(petData) {
     selectedPet = petData;
     petId = petData.pet_id
     const petDropdownBtnText = document.getElementById('pet-dropdown-btn-text')
-    petDropdownBtnText.innerText = selectedPet.pet_name
+    petDropdownBtnText.innerText = `${selectedPet.pet_name}(${selectedPet.species_name})`
     
     const response = await fetch(`/api/get_persona/${petId}`)
     const data = await response.json()
@@ -187,8 +187,8 @@ function updatePetInfoSection(petData , personaInfo) {
     petInfoSection.classList.remove('hidden')
     
     // 기본 정보 업데이트
-    document.getElementById('pet-name').textContent = petData.pet_name
-    document.getElementById('pet-species').textContent = petData.species_name
+    // document.getElementById('pet-name').textContent = petData.pet_name
+    // document.getElementById('pet-species').textContent = petData.species_name
     document.getElementById('pet-age').textContent = `${petData.pet_age}살`
     document.getElementById('pet-gender').textContent = petData.pet_gender
     document.getElementById('pet-breed').textContent = petData.breed_name || '믹스'
@@ -202,7 +202,7 @@ function updatePetInfoSection(petData , personaInfo) {
         personalityContainer.innerHTML = personaInfo.traits.map((trait) => {
             return `
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 shadow-sm">
-                    ${trait}
+                    ${trait.trait_name}
                 </span>
             `
         }).join('')
@@ -212,24 +212,24 @@ function updatePetInfoSection(petData , personaInfo) {
         `
     }
 
-    // 말투 (formal/informal에 따라 존댓말/반말 표시 + 원래 스타일명)
+    // 말투를 두 개의 div로 분리 표시
+    const politenessElement = document.getElementById('pet-politeness')
     const speechStyleElement = document.getElementById('pet-speech-style')
-    let speechStyleText = ''
     
+    // 존댓말/반말 표시
     if (personaInfo.politeness) {
         const politenessText = personaInfo.politeness.toLowerCase() === 'formal' ? '존댓말' : '반말'
-        speechStyleText = politenessText
-        
-        if (personaInfo.style_name) {
-            speechStyleText += ` · ${personaInfo.style_name}`
-        }
-    } else if (personaInfo.style_name) {
-        speechStyleText = personaInfo.style_name
+        politenessElement.textContent = politenessText
     } else {
-        speechStyleText = '-'
+        politenessElement.textContent = '-'
     }
     
-    speechStyleElement.textContent = speechStyleText
+    // 스타일명 표시
+    if (personaInfo.style_name) {
+        speechStyleElement.textContent = personaInfo.style_name
+    } else {
+        speechStyleElement.textContent = '-'
+    }
     
     // 좋아하는 것 표시
     const likesSection = document.getElementById('pet-likes-section')
