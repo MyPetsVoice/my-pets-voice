@@ -13,7 +13,6 @@ class Disease(BaseModel):
     
     disease_id = db.Column(Integer, primary_key=True, autoincrement=True)
     pet_id = db.Column(Integer, ForeignKey('pets.pet_id', ondelete='CASCADE'), nullable=False)
-    
     disease_name = db.Column(String(200), nullable=False)  # 질병 이름
     symptoms = db.Column(Text)                             # 증상
     treatment_details = db.Column(Text)                    # 치료 내역

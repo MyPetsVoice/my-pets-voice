@@ -15,7 +15,6 @@ class Allergy(BaseModel):
     
     allergy_id = db.Column(Integer, primary_key=True, autoincrement=True)
     pet_id = db.Column(Integer, ForeignKey('pets.pet_id', ondelete='CASCADE'), nullable=False)
-    
     allergy_type = db.Column(String(20), nullable=False)   # 알러지 유형
     allergen = db.Column(String(200), nullable=False)      # 알러지원
     symptoms = db.Column(String)                           # 증상
