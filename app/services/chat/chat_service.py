@@ -64,15 +64,16 @@ class ChatService:
         context = self.get_current_context()
         
         # 기본 정보 구성 (세션 데이터 구조에 맞춤)
-        name = pet_info.get('pet_name', '펫')
+        name = pet_info.get('pet_name', '')
         species = pet_info.get('species_name', '') 
         breed = pet_info.get('breed_name')
         age = pet_info.get('pet_age')  
-        gender = pet_info.get('pet_gender')  # 세션에 없는 정보
-        owner_call = pet_info.get('user_call', '주인')
+        gender = pet_info.get('pet_gender')  
+        user_call = pet_info.get('user_call', '')
         
         # 성격 및 특성 (세션 데이터 구조에 맞춤)
         personality = ','.join([trait['trait_name'] for trait in pet_info.get('traits')])
+        politeness =  '반말' if pet_info.get('politeness') == 'informal' else '존댓말'
         speech_style = pet_info.get('style_name', '다정한 말투')
         likes = pet_info.get('likes', '')
         dislikes = pet_info.get('dislikes', '')
@@ -80,12 +81,15 @@ class ChatService:
         special_notes = pet_info.get('special_note', '')
 
         prompt = f"""
-            당신은 {name}라는 이름의 {species}입니다.
+            당신은 사용자의 반려동물 {species} '{name}'(이)가 되어 사용자와 대화한다.
+            사용자를 '{user_call}'라고 부르며, '{politeness}' 말투와 '{speech_style}'로 항상 반려동물의 관점에서 대화한다.
 
             [기본 정보]
             - 품종: {breed}
             - 나이: {age}살
             - 성별: {gender}
+            - 생일: {pet_info.get('birthdate')}
+            - 입양일: {pet_info.get('adoption_date')}
             - 성격: {personality}
             - 말투: {speech_style}
 
@@ -94,7 +98,6 @@ class ChatService:
             - 시간: {context['time']}
             - 날씨: {context['weather']}
 
-            주인을 '{owner_call}'라고 부르며, 항상 반려동물의 관점에서 대화하세요.
 
             [추가 정보]"""
 
@@ -114,36 +117,12 @@ class ChatService:
             2. {name}의 성격({personality})을 잘 표현하세요
             3. 반려동물 관점에서 자연스럽게 대화하세요
             4. 한국어로 대답하세요
-            5. 답변은 1-3문장으로 간결하게 하세요
-            6. 귀여운 이모지를 적절히 사용하세요
-            7. 사람처럼 지식을 전달하지 말고, 동물스러운 반응을 보이세요
-            8. 감정 표현 시 동물 특유의 행동을 포함하세요
+            5. 답변은 길지 않고 단순하게 1-2문장으로 대화한다.
+            6. 사람처럼 지식을 전달하지 말고, 동물스러운 반응을 보이세요
             """
 
         return prompt
 
-
-    # system_prompt = f"""
-    # 너는 지금부터 사용자의 반려동물인 {pet_profile['species']} '{pet_profile['name']}'로 대화한다.
-
-    # [반려동물 정보]
-    # - 종: {pet_profile['species']} ({pet_profile['breed']}, {pet_profile['age']}살, {pet_profile['gender']})
-    # - 외형: {pet_profile['appearance']['color']}, {', '.join(pet_profile['appearance']['features'])}
-    # - 성격: {', '.join(pet_profile['personality']['traits'])}
-    # - 좋아하는 것: {', '.join(pet_profile['personality']['likes'])}
-    # - 싫어하는 것: {', '.join(pet_profile['personality']['dislikes'])}
-    # - 주인과의 관계: {pet_profile['relationship']['with_owner']}
-    # - 다른 존재와의 관계: {pet_profile['relationship']['with_others']}
-    # - 대화 스타일: {pet_profile['dialogue_style']['tone']}
-    # - 대표 표현: {', '.join(pet_profile['dialogue_style']['expressions'])}
-    # - 습관: {', '.join(pet_profile['dialogue_style']['habits'])}
-
-    # [대화 규칙]
-    # - 반드시 반려동물로서 대화한다.
-    # - 사람처럼 지식 전달을 하지 않는다.
-    # - 주인의 말에 귀엽고 동물스러운 반응을 보인다.
-    # # - 감정을 묘사할 때 동물 특유의 행동(꼬리 흔들기, 골골거리기 등)을 포함한다.
-    # """
 
     # 세션별 메모리 관리
     def get_or_create_memory(self, session_key):

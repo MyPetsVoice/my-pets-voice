@@ -42,15 +42,20 @@ document.addEventListener('click', (e) => {
 })
 
 // 웹소켓 연결 및 이벤트 핸들러 등록 함수
-function connectSocket() {
-    // 소켓 연결 되어있으면 해제
+async function connectSocket() {
+    // 기존 소켓 연결 해제
     if (socket && socket.connected) {
+        console.log('기존 SocketIO 연결 해제')
         socket.disconnect();
+        socket = null;
+        
+        // 연결 해제가 완료될 때까지 잠시 대기
+        await new Promise(resolve => setTimeout(resolve, 200));
     }
 
     console.log('SocketIO 연결 시도...');
     socket = io();
-    setupEventHandlers()
+    setupEventHandlers();
 }
 
 // 이벤트 핸들러 등록
@@ -172,13 +177,13 @@ async function selectPet(petData) {
     console.log(data)
     const personaInfo = data.persona_info
     
+    console.log('selectPet에서 입력된 petData', petData)
+    
     // UI 업데이트
     updatePetInfoSection(petData, personaInfo);
-    updateChatHeader(petData);
     
-    // 웹소켓 연결 시작 - await 필요한가?
-    connectSocket();
-    socket.emit('join_chat', {'pet_info': selectedPet})
+    // 웹소켓 연결 시작
+    await connectSocket();
     
     enableChat()
 }
@@ -274,20 +279,13 @@ function updatePetInfoSection(petData , personaInfo) {
 }
 
 function updateChatHeader(petName) {
-    console.log('pet 이름 채팅창에 표시 : ', petName)
+    console.log('updateChatHeader 입력 변수 : ', petName)
     const chatHeaderTitle = document.getElementById('chat-header-title')
+    
     chatHeaderTitle.textContent = `${petName}(이)와의 대화`
 
-    const chatWithPet = document.getElementById('chat-with-pet')
-    chatWithPet.textContent = `${petName}(이)와 대화를 시작해보세요!`
-    
-    const welcomeOnBoarding = document.getElementById('welcome-on-boarding')
-    const welcomeMsg = document.getElementById('welcome-msg')
-    const welcomePet = document.getElementById('welcome-pet')
+    showWelcomeMessage(petName)
 
-    welcomeOnBoarding.classList.add('hidden')
-    welcomeMsg.classList.remove('hidden')
-    welcomePet.textContent = petName
 
 }
 
@@ -304,7 +302,6 @@ function enableChat() {
     messageInput.focus();
 }
 
-
 function sendMessage() {
     const userMsg = messageInput.value;
     socket.emit('send_message', {'message': userMsg})
@@ -312,11 +309,8 @@ function sendMessage() {
 }
 
 function addMessage(type, content, senderName = null) {
-    const welcomeMsg = document.getElementById('welcome-msg')
-    if (!welcomeMsg.classList.contains('hidden')) {
-        welcomeMsg.classList.add('hidden')
-    }
-
+    deleteWelcomeMessage()
+    
     const messageDiv = document.createElement('div');
     messageDiv.className = `flex ${type === 'user' ? 'justify-end' : 'justify-start'} mb-4`;
     
@@ -397,8 +391,49 @@ function scrollToBottom() {
 function resetChat() {
     chatMessages.innerHTML = '';
     // 기존에 있던 거 추가하기
+    showWelcomeMessage(selectedPet.pet_name)
 }
 
 function showNoPetsMessages() {
-
+    const div = document.createElement('div')
+    div.innerHTML = `
+        <div class="text-center py-12">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-md mx-auto">
+                <i class="fas fa-robot text-6xl text-gray-400 mb-4"></i>
+                <h2 class="text-xl font-bold text-gray-800 mb-2">페르소나를 먼저 생성하세요</h2>
+                <p class="text-gray-600 mb-6">반려동물과 대화하려면 먼저 마이페이지에서 페르소나를 생성해야 합니다.</p>
+                <a href="{{ url_for('mypage.mypage_views.mypage') }}" 
+                   class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg hover:from-primary-600 hover:to-secondary-600 transition-all">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    마이페이지로 가기
+                </a>
+            </div>
+        </div>`
 }
+
+function showSelectPetMessage() {
+    chatMessages.innerHTML = `
+        <div id="welcome-on-boarding" class="text-center py-12">
+            <i class="fas fa-comments text-6xl text-gray-300 mb-4"></i>
+            <h3 id="chat-with-pet" class="text-xl font-bold text-gray-600 mb-2">반려동물과 대화하기</h3>
+            <p class="text-gray-500">왼쪽에서 반려동물을 선택하고 대화를 시작해보세요!</p>
+        </div>
+    `
+}
+
+function showWelcomeMessage(petName) {
+    chatMessages.innerHTML = `
+        <div id="welcome-msg" class="text-center py-8">
+            <i class="fas fa-heart text-4xl text-primary-400 mb-4"></i>
+            <p class="text-gray-600"><span id="welcome-pet">${petName}(이)와 대화를 시작해보세요!</span></p>
+        </div>
+    `
+}
+function deleteWelcomeMessage() {
+    const welcomeMsg = document.getElementById('welcome-msg')
+    if (welcomeMsg) {
+        chatMessages.innerHTML = ``
+    }
+}
+
+    
