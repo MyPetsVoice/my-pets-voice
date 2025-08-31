@@ -2,6 +2,7 @@ from flask import Flask, Blueprint, jsonify, render_template, request
 from app.services.pet_service import PetService
 from app.services.dailycare.healthcare_service import HealthCareService
 from app.services.dailycare.medicalcare_service import MedicationService
+from app.services.dailycare.care_chatbot_service import careChatbotService
 
 import logging
 from datetime import datetime
@@ -230,6 +231,25 @@ def deleteTodo(todo_id):
     if not data:
         return jsonify({"error": "Health record not found"}), 404
     return jsonify({"message": "Todo record deleted successfully"}), 200
+
+@dailycare_api_bp.route('/care-chatbot' , methods = ['POST'])
+def ask_chatbot():
+    """careChatbot Service"""
+    data = request.get_json()
+    user_input = data.get('message')
+    pet_id = data.get('pet_id' , 1)
+    user_id = data.get('user_id' , 1)
+    
+    if not user_input:
+        return jsonify({'error' : 'message is required'}) , 400
+    
+    answer = careChatbotService.chatbot_with_records(user_input, pet_id, user_id)
+    return jsonify({
+        'user_input' : user_input,
+        'response' : answer
+    })
+
+    
 
 
     

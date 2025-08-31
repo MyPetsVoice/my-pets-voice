@@ -1,45 +1,52 @@
-// AI 메시지 전송
-function sendMessage() {
+
+async function sendMessage() {
   const input = document.getElementById("chatInput");
   const messages = document.getElementById("chatMessages");
   const userText = input.value.trim();
   if (!userText) return;
 
-  // 사용자 메시지
+  // 사용자 메시지 추가
   const userMessage = document.createElement("div");
   userMessage.className = "message user";
   userMessage.textContent = userText;
   messages.appendChild(userMessage);
   input.value = "";
 
-  // AI 응답 시뮬레이션
-  setTimeout(() => {
+  messages.scrollTop = messages.scrollHeight;
+
+  try {
+    // Flask API 호출
+    const response = await fetch("/api/dailycares/care-chatbot", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: userText,
+        pet_id: 1,   // 실제 선택된 pet_id로 교체 가능
+        user_id: 1   // 로그인된 user_id로 교체 가능
+      })
+    });
+
+    const data = await response.json();
+
+    // AI 응답 메시지 추가
     const aiMessage = document.createElement("div");
     aiMessage.className = "message ai";
-    aiMessage.innerHTML = getAIResponse(userText);
+    aiMessage.innerHTML = data.response || "응답을 가져오지 못했습니다.";
     messages.appendChild(aiMessage);
     messages.scrollTop = messages.scrollHeight;
-  }, 500);
 
-  messages.scrollTop = messages.scrollHeight;
-}
-
-// AI 응답 처리
-function getAIResponse(userText) {
-  const responses = {
-    설사: "설사가 계속된다면 탈수 위험이 있어요...",
-    열: "체온이 39도 이상이라면 응급상황일 수 있어요...",
-    식욕: "갑작스런 식욕 부진은 여러 원인이 있을 수 있어요...",
-    구토: "구토가 반복된다면 위험할 수 있어요...",
-  };
-
-  for (let key in responses) {
-    if (userText.includes(key)) return responses[key];
+  } catch (error) {
+    console.error("Error:", error);
+    const errorMessage = document.createElement("div");
+    errorMessage.className = "message ai";
+    errorMessage.textContent = "서버 연결에 문제가 생겼어요. 잠시 후 다시 시도해주세요.";
+    messages.appendChild(errorMessage);
   }
-
-  return "반려동물의 건강에 관한 구체적인 증상을 알려주시면 더 정확한 답변을 드릴 수 있어요.";
 }
 
 function handleChatKeyPress(event) {
   if (event.key === "Enter") sendMessage();
 }
+
