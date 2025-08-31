@@ -8,6 +8,14 @@ logger = logging.getLogger(__name__)
 
 mypage_api_bp = Blueprint('mypage_api', __name__)
 
+@mypage_api_bp.route('/user-profile/')
+def get_user_profile():
+    user = session['user']['kakao_account']
+    logger.debug(user)
+
+    return jsonify({'user': user})
+
+
 @mypage_api_bp.route('/species/')
 def get_species():
     pet_species = PetSpecies.get_all_species()

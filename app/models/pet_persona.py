@@ -113,7 +113,7 @@ class PersonaTrait(BaseModel):
         traits = cls.query.filter_by(pet_persona_id=persona_id).all()
 
         for trait in traits:
-            cls.delete(trait)
+            trait.delete()
             
         updated = cls.create_persona_trait(persona_id, trait_ids)
         return updated

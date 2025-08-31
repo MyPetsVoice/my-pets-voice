@@ -337,6 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 
     getPetInfo()
+    getUserProfile()
 });
 
 
@@ -965,4 +966,15 @@ function setupPolitenessTagEvents() {
             span.classList.remove('bg-white', 'text-primary-500');
         });
     });
+}
+
+async function getUserProfile() {
+    const response = await fetch('/api/user-profile/')
+    const data = await response.json()
+    console.log(data.user)
+
+    const userNickname = document.getElementById('nickname')
+    const userEmail = document.getElementById('email')
+    userNickname.textContent = data.user.profile.nickname
+    userEmail.textContent = data.user.email
 }
