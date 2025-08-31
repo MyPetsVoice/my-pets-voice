@@ -78,6 +78,12 @@ class HealthCareService:
                 record_id=care_id,
                 medication_id=med_id
             )
+
+        @staticmethod
+        def get_linked_medications(care_id: int):
+            links = HealthCareMedication.query.filter_by(record_id=care_id).all()
+            return [link.medication for link in links]
+
                 
         @staticmethod
         def create_todo_record(**kwargs):

@@ -26,7 +26,6 @@ class HealthCare(BaseModel):
     
     # Medication 외래키
     medication_id = db.Column(Integer, ForeignKey('medications.medication_id', ondelete='SET NULL'), nullable=True)
-
     __table_args__ = (
         CheckConstraint(excrement_status.in_(['정상', '설사', '변비', '혈변']), name='check_bowel_status'),
         UniqueConstraint('pet_id', 'created_at', name='uq_user_record_date'),

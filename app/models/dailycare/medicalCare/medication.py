@@ -31,5 +31,6 @@ class Medication(BaseModel):
     
     pet = relationship("Pet", back_populates="medications")
     health_cares = db.relationship('HealthCare', back_populates='medication')
+   
     def __repr__(self):
         return f"<Medication(id={self.medication_id}, name='{self.medication_name}')>"

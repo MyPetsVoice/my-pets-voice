@@ -22,8 +22,9 @@ def get_healthcare_history():
     care_id = request.args.get('care_id')  # URL에서 ?care_id=값 가져오기
     if care_id:
         record = HealthCareService.get_health_record_by_id(care_id)
+        medication = HealthCareService.get_linked_medications(care_id) or []
         return render_template(
-            'dailycare/healthcare_detail.html', record =record
+            'dailycare/healthcare_detail.html', record =record, medication = medication
         )
     else:
         return render_template('dailycare/healthcare_history.html')
