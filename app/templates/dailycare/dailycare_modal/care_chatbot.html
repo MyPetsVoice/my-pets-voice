@@ -17,6 +17,7 @@ chat-container .message.ai ul {
 
    </style>
         <div class="chat-container">
+            <input type="hidden" id="modal-pet-id" value="{{pet_id}}">
             <div class="chat-header">
                 <h3>🤖 AI 건강상담</h3>
                 <button class="modal-close" onclick="closeModal()">&times;</button>
@@ -24,7 +25,15 @@ chat-container .message.ai ul {
             <div class="chat-messages" id="chatMessages">
                 <div class="message ai">
                     안녕하세요! 반려동물 전문 AI 수의사입니다. 🐾<br>
-                    어떤 건강 상담이 필요하신가요?
+                    어떤 건강 상담이 필요하신가요?<br>
+                    ==================================================<br>
+                    🐾 <strong>반려동물 건강 상담 챗봇</strong>
+                    ==================================================<br>
+                    명령어 예시:<br>
+                    - '건강기록 알려줘'<br>
+                    - '알러지 뭐 있어?'<br>
+                    - '예방접종 언제했어?'<br>
+                    - '전체기록 보여줘'<br>
                 </div>
             </div>
             <div class="chat-input">

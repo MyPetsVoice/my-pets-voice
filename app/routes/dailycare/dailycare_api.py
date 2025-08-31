@@ -234,11 +234,12 @@ def deleteTodo(todo_id):
 
 @dailycare_api_bp.route('/care-chatbot' , methods = ['POST'])
 def ask_chatbot():
+    current_user = 1
     """careChatbot Service"""
     data = request.get_json()
     user_input = data.get('message')
-    pet_id = data.get('pet_id' , 1)
-    user_id = data.get('user_id' , 1)
+    pet_id = data.get('pet_id')
+    user_id = data.get(current_user)
     
     if not user_input:
         return jsonify({'error' : 'message is required'}) , 400

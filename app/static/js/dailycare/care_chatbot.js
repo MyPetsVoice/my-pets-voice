@@ -1,4 +1,9 @@
 
+document.addEventListener('DOMContentLoaded',()=>{
+   const pet_id = Number(document.getElementById("modal-pet-id").value || 1);
+    console.log("careChatbot의 pet_id는 ? : ", pet_id);
+
+})
 async function sendMessage() {
   const input = document.getElementById("chatInput");
   const messages = document.getElementById("chatMessages");
@@ -13,7 +18,7 @@ async function sendMessage() {
   input.value = "";
 
   messages.scrollTop = messages.scrollHeight;
-
+  const pet_id = Number(document.getElementById("modal-pet-id").value || 1);
   try {
     // Flask API 호출
     const response = await fetch("/api/dailycares/care-chatbot", {
@@ -23,7 +28,7 @@ async function sendMessage() {
       },
       body: JSON.stringify({
         message: userText,
-        pet_id: 1,
+        pet_id: pet_id,
         user_id: 1,
       }),
     });
