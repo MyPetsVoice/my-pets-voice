@@ -49,7 +49,7 @@ async function sendMessage() {
   } catch (error) {
     console.error("Error:", error);
     loadingMessage.textContent =
-      "서버 연결에 문제가 생겼어요. 잠시 후 다시 시도해주세요.";
+      "서버 연결 문제. 잠시 후 다시 시도해주세요.";
     loadingMessage.classList.remove("loading");
   }
 }
