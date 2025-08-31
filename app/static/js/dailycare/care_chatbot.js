@@ -19,13 +19,13 @@ async function sendMessage() {
     const response = await fetch("/api/dailycares/care-chatbot", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         message: userText,
-        pet_id: 1,   // 실제 선택된 pet_id로 교체 가능
-        user_id: 1   // 로그인된 user_id로 교체 가능
-      })
+        pet_id: 1,
+        user_id: 1,
+      }),
     });
 
     const data = await response.json();
@@ -33,10 +33,11 @@ async function sendMessage() {
     // AI 응답 메시지 추가
     const aiMessage = document.createElement("div");
     aiMessage.className = "message ai";
-    aiMessage.innerHTML = data.response || "응답을 가져오지 못했습니다.";
+  aiMessage.innerHTML = formatChatbotResponse(
+    marked.parse(data.response || "응답을 가져오지 못했습니다.")
+  );
     messages.appendChild(aiMessage);
     messages.scrollTop = messages.scrollHeight;
-
   } catch (error) {
     console.error("Error:", error);
     const errorMessage = document.createElement("div");
@@ -50,3 +51,19 @@ function handleChatKeyPress(event) {
   if (event.key === "Enter") sendMessage();
 }
 
+
+function formatChatbotResponse(text) {
+  // 1. 줄바꿈 변환
+  let formatted = text.replace(/\n/g, "<br>");
+
+  // 2. **볼드** 변환
+  formatted = formatted.replace(
+    /\*\*(.*?)\*\*/g,
+    "<br><strong>$1</strong><br>"
+  );
+
+  // 3. 중복 <br> 정리
+  formatted = formatted.replace(/(<br>\s*){2,}/g, "<br>");
+
+  return formatted;
+}

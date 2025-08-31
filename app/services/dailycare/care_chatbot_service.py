@@ -117,7 +117,15 @@ class careChatbotService:
             summary = careChatbotService.summarize_pet_records(records)
 
         prompt = careChatbotService.build_prompt(user_input, summary)
+        prompt = careChatbotService.pretty_format(prompt)
         return get_gpt_response(prompt)
+    
+    
+    @staticmethod
+    def pretty_format(text: str) -> str:
+        lines = text.split("\n")
+        return "\n".join("  " + line.strip() for line in lines if line.strip())
+
 
     # -----------------------------
     # CLI 메뉴
@@ -134,6 +142,8 @@ class careChatbotService:
         print("- '전체기록 보여줘'")
         print("- 'quit' 또는 'exit' : 종료")
         print("="*50)
+        
+        
 
 
 def main():
@@ -152,6 +162,7 @@ def main():
 
         try:
             answer = careChatbotService.chatbot_with_records(user_input, pet_id, user_id)
+            answer = careChatbotService.pretty_format(answer)
             print("🤖 Bot:", answer)
         except Exception as e:
             print(f"❌ 오류 발생: {e}")

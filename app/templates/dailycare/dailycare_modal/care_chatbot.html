@@ -1,5 +1,21 @@
   <!-- AI 건강상담 대화창 -->
-   
+   <style>
+  chat-container .message.ai {
+  background: #f1f5f9;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 5px 0;
+  line-height: 1.5;
+  white-space: pre-wrap; /* 줄바꿈 반영 */
+}
+chat-container .message.ai strong {
+  color: #333;
+}
+chat-container .message.ai ul {
+  padding-left: 20px;
+}
+
+   </style>
         <div class="chat-container">
             <div class="chat-header">
                 <h3>🤖 AI 건강상담</h3>
@@ -20,4 +36,6 @@
                 </button>
             </div>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     

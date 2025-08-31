@@ -4,6 +4,8 @@
   box-sizing: border-box;
 }
 
+
+
 body {
   font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
   /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
@@ -639,3 +641,5 @@ body {
     padding: 20px;
   }
 }
+
+

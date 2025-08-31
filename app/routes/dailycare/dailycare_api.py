@@ -244,9 +244,10 @@ def ask_chatbot():
         return jsonify({'error' : 'message is required'}) , 400
     
     answer = careChatbotService.chatbot_with_records(user_input, pet_id, user_id)
+    result = careChatbotService.pretty_format(answer)
     return jsonify({
         'user_input' : user_input,
-        'response' : answer
+        'response' : result
     })
 
     
