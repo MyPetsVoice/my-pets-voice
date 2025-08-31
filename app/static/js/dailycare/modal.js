@@ -13,6 +13,10 @@ document.querySelectorAll(".health-item.mdc").forEach((item) => {
 // 모달 열기 함수
 function openModal(name, pet_id) {
   console.log(`##### name ${name}, pet_id ${pet_id}`);
+
+
+
+  //모달창열기
   fetch(`/api/dailycares/modal/${name}?pet_id=${pet_id}`)
     .then((res) => {
       if (!res.ok) throw new Error("네트워크 오류");
@@ -41,6 +45,13 @@ function openModal(name, pet_id) {
           console.log("click button");
           saveMedication(currentPetId);
         };
+      }
+
+      // 모달 열릴 때 pet 정보 불러오기
+      if (typeof petInfo === "function") {
+        petInfo(pet_id);
+      } else {
+        console.error("petInfo 함수가 로드되지 않았습니다.");
       }
     })
     .catch((err) => {

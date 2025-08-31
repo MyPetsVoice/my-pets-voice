@@ -3,6 +3,21 @@
   padding: 0;
   box-sizing: border-box;
 }
+.message.ai.loading {
+  color: #888;
+  font-style: italic;
+  position: relative;
+}
+
+.message.ai.loading::after {
+  content: "⏳";
+  margin-left: 6px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0.3; }
+}
 
 
 

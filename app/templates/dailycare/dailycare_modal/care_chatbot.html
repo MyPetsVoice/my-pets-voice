@@ -19,7 +19,8 @@ chat-container .message.ai ul {
         <div class="chat-container">
             <input type="hidden" id="modal-pet-id" value="{{pet_id}}">
             <div class="chat-header">
-                <h3>🤖 AI 건강상담</h3>
+                <h3>🤖 AI 건강상담 <span id="pet-info-header" class="pet-info-header"></span></h3>
+                
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div class="chat-messages" id="chatMessages">
