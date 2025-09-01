@@ -3,6 +3,7 @@
 db
 **/db
 *.db
+instance/mypetsvoice.db
 # Python cache
 
 # python 어쩌꾸
