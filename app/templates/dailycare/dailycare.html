@@ -53,10 +53,10 @@
                             <p>현재 복용 중인 약물 정보</p>
                         </div>
                         <!--  의료기록 모아보기 -->
-                          <a href="/dailycare/medication-history" class="health-item" >
+                          <a href="#" onclick="goToMedicalHistory()" class="health-item">
                             <h4>🔍 전체 기록</h4>
                             <p>의료기록을 모아 볼 수 있습니다.</p>
-                          </a>
+                        </a>
                     </div>
                 </div>
                 
@@ -181,7 +181,15 @@
     <div id="modalContent" ></div> 
 </div> 
 
-
+<script>
+function goToMedicalHistory() {
+    if (!current_pet_id) {
+        alert("펫을 먼저 선택해주세요.");
+        return;
+    }
+    window.location.href = `/dailycare/medication-history/${current_pet_id}`;
+}
+</script>
 
 
 <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>

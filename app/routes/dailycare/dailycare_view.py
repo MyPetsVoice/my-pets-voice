@@ -11,9 +11,9 @@ def get_dailycare():
 def get_analysis():
     return render_template('dailycare/analysis_pet.html')
 # 의료기록 모아보기 ('전체기록')
-@dailycare_bp.route('/medication-history')
-def get_medication_history():
-    return render_template('dailycare/medication_history.html')
+@dailycare_bp.route('/medication-history/<int:pet_id>')
+def get_medication_history(pet_id):
+    return render_template('dailycare/medication_history.html', pet_id=pet_id)
 
 # 건강기록 모아보기 ('기록보기')
 @dailycare_bp.route('/health-history')
