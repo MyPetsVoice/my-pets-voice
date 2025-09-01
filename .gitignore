@@ -16,8 +16,12 @@ instance/
 db생성요청사항.txt
 insert_data.py
 
+# 로그파일
 logs/
 app.log
+
+# vscode 파일
+.vscode
 
 # 개인 파일(태민)
 mypage요구사항
