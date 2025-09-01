@@ -1,0 +1,152 @@
+{% extends "base.html" %} {% block title %}나의 일기장{% endblock %} {% block
+content %}
+
+<!-- CSS 링크 -->
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/diary/index.css') }}"
+/>
+
+<div class="min-h-screen bg-gray-50">
+  <div class="container mx-auto px-4 py-8">
+    <!-- 페이지 헤더 -->
+    <div class="mb-8 text-center">
+      <h1 class="text-4xl font-bold text-gray-800 mb-2">
+        <i class="fas fa-book-open text-orange-400 mr-3"></i>
+        나의 일기장
+      </h1>
+      <p class="text-gray-600">반려동물과 함께한 소중한 순간들을 기록해요</p>
+    </div>
+    <div class="flex flex-col lg:flex-row gap-6">
+      <!-- 왼쪽: 펫 선택 사이드바 -->
+      <div class="lg:w-1/4">
+        <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-24">
+          <h2 class="text-xl font-bold mb-4 text-gray-800">
+            <i class="fas fa-paw text-orange-400 mr-2"></i>
+            내 반려동물
+          </h2>
+
+          <!-- 펫 목록 -->
+          <div class="space-y-3" id="petList">
+            <div id="petLoadingMsg" class="text-center text-gray-500">
+              <i class="fas fa-spinner fa-spin mr-2"></i>
+              반려동물 정보를 불러오는 중...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 오른쪽: 일기 목록 -->
+      <div class="lg:w-3/4">
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <!-- 검색 및 추가 버튼 영역 -->
+          <div
+            class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4"
+          >
+            <!-- 검색창 -->
+            <div class="relative w-full sm:w-96">
+              <input
+                type="text"
+                placeholder="일기 검색..."
+                class="w-full pl-12 pr-4 py-3 rounded-full border-2 border-gray-200 focus:border-orange-400 focus:outline-none transition-all duration-300"
+                id="searchInput"
+              />
+              <i
+                class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+              ></i>
+            </div>
+
+            <!-- 일기 추가 버튼 -->
+            <button
+              onclick="location.href='/diary/write'"
+              class="px-6 py-3 bg-gradient-to-r from-orange-400 to-yellow-400 text-white rounded-full font-semibold hover:from-orange-500 hover:to-yellow-500 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              <i class="fas fa-plus mr-2"></i>
+              일기 추가
+            </button>
+          </div>
+
+          <!-- 현재 선택된 펫 표시 -->
+          <div
+            class="mb-4 p-3 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg"
+            id="selectedPetInfo"
+            style="display: none"
+          >
+            <span class="text-sm text-gray-600">선택된 반려동물:</span>
+            <span
+              class="font-semibold text-orange-600 ml-2"
+              id="selectedPetName"
+            ></span>
+          </div>
+
+          <!-- 일기 테이블 -->
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b-2 border-gray-200">
+                  <th class="text-left py-3 px-4 font-semibold text-gray-700">
+                    번호
+                  </th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-700">
+                    제목
+                  </th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-700">
+                    날짜
+                  </th>
+                  <th class="text-center py-3 px-4 font-semibold text-gray-700">
+                    기분
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="diaryTableBody">
+                <!-- 로딩 메시지 -->
+                <tr id="diaryLoadingMsg">
+                  <td colspan="4" class="text-center py-8 text-gray-500">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>
+                    반려동물을 선택해주세요
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 페이지네이션 임시로 -->
+          <div
+            class="flex justify-center mt-6 space-x-2"
+            id="pagination"
+            style="display: none"
+          >
+            <button
+              class="px-3 py-1 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors duration-200"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="px-3 py-1 rounded-lg bg-orange-400 text-white">
+              1
+            </button>
+            <button
+              class="px-3 py-1 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors duration-200"
+            >
+              2
+            </button>
+            <button
+              class="px-3 py-1 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors duration-200"
+            >
+              3
+            </button>
+            <button
+              class="px-3 py-1 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors duration-200"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript 링크 -->
+<script src="{{ url_for('static', filename='js/diary/index.js') }}"></script>
+
+{% endblock %}

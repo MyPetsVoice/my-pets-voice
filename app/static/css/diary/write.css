@@ -1,0 +1,142 @@
+/* 클로드 스타일 */
+/* 펫 선택 카드 스타일 */
+.pet-option {
+  transition: all 0.3s ease;
+}
+
+.pet-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pet-option.selected {
+  border-color: #fb923c !important;
+  background: linear-gradient(to right, #fed7aa, #fef3c7) !important;
+  box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.1);
+}
+
+/* AI 변환 버튼들 */
+.ai-convert-btn {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(to right, #fb923c, #fbbf24);
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.ai-convert-btn:hover {
+  background: linear-gradient(to right, #f97316, #f59e0b);
+  transform: translateY(-1px);
+}
+
+.ai-convert-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.apply-btn {
+  padding: 0.5rem 1rem;
+  background-color: #10b981;
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.apply-btn:hover {
+  background-color: #059669;
+}
+
+.retry-btn {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+  background-color: #2563eb;
+}
+
+/* 하단 버튼들 (임시저장 제거) */
+.cancel-btn {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background-color: #6b7280;
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #4b5563;
+}
+
+.submit-btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(to right, #fb923c, #fbbf24);
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.submit-btn:hover {
+  background: linear-gradient(to right, #f97316, #f59e0b);
+  transform: translateY(-1px);
+}
+
+/* 사진 미리보기 */
+.photo-preview-item {
+  position: relative;
+}
+
+.photo-remove-btn {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  background-color: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.photo-preview-item:hover .photo-remove-btn {
+  opacity: 1;
+}
+
+/* 반응형 */
+@media (max-width: 640px) {
+  .cancel-btn {
+    width: 100%;
+  }
+
+  .submit-btn {
+    width: 100%;
+  }
+}

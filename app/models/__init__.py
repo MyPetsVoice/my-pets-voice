@@ -8,6 +8,8 @@ def init_db(app):
     # 모든 모델 import (테이블 생성을 위함)
     from app.models.base import BaseModel
     from app.models.user import User
+    from app.models.pet import Pet
+    from app.models.diary import Diary, DiaryPhoto
     from app.models.pet_persona import PetPersona
     from app.models.dailycare.healthCare.healthCare import HealthCare
     from app.models.dailycare.healthCare.healthcareMedication import HealthCareMedication
@@ -37,6 +39,7 @@ def init_db(app):
 # 모델들을 import하여 다른 모듈에서 사용할 수 있도록 함
 from app.models.base import BaseModel
 from app.models.user import User
+from app.models.pet import Pet
 from app.models.dailycare.healthCare.healthCare import HealthCare
 from app.models.dailycare.healthCare.healthcareMedication import HealthCareMedication
 from app.models.dailycare.medicalCare.allergy import Allergy
@@ -49,5 +52,5 @@ from app.models.pet import Pet, PetSpecies, PetBreed
 from app.models.pet_persona import PetPersona, PersonaTrait, PersonalityTrait, SpeechStyle
 from app.models.chat_history import ChatHistory
 
-__all__ = ['db', 'init_db', 'BaseModel', 'User', 'Pet', 'PetPersona', 'PersonaTrait', 'PetSpecies', 'PetBreed', 'PersonalityTrait', 'SpeechStyle', 'ChatHistory','HealthCare', 'HealthCareMedication','Allergy','Disease','Medication','Surgery','Vaccination','TodoList']
+__all__ = ['db', 'init_db', 'BaseModel', 'User', 'Pet', 'PetPersona', 'PersonaTrait', 'PetSpecies', 'PetBreed', 'PersonalityTrait', 'SpeechStyle', 'ChatHistory','HealthCare', 'HealthCareMedication','Allergy','Disease','Medication','Surgery','Vaccination','TodoList', 'Diary', 'DiaryPhoto']
 

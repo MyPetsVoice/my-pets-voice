@@ -1,0 +1,283 @@
+{% extends "base.html" %} {% block title %}일기 작성 - MyPet's Voice{% endblock
+%} {% block content %}
+<!-- CSS 링크 -->
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/diary/write.css') }}"
+/>
+
+<div
+  class="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50"
+>
+  <div class="container mx-auto px-4 py-8">
+    <!-- 페이지 헤더 -->
+    <div class="mb-8 text-center">
+      <h1 class="text-4xl font-bold text-gray-800 mb-2">
+        <i class="fas fa-pen-alt text-orange-400 mr-3"></i>
+        새로운 일기 작성
+      </h1>
+      <p class="text-gray-600">
+        오늘 반려동물과 함께한 특별한 순간을 기록해보세요
+      </p>
+    </div>
+
+    <div class="max-w-4xl mx-auto">
+      <div class="bg-white rounded-2xl shadow-xl p-8">
+        <form id="diaryForm" enctype="multipart/form-data">
+          <!-- 펫 선택 -->
+          <div class="mb-6">
+            <label class="block text-sm font-semibold text-gray-700 mb-3">
+              <i class="fas fa-paw text-orange-400 mr-2"></i>
+              반려동물 선택
+            </label>
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+              id="petSelection"
+            >
+              <!-- 펫 카드들은 JavaScript에서 동적으로 로드 -->
+              <div
+                id="petLoadingMsg"
+                class="col-span-full text-center text-gray-500"
+              >
+                <i class="fas fa-spinner fa-spin mr-2"></i>
+                반려동물 정보를 불러오는 중...
+              </div>
+            </div>
+            <input
+              type="hidden"
+              id="selectedPetPersonaId"
+              name="pet_persona_id"
+              required
+            />
+          </div>
+
+          <!-- 기본 정보 입력 -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <!-- 날짜 -->
+            <div>
+              <label
+                for="diaryDate"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                <i class="fas fa-calendar text-orange-400 mr-2"></i>
+                날짜
+              </label>
+              <input
+                type="date"
+                id="diaryDate"
+                name="diary_date"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                required
+              />
+            </div>
+
+            <!-- 날씨 -->
+            <div>
+              <label
+                for="weather"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                <i class="fas fa-cloud-sun text-orange-400 mr-2"></i>
+                날씨
+              </label>
+              <select
+                id="weather"
+                name="weather"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+              >
+                <option value="">선택해주세요</option>
+                <option value="맑음">☀️ 맑음</option>
+                <option value="흐림">☁️ 흐림</option>
+                <option value="비">🌧️ 비</option>
+                <option value="눈">❄️ 눈</option>
+                <option value="바람">💨 바람</option>
+              </select>
+            </div>
+
+            <!-- 기분 -->
+            <div>
+              <label
+                for="mood"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                <i class="fas fa-smile text-orange-400 mr-2"></i>
+                오늘의 기분
+              </label>
+              <select
+                id="mood"
+                name="mood"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+              >
+                <option value="">선택해주세요</option>
+                <option value="😊">😊 행복해요</option>
+                <option value="😴">😴 졸려요</option>
+                <option value="🥰">🥰 사랑스러워요</option>
+                <option value="😔">😔 슬퍼요</option>
+                <option value="😤">😤 화나요</option>
+                <option value="🎉">🎉 신나요</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 제목 입력 -->
+          <div class="mb-6">
+            <label
+              for="title"
+              class="block text-sm font-semibold text-gray-700 mb-2"
+            >
+              <i class="fas fa-heading text-orange-400 mr-2"></i>
+              제목
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              placeholder="일기 제목을 입력해주세요"
+              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+              required
+            />
+          </div>
+
+          <!-- 사진 업로드 -->
+          <div class="mb-6">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+              <i class="fas fa-camera text-orange-400 mr-2"></i>
+              사진 업로드
+            </label>
+            <div
+              class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-orange-400 transition-colors duration-300"
+            >
+              <input
+                type="file"
+                id="photos"
+                name="photos"
+                multiple
+                accept="image/*"
+                class="hidden"
+              />
+              <div id="uploadArea" class="cursor-pointer">
+                <i
+                  class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"
+                ></i>
+                <p class="text-gray-600 mb-2">클릭하여 사진을 업로드하세요</p>
+                <p class="text-sm text-gray-500">
+                  여러 장 선택 가능 (JPG, PNG, GIF)
+                </p>
+              </div>
+            </div>
+            <!-- 선택된 파일 미리보기 -->
+            <div
+              id="photoPreview"
+              class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4"
+            ></div>
+          </div>
+
+          <!-- 일기 내용 작성 -->
+          <div class="mb-6">
+            <label
+              for="content"
+              class="block text-sm font-semibold text-gray-700 mb-2"
+            >
+              <i class="fas fa-edit text-orange-400 mr-2"></i>
+              일기 내용
+            </label>
+            <textarea
+              id="content"
+              name="content_user"
+              rows="8"
+              placeholder="오늘 반려동물과 함께한 이야기를 써주세요..."
+              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none"
+              required
+            ></textarea>
+          </div>
+
+          <!-- AI 변환 섹션 -->
+          <div
+            class="mb-6 p-6 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl border border-orange-200"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-800">
+                <i class="fas fa-robot text-orange-500 mr-2"></i>
+                AI 반려동물 관점으로 변환
+              </h3>
+              <button type="button" id="aiConvertBtn" class="ai-convert-btn">
+                <i class="fas fa-magic mr-2"></i>
+                너의 목소리로
+              </button>
+            </div>
+
+            <!-- AI 변환 결과 -->
+            <div id="aiResult" class="hidden">
+              <div
+                class="bg-white rounded-lg p-4 border border-orange-200 mb-4"
+              >
+                <h4 class="font-semibold text-gray-700 mb-2">
+                  반려동물 관점으로 변환된 일기:
+                </h4>
+                <div
+                  id="aiContent"
+                  class="text-gray-800 leading-relaxed whitespace-pre-wrap"
+                ></div>
+              </div>
+
+              <!-- AI 결과 액션 버튼 -->
+              <div class="flex space-x-3">
+                <button type="button" id="applyBtn" class="apply-btn">
+                  <i class="fas fa-check mr-2"></i>
+                  적용하기
+                </button>
+                <button type="button" id="retryBtn" class="retry-btn">
+                  <i class="fas fa-redo mr-2"></i>
+                  다시하기
+                </button>
+              </div>
+            </div>
+
+            <!-- 로딩 상태 -->
+            <div id="aiLoading" class="hidden text-center py-4">
+              <i
+                class="fas fa-spinner fa-spin text-2xl text-orange-500 mb-2"
+              ></i>
+              <p class="text-gray-600">AI가 반려동물 관점으로 변환 중...</p>
+            </div>
+          </div>
+
+          <!-- 최종 일기 내용 -->
+          <div id="finalContent" class="mb-6 hidden">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+              <i class="fas fa-paw text-green-500 mr-2"></i>
+              최종 일기 내용 (반려동물 관점)
+            </label>
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div
+                id="finalContentText"
+                class="text-gray-800 leading-relaxed whitespace-pre-wrap"
+              ></div>
+            </div>
+            <input type="hidden" id="finalContentInput" name="content_ai" />
+          </div>
+
+          <!-- 버튼 -->
+          <div
+            class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-gray-200"
+          >
+            <button type="button" id="cancelBtn" class="cancel-btn">
+              <i class="fas fa-arrow-left mr-2"></i>
+              취소
+            </button>
+
+            <button type="submit" class="submit-btn">
+              <i class="fas fa-check mr-2"></i>
+              완료
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript 링크 -->
+<script src="{{ url_for('static', filename='js/diary/write.js') }}"></script>
+
+{% endblock %}

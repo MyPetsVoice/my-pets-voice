@@ -1,0 +1,137 @@
+/* index.css */
+
+/* 펫 선택 카드 스타일 */
+.pet-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.pet-card:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.pet-card.active {
+  background: linear-gradient(to right, #fb923c, #fbbf24) !important;
+  color: white;
+  box-shadow: 0 4px 20px rgba(251, 146, 60, 0.3);
+}
+
+.pet-card.active h3,
+.pet-card.active p {
+  color: white !important;
+}
+
+.pet-card.active .pet-emoji {
+  background: white !important;
+  color: #fb923c !important;
+}
+
+/* 펫 추가 버튼 */
+.pet-add-btn {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.pet-add-btn:hover {
+  border-color: #fb923c;
+  transform: translateY(-2px) scale(1.05);
+}
+
+.pet-add-btn:hover .text-gray-500 {
+  color: #fb923c;
+}
+
+/* 일기 테이블 행 */
+.diary-row {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.diary-row:hover {
+  background-color: #fff7ed;
+  transform: translateY(-1px);
+}
+
+/* AI 뱃지 */
+.ai-badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* 검색 입력창 */
+.search-input:focus {
+  box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.1);
+}
+
+/* 로딩 스피너 */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 빈 상태 메시지 */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .pet-card {
+    padding: 1rem;
+  }
+
+  .pet-card .pet-emoji {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+  }
+
+  .diary-table {
+    font-size: 0.875rem;
+  }
+}
+
+/* 스크롤바 커스터마이징 */
+.pet-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.pet-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 2px;
+}
+
+.pet-list::-webkit-scrollbar-thumb {
+  background: #fb923c;
+  border-radius: 2px;
+}
+
+.pet-list::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
