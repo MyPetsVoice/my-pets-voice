@@ -1,18 +1,13 @@
-from flask import Flask, render_template, redirect, url_for
-from app.routes.diary import diary_bp
-from app.routes.diary.diary_api import diary_api_bp
-from app.routes.chat.chat_api import chat_api_bp
-from app.routes.dailycare.dailycare_api import dailycare_api_bp
-from app.routes.dailycare.dailycare_view import dailycare_bp
+from flask import Flask, render_template
 from flask_socketio import SocketIO
-from app.routes.chat import chat_bp
-from app.routes.auth import auth_bp
-from app.routes.mypage import mypage_bp
+from app.routes import register_blueprints
 from app.models import init_db
 from config import config, setup_logging
-import os
 from dotenv import load_dotenv
+import os
+
 load_dotenv()
+
 def create_app(config_name=None):
     app = Flask(__name__)
     
@@ -49,7 +44,12 @@ def create_app(config_name=None):
         ping_interval=25
     )
     
-    # chat_api_bp의 socketio 초기화
+    # 블루프린트 등록
+    app.logger.info('블루프린트를 등록합니다.')
+    register_blueprints(app)
+    app.logger.info('모든 블루프린트가 등록되었습니다.')
+    
+    # chat_api_bp의 socketio 초기화 (블루프린트 등록 후)
     from app.routes.chat.chat_api import init_socketio
     init_socketio(socketio, app)
     app.logger.info('채팅 API SocketIO가 초기화되었습니다.')
@@ -59,17 +59,5 @@ def create_app(config_name=None):
         app.logger.debug('루트 경로 접근 - 랜딩페이지')
         return render_template('landing.html')
 
-    # 블루프린트 등록 위치
-    # app.register_blueprint(some_blueprint)
-    app.logger.info('블루프린트를 등록합니다.')
-    app.register_blueprint(diary_bp, url_prefix="/diary")
-    app.register_blueprint(diary_api_bp, url_prefix="/api/diary")
-    app.register_blueprint(dailycare_bp , url_prefix='/dailycare') 
-    app.register_blueprint(dailycare_api_bp)
-    app.register_blueprint(chat_bp)
-    app.register_blueprint(chat_api_bp)
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(mypage_bp)
-    app.logger.info('모든 블루프린트가 등록되었습니다.')
     app.logger.info('애플리케이션 초기화가 완료되었습니다.')
     return app, socketio

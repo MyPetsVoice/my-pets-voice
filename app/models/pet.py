@@ -102,9 +102,6 @@ class PetSpecies(BaseModel):
     def __repr__(self):
         return f'<AnimalSpecies {self.species_name}>'
     
-    @classmethod
-    def get_all_species(cls):
-        return cls.query.all()
     
     @classmethod
     def create_species(cls, species_name):
@@ -124,9 +121,6 @@ class PetBreed(BaseModel):
     def __repr__(self):
         return f'<PetBreed {self.breed_name}>'
     
-    @classmethod
-    def get_by_species(cls, species_id):
-        return cls.query.filter_by(species_id=species_id).order_by(cls.breed_name.asc()).all()
     
     @classmethod
     def create_breed(cls, species_id, breed_name):

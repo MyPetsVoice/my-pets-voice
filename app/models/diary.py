@@ -39,35 +39,11 @@ class Diary(BaseModel):
         diary.save()
         return diary
     
-    @classmethod
-    # 전체 일기 목록 (최신순)
-    def get_all_diaries(cls):
-        return cls.query.order_by(cls.diary_date.desc()).all()
     
-    @classmethod
-    # 특정 펫 페르소나의 일기 목록
-    def get_by_pet_persona(cls, pet_persona_id):
-        return cls.query.filter_by(pet_persona_id=pet_persona_id).order_by(cls.diary_date.desc()).all()
     
-    @classmethod
-    # 특정 사용자의 모든 일기
-    def get_by_user(cls, user_id):
-        return cls.query.filter_by(user_id=user_id).order_by(cls.diary_date.desc()).all()
     
-    @classmethod
-    # 날짜 범위로 일기 조회
-    def get_by_date_range(cls, start_date, end_date):
-        return cls.query.filter(cls.diary_date.between(start_date, end_date)).order_by(cls.diary_date.desc()).all()
     
-    @classmethod
-    # 최근 일기 목록
-    def get_recent_diaries(cls, limit=10):
-        return cls.query.order_by(cls.diary_date.desc()).limit(limit).all()
     
-    @classmethod
-    # 제목으로 일기 검색
-    def search_by_title(cls, search_term):
-        return cls.query.filter(cls.title.contains(search_term)).order_by(cls.diary_date.desc()).all()
 
 class DiaryPhoto(BaseModel):
     __tablename__ = 'diary_photo'
@@ -91,7 +67,3 @@ class DiaryPhoto(BaseModel):
         photo.save()
         return photo
     
-    @classmethod
-    # 특정 일기의 모든 사진
-    def get_by_diary(cls, diary_id):
-        return cls.query.filter_by(diary_id=diary_id).order_by(cls.display_order).all()

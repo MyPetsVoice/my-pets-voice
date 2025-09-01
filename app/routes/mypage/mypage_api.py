@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, session
 from app.models import Pet, PetSpecies, PetBreed, PetPersona, SpeechStyle, PersonalityTrait, PersonaTrait
+from app.services import PetService, PersonaService
 from datetime import datetime
 import logging
 
@@ -18,7 +19,7 @@ def get_user_profile():
 
 @mypage_api_bp.route('/species/')
 def get_species():
-    pet_species = PetSpecies.get_all_species()
+    pet_species = PetService.get_all_species()
     species = [species.to_dict() for species in pet_species]
     # logger.debug(f'species :  {species}')
 
@@ -26,7 +27,7 @@ def get_species():
 
 @mypage_api_bp.route('/breeds/<species_id>')
 def get_breeds_by_species(species_id):
-    pet_breeds = PetBreed.get_by_species(species_id)
+    pet_breeds = PetService.get_breeds_by_species(species_id)
     breeds = [breed.to_dict() for breed in pet_breeds]
     logger.debug(f'선택된 speices id : {species_id}')
     return jsonify({'data': breeds})
@@ -42,7 +43,7 @@ def add_pet():
     user_id = session.get('user_id')
     logger.debug(f'세션에 저장된 사용자 아이디 : {user_id}')
 
-    new_pet = Pet.create_pet(user_id, **pet_data)
+    new_pet = Pet.create_pet(user_id, **pet_data)  # 모델의 classmethod 사용
 
     logger.debug(f'새로 등록된 반려동물 : {new_pet}')
 
@@ -53,7 +54,7 @@ def add_pet():
 @mypage_api_bp.route('/pets/')
 def get_pets_info():
     user_id = session.get('user_id')
-    pets = Pet.find_pets_by_user_id(user_id)
+    pets = PetService.get_pets_by_user(user_id)
 
     pets_info = [pet.to_dict() for pet in pets]
 
@@ -63,7 +64,7 @@ def get_pets_info():
 
 @mypage_api_bp.route('/pet-profile/<pet_id>')
 def get_pet_profile(pet_id):
-    pet = Pet.find_pet_by_pet_id(pet_id)
+    pet = PetService.get_pet(pet_id)
     logger.debug(pet)
     
     if pet:
@@ -74,7 +75,7 @@ def get_pet_profile(pet_id):
 
 @mypage_api_bp.route('/delete-pet/<pet_id>', methods=['DELETE'])
 def delete_pet(pet_id):
-    pet = Pet.delete_pet_by_pet_id(pet_id)
+    pet = Pet.delete_pet_by_pet_id(pet_id)  # 모델의 classmethod 사용
     logger.debug(f'삭제된 펫 : {pet}')    
     
     return jsonify({'message':'삭제 완료'})
@@ -86,7 +87,7 @@ def update_pet(pet_id):
     date_fields = {'birthdate', 'adoption_date'}
     pet_data = {k: datetime.strptime(v, '%Y-%m-%d') if k in date_fields else v for k, v in pet_info.items() if v != ''}
     
-    pet = Pet.update_pet_by_pet_id(pet_id, pet_data)
+    pet = Pet.update_pet_by_pet_id(pet_id, pet_data)  # 모델의 classmethod 사용
     logger.debug(f'수정된 펫 : {pet}')
 
     return jsonify({'success': '수정 완료'})
@@ -99,7 +100,7 @@ def update_pet(pet_id):
 
 @mypage_api_bp.route('/speech-styles/')
 def get_speech_styles():
-    speech_styles = SpeechStyle.get_speech_styles()
+    speech_styles = PersonaService.get_speech_styles()
     
 
     speech_styles = [style.to_dict() for style in speech_styles]
@@ -108,7 +109,7 @@ def get_speech_styles():
 
 @mypage_api_bp.route('/personality-traits')
 def get_personality_traits():
-    personality_traits = PersonalityTrait.get_traits_by_category()
+    personality_traits = PersonaService.get_traits_by_category()
     
 
     # 각 카테고리의 trait 객체들을 to_dict()로 변환

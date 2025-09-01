@@ -1,14 +1,14 @@
 from dotenv import load_dotenv
-from app.services.pet_service import PetService
+from app.services.pet import PetService
 from app.services.dailycare.healthcare_service import HealthCareService
-from app.services.dailycare.medicalcare_service import MedicationService
+from app.services.dailycare.medicalcare_service import MedicalCareService
 from app.services.dailycare.openAI_service import get_gpt_response
 from flask import current_app as app
 
 load_dotenv()
 
 
-class careChatbotService:
+class CareChatbotService:
     # record_type 별 attribute 매핑
     ATTRIBUTE_MAP = {
         "health": {
@@ -54,11 +54,11 @@ class careChatbotService:
         return {
             'pet': PetService.get_pet(pet_id),
             'health': HealthCareService.get_health_records_by_pet(pet_id),
-            'allergy': MedicationService.get_allergy_pet(pet_id),
-            'disease': MedicationService.get_disease_pet(pet_id),
-            'medication': MedicationService.get_medications_by_pet(pet_id),
-            'surgery': MedicationService.get_surgery_pet(pet_id),
-            'vaccination': MedicationService.get_vaccination_pet(pet_id),
+            'allergy': MedicalCareService.get_allergy_pet(pet_id),
+            'disease': MedicalCareService.get_disease_pet(pet_id),
+            'medication': MedicalCareService.get_medications_by_pet(pet_id),
+            'surgery': MedicalCareService.get_surgery_pet(pet_id),
+            'vaccination': MedicalCareService.get_vaccination_pet(pet_id),
         }
 
     @staticmethod
@@ -67,7 +67,7 @@ class careChatbotService:
         if not records:
             return []
 
-        attr_map = careChatbotService.ATTRIBUTE_MAP.get(record_type, {})
+        attr_map = CareChatbotService.ATTRIBUTE_MAP.get(record_type, {})
         summaries = []
         for r in records[:limit]:  # 최근 limit개만 요약
             parts = []
@@ -88,12 +88,12 @@ class careChatbotService:
         반려동물: {pet['pet_name']} ({pet['species_name']} - {pet['breed_name']})
         나이/성별: {pet['pet_age']}살, {pet['pet_gender']} / 중성화: {"O" if pet['is_neutered'] else "X"}
         
-        최근 건강 기록: {careChatbotService.summarize_record_list(records['health'], 'health')}
-        알러지: {careChatbotService.summarize_record_list(records['allergy'], 'allergy')}
-        질병: {careChatbotService.summarize_record_list(records['disease'], 'disease')}
-        복용 중인 약: {careChatbotService.summarize_record_list(records['medication'], 'medication')}
-        수술 내역: {careChatbotService.summarize_record_list(records['surgery'], 'surgery')}
-        예방접종 내역: {careChatbotService.summarize_record_list(records['vaccination'], 'vaccination')}
+        최근 건강 기록: {CareChatbotService.summarize_record_list(records['health'], 'health')}
+        알러지: {CareChatbotService.summarize_record_list(records['allergy'], 'allergy')}
+        질병: {CareChatbotService.summarize_record_list(records['disease'], 'disease')}
+        복용 중인 약: {CareChatbotService.summarize_record_list(records['medication'], 'medication')}
+        수술 내역: {CareChatbotService.summarize_record_list(records['surgery'], 'surgery')}
+        예방접종 내역: {CareChatbotService.summarize_record_list(records['vaccination'], 'vaccination')}
         """
 
     @staticmethod
@@ -114,11 +114,11 @@ class careChatbotService:
     @staticmethod
     def chatbot_with_records(user_input: str, pet_id: int, user_id: int) -> str:
         with app.app_context():
-            records = careChatbotService.get_pet_records(pet_id)
-            summary = careChatbotService.summarize_pet_records(records)
+            records = CareChatbotService.get_pet_records(pet_id)
+            summary = CareChatbotService.summarize_pet_records(records)
 
-        prompt = careChatbotService.build_prompt(user_input, summary)
-        prompt = careChatbotService.pretty_format(prompt)
+        prompt = CareChatbotService.build_prompt(user_input, summary)
+        prompt = CareChatbotService.pretty_format(prompt)
         return get_gpt_response(prompt)
     
     

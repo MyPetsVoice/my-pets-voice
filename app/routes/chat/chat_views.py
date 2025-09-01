@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request
 from app.models import Pet, PetPersona
+from app.services import PetService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ def chat():
 
     # 사용자의 반려동물 목록 가져오기 (페르소나가 있는 것만)
     pets_with_persona = []
-    user_pets = Pet.find_pets_by_user_id(user_id)
+    user_pets = PetService.get_pets_by_user(user_id)
     
     for pet in user_pets:
         logger.debug(f'펫 : {pet}')

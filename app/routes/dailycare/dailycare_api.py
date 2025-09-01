@@ -1,14 +1,14 @@
 from flask import Flask, Blueprint, jsonify, render_template, request
-from app.services.pet_service import PetService
+from app.services.pet import PetService
 from app.services.dailycare.healthcare_service import HealthCareService
-from app.services.dailycare.medicalcare_service import MedicationService
+from app.services.dailycare.medicalcare_service import MedicalCareService
 from app.models.dailycare.medicalCare.allergy import Allergy
 from app.models.dailycare.medicalCare.disease import Disease
 from app.models.dailycare.medicalCare.surgery import Surgery
 from app.models.dailycare.medicalCare.vaccination import Vaccination
 from app.models.dailycare.medicalCare.medication import Medication
 from app.models import db
-from app.services.dailycare.care_chatbot_service import careChatbotService
+from app.services.dailycare.care_chatbot_service import CareChatbotService
 
 import logging
 from datetime import datetime
@@ -128,7 +128,7 @@ def get_health_record( care_id):
 # Medication 조회
 @dailycare_api_bp.route('/medications/<int:pet_id>', methods=['GET'])
 def get_medications(pet_id):
-    meds = MedicationService.get_medications_by_pet(pet_id)
+    meds = MedicalCareService.get_medications_by_pet(pet_id)
     return jsonify([m.to_dict() for m in meds]), 200
 
 @dailycare_api_bp.route('/get-healthcare/<int:care_id>', methods=['GET'])
@@ -158,7 +158,7 @@ def get_healthcare(care_id):
 def saveAllergy(pet_id):
     data = request.json
     
-    record = MedicationService.create_allergy(
+    record = MedicalCareService.create_allergy(
         pet_id = pet_id,
         allergy_type = data.get('allergy_type'),
         allergen = data.get('allergen'),
@@ -171,7 +171,7 @@ def saveAllergy(pet_id):
 # 알러지 정보 조회
 @dailycare_api_bp.route('/allergy/<int:pet_id>',methods=['GET'])
 def get_allergy(pet_id):
-    allergies = MedicationService.get_allergy_pet(pet_id)
+    allergies = MedicalCareService.get_allergy_pet(pet_id)
     return jsonify([allergy.to_dict() for allergy in allergies]), 200
 
 # 알러지 정보 수정
@@ -207,7 +207,7 @@ def save_disease(pet_id):
     if diagnosis_date:
         diagnosis_date = datetime.strptime(diagnosis_date, "%Y-%m-%d").date()
     
-    record = MedicationService.create_disease(
+    record = MedicalCareService.create_disease(
         pet_id=pet_id,
         disease_name=data.get('disease_name'),
         symptoms=data.get('symptoms'),
@@ -223,7 +223,7 @@ def save_disease(pet_id):
 # 질병 이력 목록 조회
 @dailycare_api_bp.route('/diseases/<int:pet_id>', methods=['GET'])
 def get_diseases(pet_id):
-    diseases = MedicationService.get_disease_pet(pet_id)
+    diseases = MedicalCareService.get_disease_pet(pet_id)
     return jsonify([disease.to_dict() for disease in diseases]), 200
 
 # 질병 이력 수정
@@ -261,7 +261,7 @@ def save_surgery(pet_id):
     
     surgery_date = datetime.strptime(data.get('surgery_date'), "%Y-%m-%d").date()
     
-    record = MedicationService.create_surgery(
+    record = MedicalCareService.create_surgery(
         pet_id=pet_id,
         surgery_name=data.get('surgery_name'),
         surgery_date=surgery_date,
@@ -276,7 +276,7 @@ def save_surgery(pet_id):
 # 수술 목록 조회
 @dailycare_api_bp.route('/surgeries/<int:pet_id>', methods=['GET'])
 def get_surgeries(pet_id):
-    surgeries = MedicationService.get_surgery_pet(pet_id)
+    surgeries = MedicalCareService.get_surgery_pet(pet_id)
     return jsonify([surgery.to_dict() for surgery in surgeries]), 200
 
 # 수술 수정
@@ -314,7 +314,7 @@ def save_vaccination(pet_id):
     if data.get('next_vaccination_date'):
         next_vaccination_date = datetime.strptime(data.get('next_vaccination_date'), "%Y-%m-%d").date()
     
-    record = MedicationService.create_vaccination(
+    record = MedicalCareService.create_vaccination(
         pet_id=pet_id,
         vaccine_name=data.get('vaccine_name'),
         vaccination_date=vaccination_date,
@@ -330,7 +330,7 @@ def save_vaccination(pet_id):
 # 예방접종 목록 조회
 @dailycare_api_bp.route('/vaccinations/<int:pet_id>', methods=['GET'])
 def get_vaccinations(pet_id):
-    vaccinations = MedicationService.get_vaccination_pet(pet_id)
+    vaccinations = MedicalCareService.get_vaccination_pet(pet_id)
     return jsonify([vaccination.to_dict() for vaccination in vaccinations]), 200
 
 # 예방접종 수정
@@ -370,7 +370,7 @@ def save_medication(pet_id):
     start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else None
     end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else None
     
-    record = MedicationService.create_medication(
+    record = MedicalCareService.create_medication(
     pet_id = pet_id,
     medication_name = data.get('medication_name'),
     purpose = data.get('purpose'),
@@ -444,8 +444,8 @@ def ask_chatbot():
     if not user_input:
         return jsonify({'error' : 'message is required'}) , 400
     
-    answer = careChatbotService.chatbot_with_records(user_input, pet_id, user_id)
-    result = careChatbotService.pretty_format(answer)
+    answer = CareChatbotService.chatbot_with_records(user_input, pet_id, user_id)
+    result = CareChatbotService.pretty_format(answer)
     return jsonify({
         'user_input' : user_input,
         'response' : result

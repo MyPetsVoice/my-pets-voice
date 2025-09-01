@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain.schema import SystemMessage, HumanMessage
 from app.models.pet_persona import PetPersona
+from app.models.diary import Diary, DiaryPhoto
 import os
 
 class DiaryService:
@@ -76,3 +77,38 @@ class DiaryService:
     def get_pet_personas_by_user(self, user_id):
         personas = PetPersona.query.filter_by(user_id=user_id).all()
         return personas
+    
+    @staticmethod
+    def get_all_diaries():
+        """전체 일기 목록 (최신순)"""
+        return Diary.query.order_by(Diary.diary_date.desc()).all()
+    
+    @staticmethod
+    def get_by_pet_persona(pet_persona_id):
+        """특정 펫 페르소나의 일기 목록"""
+        return Diary.query.filter_by(pet_persona_id=pet_persona_id).order_by(Diary.diary_date.desc()).all()
+    
+    @staticmethod
+    def get_by_user(user_id):
+        """특정 사용자의 모든 일기"""
+        return Diary.query.filter_by(user_id=user_id).order_by(Diary.diary_date.desc()).all()
+    
+    @staticmethod
+    def get_by_date_range(start_date, end_date):
+        """날짜 범위로 일기 조회"""
+        return Diary.query.filter(Diary.diary_date.between(start_date, end_date)).order_by(Diary.diary_date.desc()).all()
+    
+    @staticmethod
+    def get_recent_diaries(limit=10):
+        """최근 일기 목록"""
+        return Diary.query.order_by(Diary.diary_date.desc()).limit(limit).all()
+    
+    @staticmethod
+    def search_by_title(search_term):
+        """제목으로 일기 검색"""
+        return Diary.query.filter(Diary.title.contains(search_term)).order_by(Diary.diary_date.desc()).all()
+    
+    @staticmethod
+    def get_photos_by_diary(diary_id):
+        """특정 일기의 모든 사진"""
+        return DiaryPhoto.query.filter_by(diary_id=diary_id).order_by(DiaryPhoto.display_order).all()

@@ -2,17 +2,23 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
-from langchain.memory import ConversationBufferWindowMemory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
-from app.models import Pet, PetPersona, PersonaTrait
+from app.models import Pet, PetPersona
 from dotenv import load_dotenv
 from datetime import datetime
 import logging
+import os
 
 load_dotenv()
 logger = logging.getLogger(__name__)
 
+# LangSmith 설정
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+if os.getenv("LANGCHAIN_API_KEY"):
+    os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
+if os.getenv("LANGSMITH_PROJECT"):
+    os.environ["LANGCHAIN_PROJECT"] = os.getenv("LANGSMITH_PROJECT")
 
 class ChatService:
     def __init__(self):

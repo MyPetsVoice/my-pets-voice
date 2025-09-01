@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
             personaData = JSON.parse(e.currentTarget.dataset.persona)
             addPersonaForm.dataset.mode = 'edit';
         } else {
-            delete personaData;
+            personaData = null;
             addPersonaForm.dataset.mode = 'add';
         }
 
@@ -328,10 +328,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const petId = petCard.dataset.petId
             try {
                 const response = await fetch(`/api/pet-profile/${petId}`)
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const petData = await response.json()
                 showPetProfile(petData)
             } catch (error) {
                 console.error('펫 프로필 로딩 실패:', error)
+                console.error('Response details:', error.message)
             }
         }
     })
@@ -416,7 +422,7 @@ async function getPetInfo() {
     showLoadingState();
     
     try {
-        const response = await fetch('/api/pets');
+        const response = await fetch('/api/pets/');
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

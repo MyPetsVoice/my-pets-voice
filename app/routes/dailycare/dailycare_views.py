@@ -1,16 +1,19 @@
-from flask import Flask, Blueprint, jsonify, render_template,request
+from flask import Blueprint, render_template, request
 from app.services.dailycare.healthcare_service import HealthCareService
 
 dailycare_bp = Blueprint('dailycare_bp', __name__)
+
 # 데일리케어페이지
 @dailycare_bp.route('/', methods=['GET'])
 def get_dailycare():
     current_user = 1 # 임시
     return render_template('dailycare/dailycare.html', user = current_user)
+
 # 건강분석 페이지
 @dailycare_bp.route('/analysis')
 def get_analysis():
     return render_template('dailycare/analysis_pet.html')
+
 # 의료기록 모아보기 ('전체기록')
 @dailycare_bp.route('/medication-history/<int:pet_id>')
 def get_medication_history(pet_id):
@@ -55,13 +58,3 @@ def editTodo():
     record = HealthCareService.get_todo_record_by_id(todo_id)
     print(record)
     return render_template('dailycare/todo_edit.html', todo_id = todo_id, todo = record)
-    
-    
-
-
-    
- 
-
-
-
-
