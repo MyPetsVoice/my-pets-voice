@@ -149,7 +149,6 @@ def get_diary_detail(diary_id):
 # 사용자의 모든 펫 페르소나 조회
 @diary_api_bp.route("/personas")
 def get_user_personas():
-    
     user_id = session.get('user_id')
     if not user_id:
         return jsonify({"success": False, "message": "로그인이 필요합니다."})
@@ -158,17 +157,31 @@ def get_user_personas():
     
     persona_list = []
     for persona in personas:
+        # 안전하게 관계형 데이터 접근
+        pet_species = persona.pet.species.species_name if persona.pet.species else '반려동물'
+        pet_breed = persona.pet.breeds.breed_name if persona.pet.breeds else '알 수 없음'
+        
+        # persona_traits를 통해 성격 특성들을 가져오기
+        traits = []
+        if hasattr(persona, 'persona_traits'):
+            traits = [trait.personality.trait_name for trait in persona.persona_traits]
+        
         persona_data = {
             'pet_persona_id': persona.pet_persona_id,
             'pet_name': persona.pet.pet_name,
-            'pet_species': persona.pet.pet_species,
-            'pet_breed': persona.pet.pet_breed,
-            'personality_traits': persona.personality_traits,
-            'user_profile_img': persona.user.profile_img_url, 
-            'user_nickname': persona.user.nickname 
+            'pet_species': pet_species,
+            'pet_breed': pet_breed,
+            'user_call': persona.user_call,
+            'speech_habit': persona.speech_habit,
+            'likes': persona.likes,
+            'dislikes': persona.dislikes,
+            'habits': persona.habits,
+            'traits': traits,
+            'user_profile_img': persona.user.profile_img_url if hasattr(persona.user, 'profile_img_url') else None,
+            'user_nickname': persona.user.nickname if hasattr(persona.user, 'nickname') else None
         }
         persona_list.append(persona_data)
-    
+        
     return jsonify({
         "success": True,
         "personas": persona_list

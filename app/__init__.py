@@ -3,7 +3,7 @@ from app.routes.diary import diary_bp
 from app.routes.diary.diary_api import diary_api_bp
 from app.routes.chat.chat_api import chat_api_bp
 from app.routes.dailycare.dailycare_api import dailycare_api_bp
-from app.routes.dailycare.dailycare_view import dailycare_bp 
+from app.routes.dailycare.dailycare_view import dailycare_bp
 from flask_socketio import SocketIO
 from app.routes.chat import chat_bp
 from app.routes.auth import auth_bp
@@ -11,8 +11,6 @@ from app.routes.mypage import mypage_bp
 from app.models import init_db
 from config import config, setup_logging
 import os
-
-
 from dotenv import load_dotenv
 load_dotenv()
 def create_app(config_name=None):
@@ -66,7 +64,6 @@ def create_app(config_name=None):
     app.logger.info('블루프린트를 등록합니다.')
     app.register_blueprint(diary_bp, url_prefix="/diary")
     app.register_blueprint(diary_api_bp, url_prefix="/api/diary")
-    # 블루프린트 등록
     app.register_blueprint(dailycare_bp , url_prefix='/dailycare') 
     app.register_blueprint(dailycare_api_bp)
     app.register_blueprint(chat_bp)

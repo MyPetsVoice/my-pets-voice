@@ -1,104 +1,153 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="../../../static/css/dailycare/modal.css">
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-  <div class="modal-backdrop fixed inset-0 flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden modal-enter">
-            <div class="bg-gradient-to-r px-8 py-6" id="header">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-              </svg>
+  <head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../../static/css/dailycare/modal.css" />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div
+      class="modal-backdrop fixed inset-0 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden modal-enter"
+      >
+        <div class="bg-gradient-to-r px-8 py-6" id="header">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"
+              >
+                <svg
+                  class="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+              </div>
+              <h2 class="text-xl font-semibold text-white">알러지 이력 등록</h2>
             </div>
-            <h2 class="text-xl font-semibold text-white">알러지 이력 등록</h2>
+            <button
+              onclick="closeModal()"
+              class="text-white/80 hover:text-white transition-colors"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
           </div>
-          <button onclick="closeModal()" class="text-white/80 hover:text-white transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="px-8 py-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+          <form class="space-y-6">
+            <!-- 첫 번째 행: 알러지 유형 + 알러지원 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >알러지 유형</label
+                >
+                <select
+                  id="allergy_type_select"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="음식">음식 알러지</option>
+                  <option value="환경">환경 알러지</option>
+                  <option value="접촉">접촉 알러지</option>
+                  <option value="약물">약물 알러지</option>
+                </select>
+              </div>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >알러지원</label
+                >
+                <input
+                  id="allergen_input"
+                  type="text"
+                  placeholder="예: 닭고기, 꽃가루, 진드기"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <!-- 증상 -->
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >증상</label
+              >
+              <textarea
+                id="symptoms_input"
+                placeholder="알러지 증상을 자세히 기록하세요"
+                class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              ></textarea>
+            </div>
+
+            <!-- 두 번째 행: 심각도 + 진단일 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >심각도</label
+                >
+                <select
+                  id="severity_select"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="경미">경미함</option>
+                  <option value="보통">보통</option>
+                  <option value="심각">심각함</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Modal Footer -->
+        <div
+          class="bg-gray-50 px-8 py-6 flex justify-end space-x-4 border-t border-gray-200"
+        >
+          <button
+            onclick="closeModal()"
+            class="btn-cancel px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+          >
+            취소
+          </button>
+          <button
+            type="submit"
+            class="btn-primary px-8 py-3 text-white rounded-lg font-medium flex items-center space-x-2"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
             </svg>
+            <span>저장</span>
           </button>
         </div>
       </div>
-      
-      <!-- Modal Body -->
-      <div class="px-8 py-6 overflow-y-auto max-h-[calc(90vh-200px)]">
-        <form class="space-y-6">
-          
-          <!-- 첫 번째 행: 알러지 유형 + 알러지원 -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">알러지 유형</label>
-              <select  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option>음식 알러지</option>
-                <option>환경 알러지</option>
-                <option>접촉 알러지</option>
-                <option>약물 알러지</option>
-              </select>
-            </div>
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">알러지원</label>
-              <input type="text" placeholder="예: 닭고기, 꽃가루, 진드기"
-                     class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-          </div>
-          
-          <!-- 증상 -->
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">증상</label>
-            <textarea placeholder="알러지 증상을 자세히 기록하세요"
-                      class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"></textarea>
-          </div>
-          
-          <!-- 두 번째 행: 심각도 + 진단일 -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">심각도</label>
-              <select class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option>경미함</option>
-                <option>보통</option>
-                <option>심각함</option>
-              </select>
-            </div>
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">진단일</label>
-              <input type="date"
-                     class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-          </div>
-          
-          <!-- 파일 업로드 -->
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">진단서/검사 결과 첨부</label>
-            <div class="file-upload border border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50"
-                 onclick="document.getElementById('allergy-file').click()">
-              <input type="file" id="allergy-file" accept="image/*,.pdf" class="hidden">
-              📎 파일을 선택하거나 드래그하세요
-            </div>
-          </div>
-        </form>
-      </div>
-      
-      <!-- Modal Footer -->
-      <div class="bg-gray-50 px-8 py-6 flex justify-end space-x-4 border-t border-gray-200">
-        <button onclick="closeModal()" 
-                class="btn-cancel px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">
-          취소
-        </button>
-        <button type="submit" 
-                class="btn-primary px-8 py-3 text-white rounded-lg font-medium flex items-center space-x-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-          </svg>
-          <span>저장</span>
-        </button>
-      </div>
-      
     </div>
-  </div>
-</body>
+  </body>
 </html>

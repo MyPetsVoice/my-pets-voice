@@ -2,6 +2,12 @@ from flask import Flask, Blueprint, jsonify, render_template, request
 from app.services.pet_service import PetService
 from app.services.dailycare.healthcare_service import HealthCareService
 from app.services.dailycare.medicalcare_service import MedicationService
+from app.models.dailycare.medicalCare.allergy import Allergy
+from app.models.dailycare.medicalCare.disease import Disease
+from app.models.dailycare.medicalCare.surgery import Surgery
+from app.models.dailycare.medicalCare.vaccination import Vaccination
+from app.models.dailycare.medicalCare.medication import Medication
+from app.models import db
 from app.services.dailycare.care_chatbot_service import careChatbotService
 
 import logging
@@ -151,7 +157,8 @@ def get_healthcare(care_id):
 @dailycare_api_bp.route('/save/allergy/<pet_id>', methods = ['POST'])
 def saveAllergy(pet_id):
     data = request.json
-    record = MedicationService.create_medication(
+    
+    record = MedicationService.create_allergy(
         pet_id = pet_id,
         allergy_type = data.get('allergy_type'),
         allergen = data.get('allergen'),
@@ -160,6 +167,199 @@ def saveAllergy(pet_id):
     )
     
     return jsonify(record.to_dict()),200
+
+# 알러지 정보 조회
+@dailycare_api_bp.route('/allergy/<int:pet_id>',methods=['GET'])
+def get_allergy(pet_id):
+    allergies = MedicationService.get_allergy_pet(pet_id)
+    return jsonify([allergy.to_dict() for allergy in allergies]), 200
+
+# 알러지 정보 수정
+@dailycare_api_bp.route('/allergy/<int:allergy_id>', methods=['PUT'])
+def update_allergy(allergy_id):
+    data = request.json
+    allergy = Allergy.query.get(allergy_id)
+    
+    allergy.allergy_type = data.get('allergy_type', allergy.allergy_type)
+    allergy.allergen = data.get('allergen', allergy.allergen)
+    allergy.symptoms = data.get('symptoms', allergy.symptoms)
+    allergy.severity = data.get('severity', allergy.severity)
+    
+    db.session.commit()
+    return jsonify(allergy.to_dict()), 200
+
+# 알러지 정보 삭제
+@dailycare_api_bp.route('/allergy/<int:allergy_id>', methods=['DELETE'])
+def delete_allergy(allergy_id):
+    allergy = Allergy.query.get(allergy_id)
+    db.session.delete(allergy)
+    db.session.commit()
+    return jsonify({"message": "삭제완료"}), 200
+
+#----------------------------------------------------------------------
+
+# 질병 이력 생성
+@dailycare_api_bp.route('/save/disease/<int:pet_id>', methods=['POST'])
+def save_disease(pet_id):
+    data = request.json
+    
+    diagnosis_date = data.get('diagnosis_date')
+    if diagnosis_date:
+        diagnosis_date = datetime.strptime(diagnosis_date, "%Y-%m-%d").date()
+    
+    record = MedicationService.create_disease(
+        pet_id=pet_id,
+        disease_name=data.get('disease_name'),
+        symptoms=data.get('symptoms'),
+        treatment_details=data.get('treatment_details'),
+        hospital_name=data.get('hospital_name'),
+        doctor_name=data.get('doctor_name'),
+        medical_cost=data.get('medical_cost'),
+        diagnosis_date=diagnosis_date
+    )
+    
+    return jsonify(record.to_dict()), 200
+
+# 질병 이력 목록 조회
+@dailycare_api_bp.route('/diseases/<int:pet_id>', methods=['GET'])
+def get_diseases(pet_id):
+    diseases = MedicationService.get_disease_pet(pet_id)
+    return jsonify([disease.to_dict() for disease in diseases]), 200
+
+# 질병 이력 수정
+@dailycare_api_bp.route('/disease/<int:disease_id>', methods=['PUT'])
+def update_disease(disease_id):
+    data = request.json
+    disease = Disease.query.get(disease_id)
+    
+    disease.disease_name = data.get('disease_name', disease.disease_name)
+    disease.symptoms = data.get('symptoms', disease.symptoms)
+    disease.treatment_details = data.get('treatment_details', disease.treatment_details)
+    disease.hospital_name = data.get('hospital_name', disease.hospital_name)
+    disease.medical_cost = data.get('medical_cost', disease.medical_cost)
+    
+    if data.get('diagnosis_date'):
+        disease.diagnosis_date = datetime.strptime(data.get('diagnosis_date'), "%Y-%m-%d").date()
+    
+    db.session.commit()
+    return jsonify(disease.to_dict()), 200
+
+# 질병 이력 삭제
+@dailycare_api_bp.route('/disease/<int:disease_id>', methods=['DELETE'])
+def delete_disease(disease_id):
+    disease = Disease.query.get(disease_id)
+    db.session.delete(disease)
+    db.session.commit()
+    return jsonify({"message": "삭제완료"}), 200
+
+#-----------------------------------------------------------------------
+
+# 수술 이력 생성
+@dailycare_api_bp.route('/save/surgery/<int:pet_id>', methods=['POST'])
+def save_surgery(pet_id):
+    data = request.json
+    
+    surgery_date = datetime.strptime(data.get('surgery_date'), "%Y-%m-%d").date()
+    
+    record = MedicationService.create_surgery(
+        pet_id=pet_id,
+        surgery_name=data.get('surgery_name'),
+        surgery_date=surgery_date,
+        surgery_summary=data.get('surgery_summary'),
+        hospital_name=data.get('hospital_name'),
+        doctor_name=data.get('doctor_name'),
+        recovery_status=data.get('recovery_status')
+    )
+    
+    return jsonify(record.to_dict()), 200
+
+# 수술 목록 조회
+@dailycare_api_bp.route('/surgeries/<int:pet_id>', methods=['GET'])
+def get_surgeries(pet_id):
+    surgeries = MedicationService.get_surgery_pet(pet_id)
+    return jsonify([surgery.to_dict() for surgery in surgeries]), 200
+
+# 수술 수정
+@dailycare_api_bp.route('/surgery/<int:surgery_id>', methods=['PUT'])
+def update_surgery(surgery_id):
+    data = request.json
+    surgery = Surgery.query.get(surgery_id)
+    
+    surgery.surgery_name = data.get('surgery_name', surgery.surgery_name)
+    surgery.surgery_summary = data.get('surgery_summary', surgery.surgery_summary)
+    surgery.hospital_name = data.get('hospital_name', surgery.hospital_name)
+    surgery.recovery_status = data.get('recovery_status', surgery.recovery_status)
+    
+    if data.get('surgery_date'):
+        surgery.surgery_date = datetime.strptime(data.get('surgery_date'), "%Y-%m-%d").date()
+    
+    db.session.commit()
+    return jsonify(surgery.to_dict()), 200
+
+# 수술 이력 삭제
+@dailycare_api_bp.route('/surgery/<int:surgery_id>', methods=['DELETE'])
+def delete_surgery(surgery_id):
+    surgery = Surgery.query.get(surgery_id)
+    db.session.delete(surgery)
+    db.session.commit()
+    return jsonify({"message": "삭제완료"}), 200
+
+# 예방접종 생성
+@dailycare_api_bp.route('/save/vaccination/<int:pet_id>', methods=['POST'])
+def save_vaccination(pet_id):
+    data = request.json
+    
+    vaccination_date = datetime.strptime(data.get('vaccination_date'), "%Y-%m-%d").date()
+    next_vaccination_date = None
+    if data.get('next_vaccination_date'):
+        next_vaccination_date = datetime.strptime(data.get('next_vaccination_date'), "%Y-%m-%d").date()
+    
+    record = MedicationService.create_vaccination(
+        pet_id=pet_id,
+        vaccine_name=data.get('vaccine_name'),
+        vaccination_date=vaccination_date,
+        side_effects=data.get('side_effects'),
+        hospital_name=data.get('hospital_name'),
+        next_vaccination_date=next_vaccination_date,
+        manufacturer=data.get('manufacturer'),  
+        lot_number=data.get('lot_number'),
+    )
+    
+    return jsonify(record.to_dict()), 200
+
+# 예방접종 목록 조회
+@dailycare_api_bp.route('/vaccinations/<int:pet_id>', methods=['GET'])
+def get_vaccinations(pet_id):
+    vaccinations = MedicationService.get_vaccination_pet(pet_id)
+    return jsonify([vaccination.to_dict() for vaccination in vaccinations]), 200
+
+# 예방접종 수정
+@dailycare_api_bp.route('/vaccination/<int:vaccination_id>', methods=['PUT'])
+def update_vaccination(vaccination_id):
+    data = request.json
+    vaccination = Vaccination.query.get(vaccination_id)
+    
+    vaccination.vaccine_name = data.get('vaccine_name', vaccination.vaccine_name)
+    vaccination.side_effects = data.get('side_effects', vaccination.side_effects)
+    vaccination.hospital_name = data.get('hospital_name', vaccination.hospital_name)
+    
+    if data.get('vaccination_date'):
+        vaccination.vaccination_date = datetime.strptime(data.get('vaccination_date'), "%Y-%m-%d").date()
+    
+    if data.get('next_vaccination_date'):
+        vaccination.next_vaccination_date = datetime.strptime(data.get('next_vaccination_date'), "%Y-%m-%d").date()
+    
+    db.session.commit()
+    return jsonify(vaccination.to_dict()), 200
+
+# 예방접종 삭제
+@dailycare_api_bp.route('/vaccination/<int:vaccination_id>', methods=['DELETE'])
+def delete_vaccination(vaccination_id):
+    vaccination = Vaccination.query.get(vaccination_id)
+    db.session.delete(vaccination)
+    db.session.commit()
+    return jsonify({"message": "삭제완료"}), 200
+
 
 @dailycare_api_bp.route('/save/medication/<pet_id>', methods = ['POST'])
 def save_medication(pet_id):

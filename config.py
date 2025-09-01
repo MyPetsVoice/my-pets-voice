@@ -9,7 +9,7 @@ class Config:
     SECRET_KEY = os.getenv('SESSION_SECRET_KEY')
     
     # 데이터베이스 설정
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///mypetsvoice.db')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     print('연결된 database : ',SQLALCHEMY_DATABASE_URI)
 
     # SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
