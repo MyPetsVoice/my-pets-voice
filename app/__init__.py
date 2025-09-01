@@ -2,6 +2,8 @@ from flask import Flask, render_template
 from app.routes.diary import diary_bp
 from app.routes.diary.diary_api import diary_api_bp
 from app.routes.chat.chat_api import chat_api_bp
+from app.routes.dailycare.dailycare_api import dailycare_api_bp
+from app.routes.dailycare.dailycare_view import dailycare_bp
 from flask import Flask, render_template, redirect, url_for
 from flask_socketio import SocketIO
 from app.routes.chat import chat_bp
