@@ -151,7 +151,7 @@ def get_diary_detail(diary_id):
 def get_user_personas():
     user_id = session.get('user_id')
     if not user_id:
-        return jsonify({"success": False, "message": "로그인이 필요합니다."})
+        return jsonify({"success": False, "message": "로그인이 필요합니다.", "redirect": "/auth"}), 401
     
     personas = PetPersona.query.filter_by(user_id=user_id).all()
     

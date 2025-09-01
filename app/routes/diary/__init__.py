@@ -7,4 +7,3 @@ diary_bp = Blueprint('diary', __name__)
 diary_bp.register_blueprint(diary_views_bp)
 diary_bp.register_blueprint(diary_api_bp, url_prefix='/api')
 
-__all__ = ['diary_bp', 'diary_api_bp']

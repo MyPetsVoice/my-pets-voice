@@ -5,8 +5,6 @@ from app.routes.dailycare import dailycare_bp
 from app.routes.diary import diary_bp
 from app.routes.mypage import mypage_bp
 
-# API 별도 블루프린트들 (chat과 dailycare는 이미 메인 bp에 포함됨)
-from app.routes.diary.diary_api import diary_api_bp
 
 def register_blueprints(app):
     """모든 블루프린트를 Flask 앱에 등록"""
@@ -23,6 +21,5 @@ __all__ = [
     'dailycare_bp', 
     'diary_bp', 
     'mypage_bp',
-    'diary_api_bp',
     'register_blueprints'
 ]

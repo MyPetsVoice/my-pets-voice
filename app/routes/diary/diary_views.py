@@ -1,10 +1,15 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for, session
 
 diary_views_bp = Blueprint("diary_views", __name__)
 
-@diary_views_bp.route("/")
-def index():
-    return render_template("diary/index.html")
+@diary_views_bp.route("/diary")
+def diary():
+    user = session.get('user')
+    if user:
+        user_nickname = user['kakao_account']['profile']['nickname']
+        return render_template('diary/index.html', user=user_nickname)
+
+    return redirect(url_for('index'))
 
 @diary_views_bp.route("/write")
 def write():

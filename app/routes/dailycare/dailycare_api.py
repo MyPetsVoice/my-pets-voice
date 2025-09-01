@@ -13,7 +13,7 @@ from app.services.dailycare.care_chatbot_service import CareChatbotService
 import logging
 from datetime import datetime
 
-dailycare_api_bp = Blueprint('dailycare_api_bp', __name__, url_prefix= '/api/dailycares')
+dailycare_api_bp = Blueprint('dailycare_api_bp', __name__)
 
 
 # 모달 html렌더링
