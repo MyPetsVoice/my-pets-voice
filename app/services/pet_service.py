@@ -17,13 +17,12 @@ class PetService:
         pet = query.first()  
         return pet
     
+    # PetService
     @staticmethod
-    def get_pet(pet_id: int,):
-        """pet_id로 Pet 하나 가져오기"""
-        query = Pet.query.filter_by(pet_id=pet_id)
-        
-        pet = query.first()  
-        return pet
+    def get_pet(pet_id: int):
+        pet = Pet.query.get(pet_id)
+        return pet.to_dict() if pet else None
+
 
 
 

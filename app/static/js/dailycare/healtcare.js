@@ -48,10 +48,10 @@ async function getPetInfo(pet_id){
                 <!-- Current Pet Info -->
                 <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl p-6 max-w-md mx-auto">
                     <h3 class="text-white font-semibold mb-2">${i.pet_name} (${
-        i.pet_species
+        i.species_name
       })</h3>
                     <div class="text-white text-sm space-y-1">
-                        <p>종: ${i.pet_breed}</p>
+                        <p>종: ${i.breed_name}</p>
                         <p>나이: ${i.pet_age}</p>
                         <p>성별:  ${i.pet_gender}</p>
                         <p>중성화 여부: ${i.is_neutered ? "Yes" : "No"}</p>

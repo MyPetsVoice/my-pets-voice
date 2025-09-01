@@ -16,7 +16,7 @@ async function getAllPetsById(user_id) {
       const card = document.createElement("div");
       card.className = "pet-card";
       card.dataset.petId = pet.pet_id;
-      card.innerHTML = `<strong>${pet.pet_name}</strong><small>${pet.pet_breed}</small>`;
+      card.innerHTML = `<strong>${pet.pet_name}</strong><small>${pet.species_name}</small>`;
       pet_selector.appendChild(card);
     });
 
@@ -46,8 +46,8 @@ async function getAllPetsById(user_id) {
           getMedications(current_pet_id);
 
           pet_detail.innerHTML = `
-            <h3>${petData.pet_name} (${petData.pet_species})</h3>
-            <p>종: ${petData.pet_breed}</p>
+            <h3>${petData.pet_name} (${petData.species_name})</h3>
+            <p>종: ${petData.breed_name}</p>
             <p>나이: ${petData.pet_age}</p>
             <p>성별: ${petData.pet_gender}</p>
             <p>중성화 여부: ${petData.is_neutered ? "Yes" : "No"}</p>

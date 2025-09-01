@@ -82,10 +82,11 @@ class careChatbotService:
     def summarize_pet_records(records: dict) -> str:
         """반려동물 기록 요약"""
         pet = records["pet"]
+        print(pet)
 
         return f"""
-        반려동물: {pet.pet_name} ({pet.pet_species} - {pet.pet_breed})
-        나이/성별: {pet.pet_age}살, {pet.pet_gender} / 중성화: {"O" if pet.is_neutered else "X"}
+        반려동물: {pet['pet_name']} ({pet['species_name']} - {pet['breed_name']})
+        나이/성별: {pet['pet_age']}살, {pet['pet_gender']} / 중성화: {"O" if pet['is_neutered'] else "X"}
         
         최근 건강 기록: {careChatbotService.summarize_record_list(records['health'], 'health')}
         알러지: {careChatbotService.summarize_record_list(records['allergy'], 'allergy')}
