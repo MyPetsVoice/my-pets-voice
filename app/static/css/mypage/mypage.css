@@ -1,0 +1,22 @@
+/* 성격 태그 선택 효과 */
+.personality-tag input:checked + span {
+    background-color: #eab308 !important;
+    color: white !important;
+    border-color: #eab308 !important;
+}
+
+/* 모달 애니메이션 */
+.modal-enter {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

@@ -5,4 +5,4 @@ from app.routes.mypage.mypage_views import mypage_views_bp
 mypage_bp = Blueprint('mypage', __name__)
 
 mypage_bp.register_blueprint(mypage_views_bp)
-mypage_bp.register_blueprint(mypage_api_bp)
+mypage_bp.register_blueprint(mypage_api_bp, url_prefix='/api')
