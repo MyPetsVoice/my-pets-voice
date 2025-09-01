@@ -1,135 +1,472 @@
 {% extends 'base.html' %}
 
-{% block content %}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+{% block title %}MyPet's Voice - 마이페이지{% endblock %}
 
-    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-gradient">
-        <div class="card shadow-lg" style="max-width: 800px; width: 100%;">
-            <div class="card-header text-center bg-primary text-white">
-                <h2 class="mb-0"><i class="fas fa-paw me-2"></i>My Pet's Voice</h2>
-                <p class="mb-0">반려동물의 정보를 입력하고 대화를 시작하세요</p>
-            </div>
-            <div class="card-body p-4">
-                <form id="petForm">
-                    <div class="row">
-                        <!-- 기본 정보 -->
-                        <div class="col-md-6 mb-3">
-                            <label for="name" class="form-label"><i class="fas fa-tag text-primary me-1"></i>이름 *</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <label for="species" class="form-label"><i class="fas fa-cat text-primary me-1"></i>종류 *</label>
-                            <select class="form-select" id="species" name="species" required>
-                                <option value="">선택하세요</option>
-                                {% for animal in animals_data.keys() %}
-                                <option value="{{ animal }}">{{ animal }}</option>
-                                {% endfor %}
-                                <option value="기타">기타</option>
-                            </select>
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <label for="breed" class="form-label"><i class="fas fa-dna text-primary me-1"></i>품종</label>
-                            <select class="form-select" id="breed" name="breed">
-                                <option value="">종류를 먼저 선택하세요</option>
-                            </select>
-                            <input type="text" class="form-control d-none" id="customBreed" name="customBreed" placeholder="직접 입력">
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <label for="age" class="form-label"><i class="fas fa-calendar text-primary me-1"></i>나이 *</label>
-                            <input type="number" class="form-control" id="age" name="age" min="0" max="30" required>
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <label for="gender" class="form-label"><i class="fas fa-venus-mars text-primary me-1"></i>성별 *</label>
-                            <select class="form-select" id="gender" name="gender" required>
-                                <option value="">선택하세요</option>
-                                <option value="남아">남아</option>
-                                <option value="여아">여아</option>
-                            </select>
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <label for="birthday" class="form-label"><i class="fas fa-birthday-cake text-primary me-1"></i>생일</label>
-                            <input type="date" class="form-control" id="birthday" name="birthday">
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <label for="owner_call" class="form-label"><i class="fas fa-user text-primary me-1"></i>주인 호칭 *</label>
-                            <input type="text" class="form-control" id="owner_call" name="owner_call" placeholder="예: 엄마, 아빠, 주인" required>
-                        </div>
-                    </div>
-                    
-                    <!-- 성격과 말투 -->
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label"><i class="fas fa-heart text-primary me-1"></i>성격 (여러 개 선택 가능)</label>
-                            <div class="personality-tags">
-                                {% for trait in personality_traits %}
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="personality" value="{{ trait }}" id="trait_{{ loop.index }}">
-                                    <label class="form-check-label personality-tag" for="trait_{{ loop.index }}">
-                                        {{ trait }}
-                                    </label>
-                                </div>
-                                {% endfor %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mypage/mypage.css')}}">
+<script src="{{ url_for('static', filename='js/mypage/mypage.js')}}" defer></script>
+
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <!-- 사이드바 -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden sticky top-24">
+                    <!-- 프로필 카드 -->
+                    <div class="p-6 text-center bg-gradient-to-b from-primary-50 to-white border-b border-gray-100">
+                        <div class="relative w-20 h-20 mx-auto mb-4">
+                            <img src="" alt="프로필" class="w-full h-full rounded-full object-cover border-4 border-white shadow-lg">
+                            <div class="absolute bottom-0 right-0 w-6 h-6 bg-gradient-to-r from-secondary-500 to-secondary-600 rounded-full flex items-center justify-center text-white cursor-pointer shadow-lg hover:shadow-xl transition-all">
+                                <i class="fas fa-camera text-xs"></i>
                             </div>
                         </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="speech_style" class="form-label"><i class="fas fa-comment text-primary me-1"></i>말투 *</label>
-                            <select class="form-select" id="speech_style" name="speech_style" required>
-                                <option value="">선택하세요</option>
-                                {% for style in speech_styles %}
-                                <option value="{{ style }}">{{ style }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1" id="nickname">사용자님</h3>
+                        <p class="text-sm text-gray-600" id="email">user@example.com</p>
                     </div>
                     
-                    <!-- 취향과 습관 -->
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="likes" class="form-label"><i class="fas fa-thumbs-up text-success me-1"></i>좋아하는 것</label>
-                            <textarea class="form-control" id="likes" name="likes" rows="3" placeholder="쉼표로 구분해서 입력하세요. 예: 산책, 간식, 공놀이"></textarea>
-                        </div>
-                        
-                        <div class="col-md-4 mb-3">
-                            <label for="dislikes" class="form-label"><i class="fas fa-thumbs-down text-danger me-1"></i>싫어하는 것</label>
-                            <textarea class="form-control" id="dislikes" name="dislikes" rows="3" placeholder="쉼표로 구분해서 입력하세요. 예: 목욕, 큰 소리, 낯선 사람"></textarea>
-                        </div>
-                        
-                        <div class="col-md-4 mb-3">
-                            <label for="habits" class="form-label"><i class="fas fa-sync text-warning me-1"></i>습관</label>
-                            <textarea class="form-control" id="habits" name="habits" rows="3" placeholder="쉼표로 구분해서 입력하세요. 예: 꼬리 흔들기, 골골거리기"></textarea>
-                        </div>
-                    </div>
-                    
-                    <!-- 특이사항 -->
-                    <div class="mb-4">
-                        <label for="special_notes" class="form-label"><i class="fas fa-star text-warning me-1"></i>기타 특이사항</label>
-                        <textarea class="form-control" id="special_notes" name="special_notes" rows="3" placeholder="외형, 가족관계, 특별한 에피소드 등 대화에 반영되었으면 하는 점을 자유롭게 작성하세요"></textarea>
-                    </div>
-                    
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-comments me-2"></i>대화 시작하기
+                    <!-- 메뉴 -->
+                    <div class="flex flex-col">
+                        <button class="flex items-center gap-3 p-4 text-gray-600 hover:bg-primary-500 hover:text-white transition-all border-none bg-transparent cursor-pointer text-left">
+                            <i class="fas fa-paw w-5"></i>
+                            <span>반려동물 관리</span>
+                        </button>
+                        <button class="flex items-center gap-3 p-4 text-gray-600 hover:bg-primary-500 hover:text-white transition-all border-none bg-transparent cursor-pointer text-left">
+                            <i class="fas fa-comments w-5"></i>
+                            <span>대화 기록</span>
+                        </button>
+                        <button class="flex items-center gap-3 p-4 text-gray-600 hover:bg-primary-500 hover:text-white transition-all border-none bg-transparent cursor-pointer text-left">
+                            <i class="fas fa-user-cog w-5"></i>
+                            <span>계정 설정</span>
                         </button>
                     </div>
-                </form>
+                </div>
+            </div>
+
+            <!-- 메인 컨텐츠 -->
+            <div class="lg:col-span-3">
+                <!-- 헤더 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                    <div class="flex justify-between items-center">
+                        <h1 class="text-2xl font-bold text-gray-800">
+                            <i class="fas fa-paw text-primary-500 mr-2"></i>
+                            반려동물 프로필
+                        </h1>
+                        <button id="add-pet-btn" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all hover:-translate-y-0.5 shadow-md">
+                            <i class="fas fa-plus mr-2"></i>
+                            반려동물 추가
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 반려동물 카드들 -->
+                <div id="pet-profile-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                    <!-- 반려동물 정보 카드들이 여기에 렌더링됩니다 -->
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // 서버에서 전달받은 동물 데이터를 전역 변수로 설정
-        const animalsData = {{ animals_data | tojson }};
-    </script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/mypage/pet_profile.js') }}"></script>
+<!-- 반려동물 등록 모달 -->
+<div id="add-pet-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-t-xl">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold">
+                    <i class="fas fa-paw mr-2"></i>
+                    반려동물 등록
+                </h2>
+                <button id="close-pet-modal" class="text-white hover:text-gray-300 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            <form id="add-pet-form" class="space-y-6" method="POST">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="pet_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-tag text-primary-500 mr-1"></i>
+                            반려동물 이름 *
+                        </label>
+                        <input type="text" id="pet_name" name="pet_name" required 
+                               class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="species_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-cat text-primary-500 mr-1"></i>
+                            종류 *
+                        </label>
+                        <select id="pet_species" name="species_id" required
+                                class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
+                            <!-- 동물 종류 렌더링 -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="breed_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-dna text-primary-500 mr-1"></i>
+                            품종
+                        </label>
+                        <select id="pet_breed" name="breed_id"
+                                class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
+                            <option value="">종류를 먼저 선택하세요</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pet_age" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-calendar text-primary-500 mr-1"></i>
+                            나이 *
+                        </label>
+                        <input type="number" id="pet_age" name="pet_age" min="0" max="30" required
+                               class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="birthdate" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-birthday-cake text-primary-500 mr-1"></i>
+                            생일
+                        </label>
+                        <input type="date" id="birthdate" name="birthdate"
+                               class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adoption_date" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-home text-primary-500 mr-1"></i>
+                            입양일
+                        </label>
+                        <input type="date" id="adoption_date" name="adoption_date"
+                               class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-venus-mars text-primary-500 mr-1"></i>
+                        성별 *
+                    </label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center">
+                            <input type="radio" name="pet_gender" value="female" class="mr-2 text-primary-500">
+                            여아
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="pet_gender" value="male" class="mr-2 text-primary-500">
+                            남아
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="is_neutered" name="is_neutered" class="mr-2 text-primary-500">
+                        <span class="text-sm font-medium text-gray-700">중성화 완료</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="pet-img" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-image text-primary-500 mr-1"></i>
+                        프로필 이미지
+                    </label>
+                    <input type="file" id="profile_img_url" accept="image/*"
+                           class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 transition-all">
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                    <button type="button" id="cancel-pet-form" 
+                            class="px-6 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all">
+                        취소
+                    </button>
+                    <button type="submit" id="save-pet-btn"
+                            class="px-6 py-2 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all hover:-translate-y-0.5 shadow-md">
+                        저장
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 반려동물 프로필 조회 모달 -->
+<div id="view-pet-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-t-xl">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold">
+                    <i class="fas fa-paw mr-2"></i>
+                    <span id="profile-pet-name">반려동물</span> 프로필
+                </h2>
+                <button id="close-profile-modal" class="text-white hover:text-gray-300 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            <!-- 프로필 이미지 -->
+            <div class="text-center mb-6">
+                <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-r from-primary-100 to-secondary-100 flex items-center justify-center">
+                    <img id="profile-pet-image" src="" alt="프로필 이미지" class="w-full h-full rounded-full object-cover hidden">
+                    <i id="profile-pet-icon" class="fas fa-paw text-4xl text-primary-600"></i>
+                </div>
+                <h3 id="profile-pet-display-name" class="text-2xl font-bold text-gray-800 mb-2">반려동물 이름</h3>
+            </div>
+
+            <!-- 기본 정보 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                        <i class="fas fa-info-circle text-primary-500 mr-2"></i>
+                        기본 정보
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">종류:</span>
+                            <span id="profile-species" class="font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">품종:</span>
+                            <span id="profile-breed" class="font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">나이:</span>
+                            <span id="profile-age" class="font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">성별:</span>
+                            <span id="profile-gender" class="font-medium">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                        <i class="fas fa-calendar text-primary-500 mr-2"></i>
+                        중요한 날짜
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">생일:</span>
+                            <span id="profile-birthdate" class="font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">입양일:</span>
+                            <span id="profile-adoption-date" class="font-medium">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">중성화:</span>
+                            <span id="profile-neutered" class="font-medium">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 페르소나 상태 -->
+            <div class="bg-gradient-to-r from-primary-50 to-secondary-50 p-4 rounded-lg mb-6">
+                <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                    <i class="fas fa-magic text-primary-500 mr-2"></i>
+                    페르소나 상태
+                </h4>
+                <div id="persona-status">
+                    <!-- 페르소나 정보가 여기에 표시됩니다 -->
+                    <!-- <div class="text-center py-4">
+                        <i class="fas fa-robot text-3xl text-gray-400 mb-2"></i>
+                        <p class="text-gray-600">아직 페르소나가 생성되지 않았습니다</p> -->
+                    <!-- </div> -->
+                </div>
+            </div>
+
+            <!-- 버튼들 -->
+            <div class="flex justify-between gap-3">
+                <div class="flex gap-2">
+                    <button id="edit-pet-btn" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-all">
+                        <i class="fas fa-edit mr-1"></i>
+                        수정
+                    </button>
+                    <button id="delete-pet-btn" class="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all">
+                        <i class="fas fa-trash mr-1"></i>
+                        삭제
+                    </button>
+                </div>
+                <button id="create-persona-btn" class="px-6 py-2 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all hover:-translate-y-0.5 shadow-md">
+                    <i class="fas fa-magic mr-2"></i>
+                    <span id="persona-btn-text">페르소나 생성</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 페르소나 생성 모달 -->
+<div id="add-persona-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-t-xl">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold">
+                    <i class="fas fa-magic mr-2"></i>
+                    페르소나 - <span id="selected-pet-name">반려동물</span>
+                </h2>
+                <button id="close-persona-modal" class="text-white hover:text-gray-300 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            <form id="add-persona-form" class="space-y-8" method="POST">
+                <!-- 호칭 설정 -->
+                <div class="bg-gray-50 p-6 rounded-xl">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-user text-primary-500 mr-2"></i>
+                        호칭 설정
+                    </h3>
+                    <div class="form-group">
+                        <label for="user_call" class="block text-sm font-medium text-gray-700 mb-2">
+                            사용자를 부르는 호칭 *
+                        </label>
+                        <input type="text" name="user_call" id="user_call" required
+                               class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                               placeholder="예: 엄마, 아빠, 주인">
+                    </div>
+                </div>
+
+                <!-- 말투 설정 -->
+                <div class="bg-gray-50 p-6 rounded-xl">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-comment text-primary-500 mr-2"></i>
+                        말투 설정
+                    </h3>
+                    
+                    <!-- 존댓말/반말 -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">존댓말/반말</label>
+                        <div class="flex gap-3">
+                            <label class="politeness-tag">
+                                <input type="radio" name="politeness" value="formal" class="hidden">
+                                <span class="block px-4 py-2 text-center bg-white border-2 border-primary-500 text-primary-500 rounded-lg cursor-pointer hover:bg-primary-50 transition-all">존댓말</span>
+                            </label>
+                            <label class="politeness-tag">
+                                <input type="radio" name="politeness" value="informal" class="hidden">
+                                <span class="block px-4 py-2 text-center bg-white border-2 border-primary-500 text-primary-500 rounded-lg cursor-pointer hover:bg-primary-50 transition-all">반말</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 말투 스타일 -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">말투 스타일 (한 개 선택)</label>
+                        <div id="speech-styles-container" class="flex flex-wrap gap-2">
+                            <!-- 말투 스타일들이 동적으로 렌더링됩니다 -->
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="speech_habit" class="block text-sm font-medium text-gray-700 mb-2">
+                            특별한 말버릇
+                        </label>
+                        <input type="text" name="speech_habit" id="speech_habit"
+                               class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                               placeholder="예: 끝에 ~냥 붙이기, 말끝을 '~멍'으로 끝내기">
+                    </div>
+                </div>
+
+                <!-- 성격 설정 -->
+                <div class="bg-gray-50 p-6 rounded-xl">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-heart text-primary-500 mr-2"></i>
+                        성격 및 특징(여러 개 선택 가능)
+                    </h3>
+                    
+                    <div id="personality-traits-container">
+                        <!-- 성격 특성들이 동적으로 렌더링됩니다 -->
+                    </div>
+                </div>
+
+                <!-- 추가 정보 -->
+                <div class="bg-gray-50 p-6 rounded-xl">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-info-circle text-primary-500 mr-2"></i>
+                        추가 정보
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label for="likes" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-thumbs-up text-green-500 mr-1"></i>
+                                좋아하는 것
+                            </label>
+                            <textarea id="likes" name="likes" rows="3" 
+                                      class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all resize-y"
+                                      placeholder="쉼표로 구분해서 입력하세요. 예: 산책, 간식, 공놀이"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dislikes" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-thumbs-down text-red-500 mr-1"></i>
+                                싫어하는 것
+                            </label>
+                            <textarea id="dislikes" name="dislikes" rows="3"
+                                      class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all resize-y"
+                                      placeholder="쉼표로 구분해서 입력하세요. 예: 목욕, 큰 소리, 낯선 사람"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="habits" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-sync text-yellow-500 mr-1"></i>
+                                습관
+                            </label>
+                            <textarea id="habits" name="habits" rows="3"
+                                      class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all resize-y"
+                                      placeholder="쉼표로 구분해서 입력하세요. 예: 꼬리 흔들기, 골골거리기"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="family_info" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-home text-blue-500 mr-1"></i>
+                                가족 정보
+                            </label>
+                            <textarea id="family_info" name="family_info" rows="3"
+                                      class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all resize-y"
+                                      placeholder="가족 구성원, 관계 등을 입력하세요"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label for="special_note" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-star text-yellow-500 mr-1"></i>
+                            특별한 사항
+                        </label>
+                        <textarea id="special_note" name="special_note" rows="3"
+                                  class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all resize-y"
+                                  placeholder="외형, 특별한 에피소드 등 대화에 반영되었으면 하는 점을 자유롭게 작성하세요"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                    <button type="button" id="cancel-persona-form" 
+                            class="px-6 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all">
+                        취소
+                    </button>
+                    <button id="save-persona-btn" type="submit"
+                            class="px-6 py-2 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all hover:-translate-y-0.5 shadow-md">
+                        저장
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- <button onclick="document.getElementById('add-persona-modal').classList.remove('hidden')" 
+        class="px-4 py-2 bg-blue-500 text-white rounded-lg">
+    페르소나 생성 모달 열기
+</button> -->
+
 {% endblock %}

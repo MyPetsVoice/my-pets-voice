@@ -7,6 +7,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
         <script>
             tailwind.config = {
                 theme: {
@@ -45,115 +46,123 @@
             }
         </script>
         <script src="static/js/base.js" defer></script>
-</head>
-<body class="font-korean text-gray-800 bg-gray-50 min-h-screen ">
-    <!-- 네비게이션 -->
-    <nav class="bg-gray-50  sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-5 flex justify-between items-center h-20">
-            <a href="/" class="flex items-center text-secondary-500 hover:text-secondary-600 transition-colors">
-                <div class="flex items-center text-2xl font-bold">
-                    <!-- <i class="fas fa-paw mr-2 text-3xl"></i> -->
-                     <img src="../static/img/my_pet_voice.PNG" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
-                    <span>MyPet's Voice</span>
-                </div>
-            </a>
-            
-            <button class="md:hidden p-2 text-gray-700 hover:text-secondary-500" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars text-xl"></i>
-            </button>
-            
-            <div class="hidden md:flex space-x-4" id="nav-menu">
-                <a href="{{ url_for('chat.chat_views.chat')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">반려동물과 대화하기</a>
-                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">너의 일기장</a>
-                <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">마이페이지</a>
-                <a href="{{url_for('dailycare_bp.get_dailycare')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">데일리 케어</a>
-                <a href="{{ url_for('mypage.mypage_views.mypage')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">마이페이지</a>
-            </div>
-            
-                <a href="{{ url_for('auth.auth_api.logout')}}">로그아웃</a>
-                <a href="{{ url_for('auth.auth_api.kakao_login')}}">
-                    <img src="{{ url_for('static', filename='img/auth/kakao_login_medium.png')}}">
-                </a>
-
-            </div>
-        </div>
-    </nav>
-
-    <!-- 메인 컨테이너 -->
-
-     {% block content %}
-     {% endblock %}
-
-
-    <!-- 푸터 -->
-    <footer class="bg-gray-800 text-white mt-16 footer">
-        <div class="max-w-7xl mx-auto px-5 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <div class="md:col-span-2 lg:col-span-1">
-                    <div class="flex items-center text-2xl font-bold text-secondary-400 mb-4">
+    </head>
+    <body class="font-korean text-gray-800 bg-gray-50 min-h-screen">
+        <!-- 네비게이션 -->
+        <nav class="bg-gray-50  sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-5 flex justify-between items-center h-20">
+                <a href="/" class="flex items-center text-secondary-500 hover:text-secondary-600 transition-colors">
+                    <div class="flex items-center text-2xl font-bold">
                         <!-- <i class="fas fa-paw mr-2 text-3xl"></i> -->
-                         <img src="../static/img/my_pet_voice.PNG" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
+                        <img src="../static/img/my_pet_voice.PNG" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
                         <span>MyPet's Voice</span>
                     </div>
-                    <p class="text-gray-300 leading-relaxed mb-6">
-                        반려동물과의 특별한 소통을 위한 AI 플랫폼
-                    </p>
-                    <div class="flex space-x-3">
-                        <a href="#" onclick="alert('Instagram 링크 (데모)')" class="w-10 h-10 bg-gray-700 hover:bg-secondary-500 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:-translate-y-0.5">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" onclick="alert('Facebook 링크 (데모)')" class="w-10 h-10 bg-gray-700 hover:bg-secondary-500 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:-translate-y-0.5">
-                            <i class="fab fa-facebook"></i>
-                        </a>
-                        <a href="#" onclick="alert('Twitter 링크 (데모)')" class="w-10 h-10 bg-gray-700 hover:bg-secondary-500 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:-translate-y-0.5">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" onclick="alert('YouTube 링크 (데모)')" class="w-10 h-10 bg-gray-700 hover:bg-secondary-500 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:-translate-y-0.5">
-                            <i class="fab fa-youtube"></i>
-                        </a>
+                </a>
+                
+                <button class="md:hidden p-2 text-gray-700 hover:text-secondary-500" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                
+                <div class="hidden md:flex space-x-4" id="nav-menu">
+                    <a href="{{ url_for('chat.chat_views.chat')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">반려동물과 대화하기</a>
+                    <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">너의 일기장</a>
+                    <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">데일리 케어</a>
+                    <a href="{{ url_for('mypage.mypage_views.mypage')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">마이페이지</a>
+                </div>
+                
+                <!-- 날씨 api 가져와서 렌더링 -->
+                
+                
+                {% if user %}
+                    <span>{{ user }}님</span>
+                    <a href="{{ url_for('auth.auth_api.logout')}}">로그아웃</a>
+                {% else %}
+                    <a href="{{ url_for('auth.auth_api.kakao_login')}}">
+                        <img src="{{ url_for('static', filename='img/auth/kakao_login_medium.png')}}">
+                    </a>
+                    <button class="inline-flex items-center px-4 py-2 bg-secondary-500 text-white rounded-lg hover:bg-secondary-600 transition-all duration-300 hover:-translate-y-0.5 shadow-md text-sm font-medium">
+                        <i class="fas fa-sign-in-alt mr-2"></i> 로그인
+                    </button>
+                {% endif %}
+                </div>
+            </div>
+        </nav>
+
+        <!-- 메인 컨테이너 -->
+
+        {% block content %}
+        {% endblock %}
+
+
+        <!-- 푸터 -->
+        <footer class="bg-gray-800 text-white mt-8">
+            <div class="max-w-7xl mx-auto px-5 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                    <div class="md:col-span-2 lg:col-span-1">
+                        <div class="flex items-center text-2xl font-bold text-secondary-400 mb-4">
+                            <!-- <i class="fas fa-paw mr-2 text-3xl"></i> -->
+                            <img src="../static/img/my_pet_voice.PNG" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
+                            <span>MyPet's Voice</span>
+                        </div>
+                        <p class="text-gray-300 leading-relaxed mb-6">
+                            반려동물과의 특별한 소통을 위한 AI 플랫폼
+                        </p>
+                        <div class="flex space-x-3">
+                            <a href="#" onclick="alert('Instagram 링크 (데모)')" class="w-10 h-10 bg-gray-700 hover:bg-secondary-500 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:-translate-y-0.5">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" onclick="alert('Facebook 링크 (데모)')" class="w-10 h-10 bg-gray-700 hover:bg-secondary-500 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:-translate-y-0.5">
+                                <i class="fab fa-facebook"></i>
+                            </a>
+                            <a href="#" onclick="alert('Twitter 링크 (데모)')" class="w-10 h-10 bg-gray-700 hover:bg-secondary-500 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:-translate-y-0.5">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" onclick="alert('YouTube 링크 (데모)')" class="w-10 h-10 bg-gray-700 hover:bg-secondary-500 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:-translate-y-0.5">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-primary-400 text-lg font-semibold mb-4">서비스</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" onclick="showSection('chat')" class="text-gray-300 hover:text-primary-400 transition-colors">반려동물과 대화하기</a></li>
+                            <li><a href="#" onclick="showSection('diary')" class="text-gray-300 hover:text-primary-400 transition-colors">반려동물 일기</a></li>
+                            <li><a href="#" onclick="showSection('dailycare')" class="text-gray-300 hover:text-primary-400 transition-colors">데일리 케어</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="text-primary-400 text-lg font-semibold mb-4">고객지원</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" onclick="alert('공지사항 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">공지사항</a></li>
+                            <li><a href="#" onclick="alert('FAQ (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">자주 묻는 질문</a></li>
+                            <li><a href="#" onclick="alert('문의하기 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">문의하기</a></li>
+                            <li><a href="#" onclick="alert('이용가이드 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">이용가이드</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="text-primary-400 text-lg font-semibold mb-4">정보</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" onclick="alert('회사소개 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">회사소개</a></li>
+                            <li><a href="#" onclick="alert('이용약관 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">이용약관</a></li>
+                            <li><a href="#" onclick="alert('개인정보처리방침 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">개인정보처리방침</a></li>
+                            <li><a href="#" onclick="alert('사업자정보 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">사업자정보</a></li>
+                        </ul>
                     </div>
                 </div>
 
-                <div>
-                    <h4 class="text-primary-400 text-lg font-semibold mb-4">서비스</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" onclick="showSection('chat')" class="text-gray-300 hover:text-primary-400 transition-colors">반려동물과 대화하기</a></li>
-                        <li><a href="#" onclick="showSection('diary')" class="text-gray-300 hover:text-primary-400 transition-colors">반려동물 일기</a></li>
-                        <li><a href="#" onclick="showSection('dailycare')" class="text-gray-300 hover:text-primary-400 transition-colors">데일리 케어</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-primary-400 text-lg font-semibold mb-4">고객지원</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" onclick="alert('공지사항 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">공지사항</a></li>
-                        <li><a href="#" onclick="alert('FAQ (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">자주 묻는 질문</a></li>
-                        <li><a href="#" onclick="alert('문의하기 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">문의하기</a></li>
-                        <li><a href="#" onclick="alert('이용가이드 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">이용가이드</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-primary-400 text-lg font-semibold mb-4">정보</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" onclick="alert('회사소개 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">회사소개</a></li>
-                        <li><a href="#" onclick="alert('이용약관 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">이용약관</a></li>
-                        <li><a href="#" onclick="alert('개인정보처리방침 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">개인정보처리방침</a></li>
-                        <li><a href="#" onclick="alert('사업자정보 (데모)')" class="text-gray-300 hover:text-primary-400 transition-colors">사업자정보</a></li>
-                    </ul>
+                <div class="flex flex-col md:flex-row justify-between items-center pt-6 border-t border-gray-700 text-sm text-gray-400">
+                    <div>
+                        <p>&copy; 2025 MyPet's Voice. All rights reserved.</p>
+                    </div>
+                    <div class="mt-2 md:mt-0">
+                        <p>문의: contact@mypetsvoice.com | 대표번호: 02-1234-5678</p>
+                    </div>
                 </div>
             </div>
+        </footer>
 
-            <div class="flex flex-col md:flex-row justify-between items-center pt-6 border-t border-gray-700 text-sm text-gray-400">
-                <div>
-                    <p>&copy; 2025 MyPet's Voice. All rights reserved.</p>
-                </div>
-                <div class="mt-2 md:mt-0">
-                    <p>문의: contact@mypetsvoice.com | 대표번호: 02-1234-5678</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-</body>
+    </body>
 </html>
