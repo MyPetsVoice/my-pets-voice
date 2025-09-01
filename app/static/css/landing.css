@@ -1,0 +1,297 @@
+/* app/static/css/landing.css */
+
+/* 히어로 섹션 애니메이션 */
+.hero-animate {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease-out;
+}
+
+.hero-animate.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 기능 카드 호버 효과 강화 */
+.feature-card {
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.feature-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.feature-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.feature-card .feature-icon {
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* 데모 채팅 애니메이션 */
+.demo-message {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideInMessage 0.5s ease-out forwards;
+}
+
+.demo-message.user-message {
+    transform: translateX(20px);
+}
+
+@keyframes slideInMessage {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 타이핑 인디케이터 애니메이션 개선 */
+.typing-dots {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.typing-dots .dot {
+    width: 8px;
+    height: 8px;
+    background-color: #9ca3af;
+    border-radius: 50%;
+    animation: typingBounce 1.4s infinite ease-in-out;
+}
+
+.typing-dots .dot:nth-child(1) { animation-delay: 0s; }
+.typing-dots .dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots .dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+    0%, 60%, 100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    30% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* 부드러운 스크롤 */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 그라디언트 텍스트 애니메이션 */
+.gradient-text {
+    background: linear-gradient(45deg, #f97316, #eab308, #f97316);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* 버튼 호버 효과 강화 */
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+/* 카드 3D 효과 */
+.card-3d {
+    perspective: 1000px;
+}
+
+.card-3d-inner {
+    transition: transform 0.3s;
+    transform-style: preserve-3d;
+}
+
+.card-3d:hover .card-3d-inner {
+    transform: rotateY(5deg) rotateX(5deg);
+}
+
+/* 로딩 스피너 */
+.loading-spinner {
+    border: 3px solid #f3f4f6;
+    border-top: 3px solid #f97316;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 반응형 텍스트 크기 */
+@media (max-width: 640px) {
+    .hero-title {
+        font-size: 2.5rem;
+        line-height: 1.2;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+}
+
+/* 데모 채팅 스타일 */
+.demo-chat-container {
+    background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+    border: 1px solid #e2e8f0;
+}
+
+.demo-message-user {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    border-radius: 18px 18px 4px 18px;
+    padding: 12px 16px;
+    max-width: 80%;
+    margin-left: auto;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+    animation: slideInRight 0.3s ease-out;
+}
+
+.demo-message-bot {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px 18px 18px 4px;
+    padding: 12px 16px;
+    max-width: 80%;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    animation: slideInLeft 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 펄스 애니메이션 */
+.pulse-soft {
+    animation: pulseSoft 2s ease-in-out infinite;
+}
+
+@keyframes pulseSoft {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+/* 플로팅 애니메이션 */
+.floating {
+    animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes floating {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* CTA 섹션 파티클 효과 */
+.cta-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+        radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 2px, transparent 2px);
+    background-size: 50px 50px;
+    animation: particleMove 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes particleMove {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(50px, 50px);
+    }
+}
+
+/* 모바일 최적화 */
+@media (max-width: 768px) {
+    .demo-message-user,
+    .demo-message-bot {
+        max-width: 90%;
+        font-size: 0.9rem;
+    }
+    
+    .feature-card {
+        margin-bottom: 2rem;
+    }
+    
+    .hero-section .hero-image {
+        order: -1;
+        margin-bottom: 2rem;
+    }
+}

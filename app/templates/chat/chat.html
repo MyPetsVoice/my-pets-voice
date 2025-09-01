@@ -1,293 +1,210 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/chat/chat.css') }}" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+{% block title %}MyPet's Voice - 반려동물과 대화하기{% endblock %}
 
-<div class="container-fluid h-100">
-        <div class="row h-100">
-            <!-- 사이드바 - 펫 정보 -->
-            <div class="col-md-3 bg-light sidebar p-0">
-                <div class="pet-info-panel h-100">
-                    <div class="pet-header text-center p-3 bg-primary text-white">
-                        <div class="pet-avatar mb-2">
-                            <i class="fas fa-paw fa-3x"></i>
-                        </div>
-                        <h4 class="mb-1">{{ pet_info.name }}</h4>
-                        <p class="mb-0 small">{{ pet_info.species }} · {{ pet_info.breed }}</p>
-                        <p class="mb-0 small">{{ pet_info.age }}살 {{ pet_info.gender }}</p>
-                    </div>
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat/chat.css')}}">
+
+<div class="bg-gray-50 pb-20 chat-page">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+        
+        {% if not pets %}
+        <!-- 페르소나가 없는 경우 -->
+        <div class="text-center py-12">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-md mx-auto">
+                <i class="fas fa-robot text-6xl text-gray-400 mb-4"></i>
+                <h2 class="text-xl font-bold text-gray-800 mb-2">페르소나를 먼저 생성하세요</h2>
+                <p class="text-gray-600 mb-6">반려동물과 대화하려면 먼저 마이페이지에서 페르소나를 생성해야 합니다.</p>
+                <a href="{{ url_for('mypage.mypage_views.mypage') }}" 
+                   class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg hover:from-primary-600 hover:to-secondary-600 transition-all">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    마이페이지로 가기
+                </a>
+            </div>
+        </div>
+        
+        {% else %}
+        <!-- 채팅 화면 -->
+        <div class="chat-main-container">
+            
+            <!-- 사이드바 - 반려동물 선택 및 정보 -->
+            <div class="chat-sidebar">
+                
+                <!-- 반려동물 선택 드롭다운 -->
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-heart text-primary-500 mr-2"></i>
+                        내 반려동물
+                    </h3>
                     
-                    <div class="pet-details p-3">
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2"><i class="fas fa-heart text-danger me-1"></i>성격</h6>
-                            <div class="trait-tags">
-                                {% for trait in pet_info.personality %}
-                                <span class="badge bg-secondary me-1 mb-1">{{ trait }}</span>
-                                {% endfor %}
+                    <div class="relative">
+                        <button id="pet-dropdown-btn" class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-all">
+                            <div class="flex items-center" id="selected-pet-info">
+                                <div class="w-8 h-8 bg-gradient-to-r from-primary-100 to-secondary-100 rounded-full mr-3 flex items-center justify-center">
+                                    <i class="fas fa-paw text-primary-600 text-sm"></i>
+                                </div>
+                                <span id="pet-dropdown-btn-text" class="font-medium text-gray-700">반려동물 선택</span>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-500 transition-transform" id="dropdown-arrow"></i>
+                        </button>
+                        
+                        <div id="pet-dropdown-menu" class="hidden absolute top-full left-0 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto">
+                            {% for pet in pets %}
+                            <button class="pet-option w-full flex items-center px-4 py-3 hover:bg-gray-50 transition-all border-b border-gray-100 last:border-b-0" 
+                                    data-pet-id="{{ pet.pet_id }}" data-pet='{{ pet | tojson }}'>
+                                <div class="w-8 h-8 bg-gradient-to-r from-primary-100 to-secondary-100 rounded-full mr-3 flex items-center justify-center">
+                                    {% if pet.profile_image_url %}
+                                    <img src="{{ pet.profile_image_url }}" alt="{{ pet.pet_name }}" class="w-full h-full rounded-full object-cover">
+                                    {% else %}
+                                    <i class="fas fa-paw text-primary-600 text-sm"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="text-left">
+                                    <div class="font-medium text-gray-800">{{ pet.pet_name }}</div>
+                                    <div class="text-sm text-gray-600">{{ pet.species_name or '알 수 없음' }}</div>
+                                </div>
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 선택된 반려동물 정보 -->
+                <div id="pet-info-section" class="hidden flex-1 flex flex-col">
+                    <!-- <div class="text-center mb-4">
+                        <div id="pet-avatar" class="w-20 h-20 bg-gradient-to-r from-primary-100 to-secondary-100 rounded-full mx-auto mb-3 flex items-center justify-center">
+                            <i class="fas fa-paw text-2xl text-primary-600"></i>
+                        </div>
+                        <h3 id="pet-name" class="text-xl font-bold text-gray-800 mb-1">-</h3>
+                        <p id="pet-species" class="text-sm text-gray-600">-</p>
+                    </div> -->
+                    
+                    <!-- 페르소나 정보 -->
+                    <div class="pet-info-scroll-area">
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-user text-primary-500 mr-1"></i>
+                                기본 정보
+                            </h4>
+                            <div class="bg-gray-50 rounded-lg p-3 space-y-1">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">나이:</span>
+                                    <span id="pet-age" class="font-medium">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">성별:</span>
+                                    <span id="pet-gender" class="font-medium">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">품종:</span>
+                                    <span id="pet-breed" class="font-medium">-</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">나를 부르는 말:</span>
+                                    <span id="pet-user-call" class="font-medium text-primary-600">-</span>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2"><i class="fas fa-comment text-primary me-1"></i>말투</h6>
-                            <span class="badge bg-info">{{ pet_info.speech_style }}</span>
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-heart text-red-500 mr-1"></i>
+                                성격 특성
+                            </h4>
+                            <div id="pet-personality" class="flex flex-wrap gap-2">
+                                <!-- 성격 태그들이 여기에 동적으로 추가됩니다 -->
+                            </div>
                         </div>
                         
-                        {% if pet_info.likes %}
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2"><i class="fas fa-thumbs-up text-success me-1"></i>좋아하는 것</h6>
-                            {% for like in pet_info.likes %}
-                            <span class="badge bg-success me-1 mb-1">{{ like }}</span>
-                            {% endfor %}
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-comment text-blue-500 mr-1"></i>
+                                말투
+                            </h4>
+                            <div class="flex gap-2">
+                                <div id="pet-politeness" class="bg-blue-50 rounded-full p-2 text-blue-800 font-medium text-xs">-</div>
+                                <div id="pet-speech-style" class="bg-blue-50 rounded-full p-2 text-blue-800 font-medium text-xs">-</div>
+                            </div>
                         </div>
-                        {% endif %}
                         
-                        {% if pet_info.dislikes %}
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2"><i class="fas fa-thumbs-down text-danger me-1"></i>싫어하는 것</h6>
-                            {% for dislike in pet_info.dislikes %}
-                            <span class="badge bg-danger me-1 mb-1">{{ dislike }}</span>
-                            {% endfor %}
+                        <div id="pet-likes-section" class="hidden">
+                            <h4 class="font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-heart text-green-500 mr-1"></i>
+                                좋아하는 것
+                            </h4>
+                            <div id="pet-likes" class="flex flex-wrap gap-1">
+                                <!-- 좋아하는 것들이 여기에 태그로 추가됩니다 -->
+                            </div>
                         </div>
-                        {% endif %}
                         
-                        {% if pet_info.habits %}
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2"><i class="fas fa-sync text-warning me-1"></i>습관</h6>
-                            {% for habit in pet_info.habits %}
-                            <span class="badge bg-warning me-1 mb-1">{{ habit }}</span>
-                            {% endfor %}
+                        <div id="pet-dislikes-section" class="hidden">
+                            <h4 class="font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-heart-broken text-red-500 mr-1"></i>
+                                싫어하는 것
+                            </h4>
+                            <div id="pet-dislikes" class="flex flex-wrap gap-1">
+                                <!-- 싫어하는 것들이 여기에 태그로 추가됩니다 -->
+                            </div>
                         </div>
-                        {% endif %}
-                        
-                        {% if pet_info.special_notes %}
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2"><i class="fas fa-star text-warning me-1"></i>특이사항</h6>
-                            <p class="small text-muted">{{ pet_info.special_notes }}</p>
-                        </div>
-                        {% endif %}
                     </div>
                     
-                    <div class="pet-controls p-3 border-top">
-                        <button class="btn btn-outline-warning btn-sm w-100 mb-2" onclick="resetChat()">
-                            <i class="fas fa-redo me-1"></i>대화 초기화
+                    <!-- 채팅 초기화 버튼 -->
+                    <div class="mt-4 pt-3 border-t border-gray-200">
+                        <button id="reset-chat-btn" class="w-full flex items-center justify-center px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all">
+                            <i class="fas fa-refresh mr-2"></i>
+                            대화 초기화
                         </button>
-                        <a href="/" class="btn btn-outline-primary btn-sm w-100">
-                            <i class="fas fa-edit me-1"></i>펫 정보 수정
-                        </a>
                     </div>
                 </div>
+                
             </div>
             
             <!-- 채팅 영역 -->
-            <div class="col-md-9 p-0 chat-container">
-                <div class="chat-header p-3 bg-white border-bottom">
-                    <h5 class="mb-0">
-                        <i class="fas fa-comments text-primary me-2"></i>
-                        {{ pet_info.name }}와 대화하기
-                    </h5>
-                    <small class="text-muted">{{ pet_info.owner_call }}를(을) 기다리고 있어요!</small>
-                </div>
-                
-                <div class="chat-messages" id="chatMessages">
-                    <div class="welcome-message text-center py-5">
-                        <div class="pet-welcome-avatar mb-3">
-                            <i class="fas fa-paw fa-4x text-primary"></i>
+            <div class="chat-area">
+                <!-- 채팅 헤더 -->
+                <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <div id="chat-header-avatar" class="w-10 h-10 bg-gradient-to-r from-primary-100 to-secondary-100 rounded-full mr-3 flex items-center justify-center">
+                            <i class="fas fa-paw text-primary-600"></i>
                         </div>
-                        <h4>{{ pet_info.name }}이(가) 기다리고 있어요!</h4>
-                        <p class="text-muted">{{ pet_info.owner_call }}님과 대화하고 싶어해요. 먼저 인사해보세요! 🐾</p>
+                        <div>
+                            <h4 id="chat-header-title" class="font-semibold text-gray-800">반려동물을 선택하세요</h4>
+                            <div id="chat-header-status" class="text-sm text-gray-500">
+                                <i id="chat-status-icon" class="fas fa-circle text-xs mr-1"></i>
+                                <span id="status-text" class="text-sm text-gray-500">대기중</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="chat-input-container p-3 bg-white border-top">
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="messageInput" 
-                               placeholder="{{ pet_info.name }}에게 메시지를 입력하세요..." 
-                               maxlength="200">
-                        <button class="btn btn-primary" type="button" id="sendButton">
-                            <i class="fas fa-paper-plane me-1"></i>전송
+                <!-- 채팅 메시지 영역 -->
+                <div id="chat-messages" class="chat-messages-container">
+                    <!-- 채팅 메시지 표시 -->
+                </div>
+                
+                <!-- 메시지 입력 영역 -->
+                <div class="p-4 border-t border-gray-200">
+                    <form id="chat-form" class="flex gap-2">
+                        <input type="text" id="message-input" placeholder="반려동물을 선택하고 메시지를 입력하세요..." 
+                               class="flex-1 p-3 border border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all" disabled>
+                        <button type="submit" id="msg-submit-btn" class="px-6 py-3 bg-gray-300 text-gray-500 rounded-lg transition-all" disabled>
+                            <i class="fas fa-paper-plane"></i>
                         </button>
-                    </div>
-                    <div class="text-muted small mt-1 text-center">
-                        <i class="fas fa-info-circle me-1"></i>
-                        {{ pet_info.name }}는 {{ pet_info.speech_style }}로 대답할 거예요
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
+        {% endif %}
+        
     </div>
-    
-    <!-- 로딩 모달 -->
-    <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-sm modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center p-4">
-                    <div class="spinner-border text-primary mb-3" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mb-0">{{ pet_info.name }}가 생각하고 있어요...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
-    <script>
-        const chatMessages = document.getElementById('chatMessages');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-        const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
-        
-        // Socket.IO 연결 초기화
-        const socket = io();
-        
-        // Socket.IO 이벤트 리스너들
-        socket.on('connect', function() {
-            console.log('소켓 연결됨');
-        });
-        
-        socket.on('user_message', function(data) {
-            addMessage(data.message, 'user');
-        });
-        
-        socket.on('bot_typing', function(data) {
-            showTypingIndicator(data.pet_name);
-        });
-        
-        socket.on('bot_response', function(data) {
-            hideTypingIndicator();
-            addMessage(data.message, 'bot', data.pet_name);
-        });
-        
-        socket.on('error', function(data) {
-            hideTypingIndicator();
-            addMessage(data.message, 'bot', '{{ pet_info.name }}');
-        });
-        
-        socket.on('chat_reset', function(data) {
-            chatMessages.innerHTML = `
-                <div class="welcome-message text-center py-5">
-                    <div class="pet-welcome-avatar mb-3">
-                        <i class="fas fa-paw fa-4x text-primary"></i>
-                    </div>
-                    <h4>{{ pet_info.name }}이(가) 기다리고 있어요!</h4>
-                    <p class="text-muted">{{ pet_info.owner_call }}님과 대화하고 싶어해요. 먼저 인사해보세요! 🐾</p>
-                </div>
-            `;
-        });
+</div>
 
-        // 메시지 전송
-        function sendMessage() {
-            const message = messageInput.value.trim();
-            if (!message) return;
-            
-            messageInput.value = '';
-            sendButton.disabled = true;
-            
-            // 소켓을 통해 메시지 전송
-            socket.emit('send_message', { message: message });
-            
-            setTimeout(() => {
-                sendButton.disabled = false;
-            }, 1000);
-        }
-        
-        // 메시지 추가
-        function addMessage(text, type, petName = null) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}-message`;
-            
-            if (type === 'user') {
-                messageDiv.innerHTML = `
-                    <div class="message-content user-content">
-                        <div class="message-text">${text}</div>
-                        <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-                    </div>
-                    <div class="message-avatar user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                `;
-            } else {
-                messageDiv.innerHTML = `
-                    <div class="message-avatar bot-avatar">
-                        <i class="fas fa-paw"></i>
-                    </div>
-                    <div class="message-content bot-content">
-                        <div class="message-name">${petName || '{{ pet_info.name }}'}</div>
-                        <div class="message-text">${text}</div>
-                        <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-                    </div>
-                `;
-            }
-            
-            // 환영 메시지 제거
-            const welcomeMessage = chatMessages.querySelector('.welcome-message');
-            if (welcomeMessage) {
-                welcomeMessage.remove();
-            }
-            
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-        
-        // 타이핑 인디케이터 표시
-        function showTypingIndicator(petName) {
-            hideTypingIndicator(); // 기존 인디케이터 제거
-            
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'message bot-message typing-indicator';
-            typingDiv.innerHTML = `
-                <div class="message-avatar bot-avatar">
-                    <i class="fas fa-paw"></i>
-                </div>
-                <div class="message-content bot-content">
-                    <div class="message-name">${petName}</div>
-                    <div class="typing-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                </div>
-            `;
-            
-            // 환영 메시지 제거
-            const welcomeMessage = chatMessages.querySelector('.welcome-message');
-            if (welcomeMessage) {
-                welcomeMessage.remove();
-            }
-            
-            chatMessages.appendChild(typingDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-        
-        // 타이핑 인디케이터 숨김
-        function hideTypingIndicator() {
-            const typingIndicator = chatMessages.querySelector('.typing-indicator');
-            if (typingIndicator) {
-                typingIndicator.remove();
-            }
-        }
+<script>
+// 반려동물 목록을 JavaScript에서 사용할 수 있도록 설정
+const allPets = {{ pets | tojson if pets else '[]' }};
+let selectedPet = null;
+</script>
 
-        // 대화 초기화
-        function resetChat() {
-            if (confirm('정말로 대화를 초기화하시겠습니까?')) {
-                socket.emit('reset_chat');
-            }
-        }
-        
-        // 이벤트 리스너
-        sendButton.addEventListener('click', sendMessage);
-        
-        messageInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-        
-        // 입력창에 포커스
-        messageInput.focus();
-    </script>
+<script src="{{ url_for('static', filename='js/chat/chat.js')}}" defer></script>
+
 {% endblock %}

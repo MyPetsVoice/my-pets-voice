@@ -8,9 +8,22 @@ __pycache__/
 # 데이터베이스
 .db
 instance/
+db생성요청사항.txt
+insert_data.py
 
 logs/
 app.log
+
+# 개인 파일(태민)
+mypage요구사항
+test_pet_models.py
+recreate_pets_table.py
+init_db_data.py
+db생성_요구사항.txt
+add_other_breeds.py
+
+
+
 # =============== #
 # Mac OS 관련 파일 #
 # =============== #

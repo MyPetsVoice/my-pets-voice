@@ -26,7 +26,15 @@ def create_app(config_name=None):
 
     # SocketIO 초기화
     app.logger.info('SocketIO를 초기화합니다.')
-    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+    socketio = SocketIO(
+        app, 
+        cors_allowed_origins="*", 
+        async_mode='threading',
+        engineio_logger=False,
+        socketio_logger=False,
+        ping_timeout=60,
+        ping_interval=25
+    )
     
     # chat_api_bp의 socketio 초기화
     from app.routes.chat.chat_api import init_socketio
@@ -35,8 +43,8 @@ def create_app(config_name=None):
 
     @app.route('/')
     def index():
-        app.logger.debug('루트 경로 접근 - 마이페이지로 리다이렉트')
-        return redirect(url_for('mypage.mypage_views.mypage'))
+        app.logger.debug('루트 경로 접근 - 랜딩페이지')
+        return render_template('landing.html')
 
     # 블루프린트 등록
     app.logger.info('블루프린트를 등록합니다.')
