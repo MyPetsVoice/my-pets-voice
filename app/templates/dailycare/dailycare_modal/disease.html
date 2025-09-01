@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../../static/css/dailycare/modal.css" />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <!-- Modal Backdrop -->
+    <div
+      class="modal-backdrop fixed inset-0 flex items-center justify-center z-50"
+    >
+      <!-- Modal Content -->
+      <div
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden modal-enter"
+      >
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r px-8 py-6" id="header">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"
+              >
+                <svg
+                  class="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <h2 class="text-xl font-semibold text-white">질병 이력 등록</h2>
+            </div>
+            <button
+              onclick="closeModal()"
+              class="text-white/80 hover:text-white transition-colors"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="px-8 py-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+          <form class="space-y-6">
+            <!-- 첫 번째 행 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >질병명</label
+                >
+                <input
+                  id="disease_name_input"
+                  type="text"
+                  placeholder="진단받은 질병명을 입력하세요"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                />
+              </div>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >진단일</label
+                >
+                <input
+                  id="diagnosis_date_input"
+                  type="date"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                />
+              </div>
+            </div>
+
+            <!-- 증상 -->
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >증상</label
+              >
+              <textarea
+                id="symptoms_input"
+                placeholder="질병의 증상을 자세히 기록하세요"
+                class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
+              ></textarea>
+            </div>
+
+            <!-- 치료 내용 -->
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >치료 내용</label
+              >
+              <textarea
+                id="treatment_details_input"
+                placeholder="받은 치료 내용을 기록하세요"
+                class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
+              ></textarea>
+            </div>
+
+            <!-- 두 번째 행 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >치료 병원</label
+                >
+                <input
+                  id="hospital_name_input"
+                  type="text"
+                  placeholder="병원명"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                />
+              </div>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >담당 의사</label
+                >
+                <input
+                  id="doctor_name_input"
+                  type="text"
+                  placeholder="수의사명"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                />
+              </div>
+            </div>
+
+            <!-- 진료비 -->
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >진료비</label
+              >
+              <input
+                id="medical_cost_input"
+                type="number"
+                placeholder="원"
+                class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              />
+            </div>
+          </form>
+        </div>
+
+        <!-- Modal Footer -->
+        <div
+          class="bg-gray-50 px-8 py-6 flex justify-end space-x-4 border-t border-gray-200"
+        >
+          <button
+            onclick="closeModal()"
+            class="btn-cancel px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+          >
+            취소
+          </button>
+          <button
+            type="submit"
+            class="btn-primary px-8 py-3 text-white rounded-lg font-medium flex items-center space-x-2"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            <span>저장</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

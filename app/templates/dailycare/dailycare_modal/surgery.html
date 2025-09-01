@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../../static/css/dailycare/modal.css" />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <!-- Modal Backdrop -->
+    <div
+      id="surgery-modal"
+      class="modal-backdrop fixed inset-0 flex items-center justify-center z-50"
+    >
+      <!-- Modal Content -->
+      <div
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden modal-enter"
+      >
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r px-8 py-6" id="header">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"
+              >
+                <svg
+                  class="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  ></path>
+                </svg>
+              </div>
+              <h2 class="text-xl font-semibold text-white">🩺 수술 기록</h2>
+            </div>
+            <button
+              onclick="closeModal('surgery-modal')"
+              class="text-white/80 hover:text-white transition-colors"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="px-8 py-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+          <form class="space-y-6">
+            <!-- 첫 번째 행 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label
+                  class="block text-sm font-medium text-gray-700 label-required"
+                  >수술명</label
+                >
+                <input
+                  id="surgery_name_input"
+                  type="text"
+                  placeholder="수술명을 입력하세요"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                />
+              </div>
+              <div class="space-y-2">
+                <label
+                  class="block text-sm font-medium text-gray-700 label-required"
+                  >수술일</label
+                >
+                <input
+                  id="surgery_date_input"
+                  type="date"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                />
+              </div>
+            </div>
+
+            <!-- 수술 사유 -->
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >수술 사유</label
+              >
+              <textarea
+                id="surgery_summary_input"
+                placeholder="수술을 받게 된 이유를 기록하세요"
+                class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+              ></textarea>
+            </div>
+
+            <!-- 두 번째 행 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >수술 병원</label
+                >
+                <input
+                  id="hospital_name_input"
+                  type="text"
+                  placeholder="병원명"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >집도의</label
+                >
+                <input
+                  id="doctor_name_input"
+                  type="text"
+                  placeholder="수의사명"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+            </div>
+
+            <!-- 회복 상태 -->
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >회복 상태</label
+              >
+              <select
+                id="recovery_status_select"
+                class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none"
+              >
+                <option value="완전회복">완전 회복</option>
+                <option value="회복중">회복 중</option>
+                <option value="경과관찰중">경과 관찰 중</option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+        <!-- Modal Footer -->
+        <div
+          class="bg-gray-50 px-8 py-6 flex justify-end space-x-4 border-t border-gray-200"
+        >
+          <button
+            onclick="closeModal('surgery-modal')"
+            class="btn-cancel px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+          >
+            취소
+          </button>
+          <button
+            type="submit"
+            class="btn-primary px-8 py-3 text-white rounded-lg font-medium flex items-center space-x-2 bg-blue-600 hover:bg-blue-700"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>저장</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,4 +1,8 @@
 .env
+# 루트 + 하위 폴더 db 파일 무시
+db
+**/db
+*.db
 # Python cache
 
 # python 어쩌꾸

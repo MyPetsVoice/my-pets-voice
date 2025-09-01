@@ -1,0 +1,64 @@
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+        #header{
+             background: linear-gradient(135deg, #ff832b  0%, #f6c73b 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .form-input {
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px -8px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #f6c73b 0%, #ff832b 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg,  #fe940a 0%, #fb3600 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -10px rgba(59, 130, 246, 0.5);
+        }
+        
+        .btn-cancel {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cancel:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-enter {
+            animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .label-required::after {
+            content: '*';
+            color: #EF4444;
+            margin-left: 4px;
+        }

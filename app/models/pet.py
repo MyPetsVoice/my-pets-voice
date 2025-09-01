@@ -1,6 +1,8 @@
 from app.models import db
 from app.models.base import BaseModel
 
+
+
 class Pet(BaseModel):
     __tablename__ = 'pets'
 
@@ -15,6 +17,15 @@ class Pet(BaseModel):
     profile_image_url = db.Column(db.String(500))
 
     user = db.relationship('User', backref='pets')
+    medications = db.relationship('Medication', back_populates='pet', cascade='all, delete-orphan')
+    allergies = db.relationship('Allergy', back_populates='pet', cascade='all, delete-orphan')
+    diseases = db.relationship('Disease', back_populates='pet', cascade='all, delete-orphan')
+    surgeries = db.relationship('Surgery', back_populates='pet', cascade = 'all, delete-orphan')
+    vaccinations = db.relationship('Vaccination', back_populates='pet', cascade = 'all, delete-orphan')
+    health_care = db.relationship('HealthCare', back_populates='pet', cascade = 'all, delete-orphan')
+    
+    
+    
     
     def __repr__(self):
         return f'<Pet {self.pet_name}>'

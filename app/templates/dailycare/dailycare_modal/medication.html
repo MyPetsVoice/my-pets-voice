@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../../static/css/dailycare/modal.css" />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div data-pet-id="{{ pet_id }}"></div>
+    <input type="hidden" id="modal-pet-id" value="{{pet_id}}" />
+    <!-- Modal Backdrop -->
+    <div
+      class="modal-backdrop fixed inset-0 flex items-center justify-center z-50"
+    >
+      <!-- Modal Content -->
+      <div
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden modal-enter"
+      >
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r px-8 py-6" id="header">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"
+              >
+                <svg
+                  class="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 8.172V5L8 4z"
+                  ></path>
+                </svg>
+              </div>
+              <h2 class="text-xl font-semibold text-white">약물 정보 등록</h2>
+            </div>
+            <button
+              onclick="closeModal()"
+              class="text-white/80 hover:text-white transition-colors"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="px-8 py-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+          <form class="space-y-6">
+            <!-- 첫 번째 행 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label
+                  class="block text-sm font-medium text-gray-700 label-required"
+                  >약물명</label
+                >
+                <input
+                  type="text"
+                  id="medication_name_input"
+                  placeholder="복용 중인 약물명을 입력하세요"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400"
+                />
+              </div>
+              <div class="space-y-2">
+                <label
+                  class="block text-sm font-medium text-gray-700 label-required"
+                  >복용 목적</label
+                >
+                <input
+                  type="text"
+                  id="purpose_input"
+                  placeholder="질병명 또는 증상을 입력하세요"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400"
+                />
+              </div>
+            </div>
+
+            <!-- 두 번째 행 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label
+                  class="block text-sm font-medium text-gray-700 label-required"
+                  >용량</label
+                >
+                <input
+                  type="text"
+                  id="dosage_input"
+                  placeholder="예: 5mg, 1정"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400"
+                />
+              </div>
+              <div class="space-y-2">
+                <label
+                  class="block text-sm font-medium text-gray-700 label-required"
+                  >복용 횟수</label
+                >
+                <select
+                  id="frequency_select"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 bg-white"
+                >
+                  <option value="">복용 횟수를 선택하세요</option>
+                  <option value="하루1회">하루 1회</option>
+                  <option value="하루2회">하루 2회</option>
+                  <option value="하루3회">하루 3회</option>
+                  <option value="필요시">필요시</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- 세 번째 행 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >복용 시작일</label
+                >
+                <input
+                  type="date"
+                  id="start_date_input"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700"
+                />
+              </div>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >복용 종료일</label
+                >
+                <input
+                  type="date"
+                  id="end_date_input"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700"
+                />
+              </div>
+            </div>
+
+            <!-- 부작용/주의사항 -->
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >부작용/주의사항</label
+              >
+              <textarea
+                rows="3"
+                id="side_effects_notes_input"
+                placeholder="복용 중 주의사항이나 부작용을 기록하세요"
+                class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400 resize-none"
+              ></textarea>
+            </div>
+
+            <!-- 처방 병원 -->
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >처방 병원</label
+              >
+              <input
+                type="text"
+                id="hospital_name_input"
+                placeholder="병원명을 입력하세요"
+                class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400"
+              />
+            </div>
+          </form>
+        </div>
+
+        <!-- Modal Footer -->
+        <div
+          class="bg-gray-50 px-8 py-6 flex justify-end space-x-4 border-t border-gray-200"
+        >
+          <button
+            onclick="closeModal()"
+            class="btn-cancel px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+          >
+            취소
+          </button>
+          <button
+            type="submit"
+            class="btn-primary px-8 py-3 text-white rounded-lg font-medium flex items-center space-x-2"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>저장</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

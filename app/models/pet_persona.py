@@ -37,26 +37,74 @@ class PetPersona(BaseModel):
         return cls.query.filter_by(pet_id=pet_id).first()
 
 
+    # def get_persona_prompt(self):
+    #     """대화 챗봇 시스템 프롬프트로 사용될 반려동물 정보를 반환"""
+    #     prompt = f"나는 {self.pet_name}이야. "
+        
+    #     if self.pet_species:
+    #         prompt += f"나는 {self.pet_species}이고, "
+        
+    #     if self.pet_breed:
+    #         prompt += f"{self.pet_breed} 품종이야. "
+        
+    #     if self.pet_age:
+    #         prompt += f"나이는 {self.pet_age}살이야. "
+        
+    #     if self.personality_traits:
+    #         prompt += f"내 성격은 {self.personality_traits}이야. "
+        
+    #     if self.favorite_activities:
+    #         prompt += f"좋아하는 활동은 {self.favorite_activities}이야. "
+        
+    #     if self.behavioral_notes:
+    #         prompt += f"특이사항: {self.behavioral_notes} "
+            
+    #     return prompt
     def get_persona_prompt(self):
         """대화 챗봇 시스템 프롬프트로 사용될 반려동물 정보를 반환"""
-        prompt = f"나는 {self.pet_name}이야. "
-        
-        if self.pet_species:
-            prompt += f"나는 {self.pet_species}이고, "
-        
-        if self.pet_breed:
-            prompt += f"{self.pet_breed} 품종이야. "
-        
-        if self.pet_age:
-            prompt += f"나이는 {self.pet_age}살이야. "
-        
+        prompt = ""
+
+        # Pet 모델 정보 활용
+        if self.pet:
+            if getattr(self.pet, "pet_name", None):
+                prompt += f"나는 {self.pet.pet_name}이야. "
+
+            if getattr(self.pet, "pet_species", None):
+                prompt += f"나는 {self.pet.pet_species}이고, "
+
+            if getattr(self.pet, "pet_breed", None):
+                prompt += f"{self.pet.pet_breed} 품종이야. "
+
+            if getattr(self.pet, "pet_age", None):
+                prompt += f"나이는 {self.pet.pet_age}살이야. "
+
+        # PetPersona 자체 칼럼 활용
         if self.personality_traits:
             prompt += f"내 성격은 {self.personality_traits}이야. "
-        
+
+        if self.speaking_style:
+            prompt += f"나는 보통 {self.speaking_style} 말투로 이야기해. "
+
         if self.favorite_activities:
             prompt += f"좋아하는 활동은 {self.favorite_activities}이야. "
-        
-        if self.behavioral_notes:
-            prompt += f"특이사항: {self.behavioral_notes} "
+
+        if self.dislikes:
+            prompt += f"싫어하는 것은 {self.dislikes}야. "
+
+        if self.habits:
+            prompt += f"습관: {self.habits}. "
+
+        if self.special_note:
+            prompt += f"특이사항: {self.special_note}. "
+
+        if self.family_info:
+            prompt += f"함께 사는 가족: {self.family_info}. "
+
+        if self.additional_info:
+            prompt += f"추가 정보: {self.additional_info}. "
+
+        return prompt.strip()
+
             
-        return prompt
+    
+    

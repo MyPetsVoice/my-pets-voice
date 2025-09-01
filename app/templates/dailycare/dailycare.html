@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}반려동물의 목소리가 들려 -데일리케어{% endblock %}
+{% block content %}
+
+<link rel="stylesheet" href=".././../static/css/dailycare/dailcare.css">
+<link rel="stylesheet" href="../../static/css/dailycare/todo.css">
+</head>
+<body style=" padding: 0;">
+    <div class="container" style="padding: 30px;">
+        <!-- 반려동물 선택 창 (header) -->
+        <header class="header">
+            <h1>🐾 데일리케어</h1>
+            <p>우리 반려동물의 건강을 함께 관리해요</p>
+          
+            <div class="pet-selector" id="pet-selector">
+                 
+            </div>
+             <div id="pet-detail"></div>
+        </header>
+        
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <!-- 의료기록 관리 섹션 -->
+                <div class="section-card">
+                    <h2 class="section-title">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        의료기록 관리
+                    </h2>
+                    
+                    <div class="health-grid">
+                        <div class="health-item mdc" data-modal="allergy" >
+                            <h4>🤧 알러지 정보</h4>
+                            <p>음식, 환경 알러지 등록</p>
+                        </div>
+                        <div class="health-item mdc" data-modal="disease" >
+                            <h4>🏥 질병 이력</h4>
+                            <p>과거 질병 및 치료 기록</p>
+                        </div>
+                        <div class="health-item mdc"  data-modal="surgery" >
+                            <h4>⚕️ 수술 이력</h4>
+                            <p>수술 날짜 및 내용 기록</p>
+                        </div>
+                      
+                        <div class="health-item mdc" data-modal="vaccination">
+                            <h4>💉 예방접종</h4>
+                            <p>접종 기록 및 일정 관리</p>
+                        </div>
+                        <div class="health-item mdc" data-modal="medication" >
+                            <h4>💊 복용약물</h4>
+                            <p>현재 복용 중인 약물 정보</p>
+                        </div>
+                        <!--  의료기록 모아보기 -->
+                          <a href="#" onclick="goToMedicalHistory()" class="health-item">
+                            <h4>🔍 전체 기록</h4>
+                            <p>의료기록을 모아 볼 수 있습니다.</p>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 건강기록 관리 섹션 -->
+                <div class="section-card">
+                    <h2 class="section-title">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                        오늘의 케어 기록
+                    </h2>
+                    
+                    <div class="nav-tabs">
+                        <button class="nav-tab active" onclick="switchTab(event,'daily')">건강 기록</button>
+                        <button class="nav-tab" onclick="switchTab(event,'schedule')">TODO</button>
+                    </div>
+                    
+                    <div id="daily-tab" class="tab-content active">
+                        <form class="daily-care-form">
+                            <!-- 먹이 -->
+                            <div class="form-group">
+                                <label>🍽️ 먹이</label>
+                                <input type="number" id="food-input" placeholder="g 단위로 입력">
+                            </div>
+                            <!-- 급수량 -->
+                            <div class="form-group">
+                                <label>💧 급수량</label>
+                                <input type="number" id="water-input" placeholder="ml 단위로 입력">
+                            </div>
+                            <!-- 배변 -->
+                            <div class="form-group">
+                                <label>💩 배변 상태</label>
+                                <select id="poop-select">
+                                    <option>정상</option>
+                                    <option>설사</option>
+                                    <option>변비</option>
+                                    <option>혈변</option>
+                                </select>
+                            </div>
+                            <!-- 몸무게 -->
+                            <div class="form-group">
+                                <label>⚖️ 몸무게</label>
+                                <input type="number" step="0.1" id="weight-input" placeholder="kg 단위로 입력">
+                            </div>
+                            <!-- 산책시간 -->
+                            <div class="form-group">
+                                <label>🚶 산책 시간</label>
+                                <input type="number" id="walk-input" placeholder="분 단위로 입력">
+                            </div>
+                            <!-- 영양제 -->
+                             <div class="form-group">
+                                <label>💊 약/영양제</label>
+                                <select id="medication-select" >
+                                    <option value="">약/영양제를 선택해주세요</option>
+                                </select>
+                        </div>
+                        </form>
+                        <div class="quick-actions">
+                            <button class="btn btn-primary" id="save_healthcare">📝 기록 저장</button>
+                            <button class="btn btn-secondary" id="link_healthcare_history" data-pet-id="">📊 기록 보기</button>
+                        </div>
+                    </div>
+                    
+                    
+                    <div id="schedule-tab" class="tab-content">
+                        <div class="form-group">
+
+                        </div>
+                        <div class="quick-actions" >
+                            <div id="todo_div"></div>
+                            <button class="btn btn-primary" id="create_todo" data-user-id="{{ user }}">➕ 일정 추가</button>
+                            <a href="/dailycare/todo" class="btn btn-secondary">📋 전체 일정</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <!-- AI 건강상담 위젯 -->
+                <div class="ai-chat-widget">
+                    <h3>🤖 AI 건강상담</h3>
+                    <p>반려동물 전문 AI가 24시간 상담해드려요</p>
+                    <button class="btn btn-secondary" onclick="openModal('care_chatbot')" style="background: rgba(255,255,255,0.2); color: white; border: none;">
+                        💬 상담 시작
+                    </button>
+                    
+                </div>
+
+
+
+                
+                <!-- 건강 리포트 위젯 -->
+                <div class="health-report-widget">
+                    <h3>📊 이번주 건강 리포트</h3>
+                    <div class="health-score">85점</div>
+                    <p style="text-align: center; opacity: 0.9;">전체적으로 건강한 상태예요!</p>
+                    <a class = 'btn btn-secondary ' style="background: rgba(255,255,255,0.2); color: white; border: none; width: 100%;" href="/dailycare/analysis"> 📈 전체 리포트 보기</a></button>
+                    
+                </div>
+                
+<div class="calendar-widget">
+  
+  <div class="calendar-header">
+    <button id="prev-month" class="btn btn-secondary">◀</button>
+    <strong id="current-month"></strong>
+    <button id="next-month" class="btn btn-secondary">▶</button>
+  </div>
+  <div class="calendar-grid" id="calendar-grid">
+    <div>일</div><div>월</div><div>화</div><div>수</div>
+    <div>목</div><div>금</div><div>토</div>
+  </div>
+</div>
+            </div>
+        </div>
+    </div>
+    
+<!-- 공용 모달 -->
+<div id="common-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="flex justify-between items-center mb-4">
+      <button id="modal-close-btn" class="text-gray-500">&times;</button>
+    </div> 
+    <div id="modalContent" ></div> 
+</div> 
+
+<script>
+function goToMedicalHistory() {
+    if (!current_pet_id) {
+        alert("펫을 먼저 선택해주세요.");
+        return;
+    }
+    window.location.href = `/dailycare/medication-history/${current_pet_id}`;
+}
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+<script src="../../static/js/dailycare/modal.js"></script>
+<script src="../../static/js/dailycare/todo.js"></script>
+<script src=".././../static/js/dailycare/dailycare.js"></script>
+<script src="../../static/js/dailycare/care_chatbot.js"></script>
+<script src="../../static/js/dailycare/calender.js"></script>
+      
+
+{% endblock %}

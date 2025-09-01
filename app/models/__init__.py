@@ -11,6 +11,18 @@ def init_db(app):
     from app.models.pet import Pet
     from app.models.diary import Diary, DiaryPhoto
     from app.models.pet_persona import PetPersona
+    from app.models.dailycare.healthCare.healthCare import HealthCare
+    from app.models.dailycare.healthCare.healthcareMedication import HealthCareMedication
+    from app.models.dailycare.medicalCare.allergy import Allergy
+    from app.models.dailycare.medicalCare.disease import Disease
+    from app.models.dailycare.medicalCare.medication import Medication
+    from app.models.dailycare.medicalCare.surgery import Surgery
+    from app.models.dailycare.medicalCare.vaccination import Vaccination
+    
+    
+    
+    
+
 
     with app.app_context():
         db.create_all()

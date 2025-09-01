@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../../static/css/dailycare/modal.css" />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <!-- Modal Backdrop -->
+    <div
+      id="vaccination-modal"
+      class="modal-backdrop fixed inset-0 flex items-center justify-center z-50"
+    >
+      <!-- Modal Content -->
+      <div
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden modal-enter"
+      >
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r px-8 py-6" id="header">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"
+              >
+                <svg
+                  class="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 2a10 10 0 100 20 10 10 0 000-20z"
+                  ></path>
+                </svg>
+              </div>
+              <h2 class="text-xl font-semibold text-white">
+                💉 백신 접종 기록
+              </h2>
+            </div>
+            <button
+              onclick="closeModal('vaccination-modal')"
+              class="text-white/80 hover:text-white transition-colors"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="px-8 py-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+          <form class="space-y-6">
+            <!-- 첫 번째 행: 백신명 / 접종일 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >백신명</label
+                >
+                <input
+                  id="vaccine_name_input"
+                  type="text"
+                  placeholder="예: DHPPL, 광견병"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                />
+              </div>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >접종일</label
+                >
+                <input
+                  id="vaccination_date_input"
+                  type="date"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                />
+              </div>
+            </div>
+
+            <!-- 두 번째 행: 제조회사 / 로트번호 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >제조회사</label
+                >
+                <input
+                  id="manufacturer_input"
+                  type="text"
+                  placeholder="백신 제조회사"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                />
+              </div>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >로트번호</label
+                >
+                <input
+                  id="lot_number_input"
+                  type="text"
+                  placeholder="백신 로트번호"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                />
+              </div>
+            </div>
+
+            <!-- 부작용 -->
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >부작용</label
+              >
+              <textarea
+                id="side_effects_input"
+                placeholder="접종 후 나타난 부작용이 있다면 기록하세요"
+                class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+              ></textarea>
+            </div>
+
+            <!-- 세 번째 행: 접종 병원 / 다음 접종일 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >접종 병원</label
+                >
+                <input
+                  id="hospital_name_input"
+                  type="text"
+                  placeholder="병원명"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700"
+                  >다음 접종일</label
+                >
+                <input
+                  id="next_vaccination_date_input"
+                  type="date"
+                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Modal Footer -->
+        <div
+          class="bg-gray-50 px-8 py-6 flex justify-end space-x-4 border-t border-gray-200"
+        >
+          <button
+            onclick="closeModal('vaccination-modal')"
+            class="btn-cancel px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+          >
+            취소
+          </button>
+          <button
+            type="submit"
+            class="btn-primary px-8 py-3 text-white rounded-lg font-medium flex items-center space-x-2 bg-blue-600 hover:bg-blue-700"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            <span>저장</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
