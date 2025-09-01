@@ -9,13 +9,10 @@ class Config:
     SECRET_KEY = os.getenv('SESSION_SECRET_KEY')
     
     # 데이터베이스 설정
-<<<<<<< HEAD
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///mypetsvoice-xuswns.db')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///mypetsvoice.db')
     print('연결된 database : ',SQLALCHEMY_DATABASE_URI)
 
-=======
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
->>>>>>> 4d2c685d9d1c6dbeba1a3e69aab80fe6037c84fa
+    # SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # OpenAI API 설정
