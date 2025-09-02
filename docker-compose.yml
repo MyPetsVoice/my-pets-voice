@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: mypetsvoice-app
+    ports:
+      - "80:5000"
+    env_file:
+      - .env.production
+    volumes:
+      - ./app/static/uploads:/app/app/static/uploads
+      - ./logs:/app/logs
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - mypetsvoice-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  db:
+    image: postgres:15-alpine
+    container_name: mypetsvoice-db
+    environment:
+      POSTGRES_DB: mypetsvoice
+      POSTGRES_USER: mypetsvoice
+      POSTGRES_PASSWORD: MyPetVoice2024!
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - mypetsvoice-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mypetsvoice -d mypetsvoice"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nginx:
+    image: nginx:alpine
+    container_name: mypetsvoice-nginx
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - web
+    restart: unless-stopped
+    networks:
+      - mypetsvoice-network
+
+volumes:
+  postgres_data:
+
+networks:
+  mypetsvoice-network:
+    driver: bridge
