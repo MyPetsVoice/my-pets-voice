@@ -240,7 +240,7 @@ async function submitDiary(event) {
 
   if (data.success) {
     alert("일기가 성공적으로 저장되었습니다!");
-    window.location.href = "/diary/";
+    window.location.href = "/diary";
   } else {
     alert(`저장 실패: ${data.message}`);
   }

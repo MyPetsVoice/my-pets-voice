@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, session
 from app.models import db
 from app.models.diary import Diary, DiaryPhoto
 from app.models.pet_persona import PetPersona
-from app.services import DiaryService as DS
+from app.services import DiaryService
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -18,7 +18,7 @@ def allowed_file(filename):
 # 전체 일기 목록 조회 
 @diary_api_bp.route("/list")
 def list_diaries():
-    diaries = DS.get_all_diaries()
+    diaries = DiaryService.get_all_diaries()
     return jsonify({
         "success": True,
         "diaries": [diary.to_dict() for diary in diaries]
@@ -27,7 +27,7 @@ def list_diaries():
 # 펫 페르소나의 일기 목록 조회 
 @diary_api_bp.route("/list/<int:pet_persona_id>")
 def list_pet_diaries(pet_persona_id):
-    diaries = DS.get_by_pet_persona(pet_persona_id)
+    diaries = DiaryService.get_by_pet_persona(pet_persona_id)
     return jsonify({
         "success": True,
         "pet_persona_id": pet_persona_id,

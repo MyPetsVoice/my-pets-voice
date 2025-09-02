@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, session
 
 diary_views_bp = Blueprint("diary_views", __name__)
 
-@diary_views_bp.route("/diary")
+@diary_views_bp.route("/")
 def diary():
     user = session.get('user')
     if user:
