@@ -72,12 +72,16 @@ class PetPersona(BaseModel):
         persona_id = persona['pet_persona_id']
         logger.debug(f'페르소나 아이디 : {persona_id}')
 
-        traits = PersonaTrait.find_by_persona_id(persona_id)
+        # PersonaTrait.find_by_persona_id가 서비스로 이동되어 임시로 직접 쿼리 사용
+        traits = PersonaTrait.query.filter_by(pet_persona_id=persona_id).all()
+        traits = [trait.to_dict() for trait in traits]
         logger.debug(f'성격 및 특징 : {traits}')
 
         style_id = persona['style_id']
-        speech_style = SpeechStyle.find_by_style_id(style_id)
-        speech_style_name = speech_style['style_name']
+        # SpeechStyle.find_by_style_id가 서비스로 이동되어 임시로 직접 쿼리 사용
+        speech_style = SpeechStyle.query.filter_by(style_id=style_id).first()
+        speech_style_data = speech_style.to_dict() if speech_style else {}
+        speech_style_name = speech_style_data.get('style_name', '') if speech_style_data else ''
         logger.debug(f'말투 : {speech_style_name} ')
 
         persona_info = persona
@@ -118,10 +122,6 @@ class PersonaTrait(BaseModel):
         updated = cls.create_persona_trait(persona_id, trait_ids)
         return updated
 
-    @classmethod
-    def find_by_persona_id(cls, pet_persona_id):
-        traits = cls.query.filter_by(pet_persona_id=pet_persona_id).all()
-        return [trait.to_dict() for trait in traits]
 
     def to_dict(self):
         trait_name = self.personality.trait_name
@@ -139,18 +139,6 @@ class PersonalityTrait(BaseModel):
     def __repr__(self):
         return f'<PersonalityTrait {self.trait_name}>'
     
-    @classmethod
-    def get_traits_by_category(cls):
-        traits = cls.query.order_by(cls.category.asc()).all()
-        grouped = {}
-
-        for trait in traits:
-            category = trait.category
-            if category not in grouped:
-                grouped[category] = []
-            grouped[category].append(trait)
-        
-        return grouped
     
     @classmethod
     def create_trait(cls, trait_name, category):
@@ -171,14 +159,7 @@ class SpeechStyle(BaseModel):
     def __repr__(self):
         return f'<SpeechStyle {self.style_name}>'
     
-    @classmethod
-    def get_speech_styles(cls):
-        return cls.query.all()
     
-    @classmethod
-    def find_by_style_id(cls, style_id):
-        speech_style = cls.query.filter_by(style_id=style_id).first()
-        return speech_style.to_dict()
     
     @classmethod
     def create_speech_style(cls, style_name, style_description=None, example_phrases=None):

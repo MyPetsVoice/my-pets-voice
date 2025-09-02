@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, session
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from app.services.chat.chat_service import chat_service
 from app.models import Pet, PetPersona
+from app.services import PetService
 import os
 import json
 import threading
@@ -165,9 +166,10 @@ def get_persona_info(pet_id):
     try:
         logger.debug(f'선택된 반려동물의 아이디 : {pet_id}')
         # 펫 기본정보와 페르소나 정보 모두 가져와서 전달
-        pet_info = Pet.find_pet_by_pet_id(pet_id)
+        pet_info = PetService.get_pet(pet_id)
         logger.debug(f'펫 아이디 {pet_id}의 기본 정보 : {pet_info}')
 
+        # PetPersona.get_persona_info는 classmethod이므로 그대로 사용
         persona_info = PetPersona.get_persona_info(pet_id)
         logger.debug(f'펫 아이디 {pet_id}의 페르소나 정보 : {persona_info}')
 

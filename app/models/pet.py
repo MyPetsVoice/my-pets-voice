@@ -5,6 +5,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+
 class Pet(BaseModel):
     __tablename__ = 'pets'
 
@@ -21,12 +23,16 @@ class Pet(BaseModel):
     profile_image_url = db.Column(db.String(500))
 
     user = db.relationship('User', backref='pets')
+    medications = db.relationship('Medication', back_populates='pet', cascade='all, delete-orphan')
+    allergies = db.relationship('Allergy', back_populates='pet', cascade='all, delete-orphan')
+    diseases = db.relationship('Disease', back_populates='pet', cascade='all, delete-orphan')
+    surgeries = db.relationship('Surgery', back_populates='pet', cascade = 'all, delete-orphan')
+    vaccinations = db.relationship('Vaccination', back_populates='pet', cascade = 'all, delete-orphan')
+    health_care = db.relationship('HealthCare', back_populates='pet', cascade = 'all, delete-orphan')
     species = db.relationship('PetSpecies', backref='pets', lazy='joined')
     breeds = db.relationship('PetBreed', backref='pets', lazy='joined')
-    
     # PetPersona와의 관계 - Pet 삭제시 PetPersona도 함께 삭제
     persona = db.relationship('PetPersona', backref='pet', cascade='all, delete-orphan', uselist=False)
-    
     # ChatHistory와의 관계 - Pet 삭제시 채팅 기록도 함께 삭제
     chat_histories = db.relationship('ChatHistory', backref='pet', cascade='all, delete-orphan')
     
@@ -96,9 +102,6 @@ class PetSpecies(BaseModel):
     def __repr__(self):
         return f'<AnimalSpecies {self.species_name}>'
     
-    @classmethod
-    def get_all_species(cls):
-        return cls.query.all()
     
     @classmethod
     def create_species(cls, species_name):
@@ -118,9 +121,6 @@ class PetBreed(BaseModel):
     def __repr__(self):
         return f'<PetBreed {self.breed_name}>'
     
-    @classmethod
-    def get_by_species(cls, species_id):
-        return cls.query.filter_by(species_id=species_id).order_by(cls.breed_name.asc()).all()
     
     @classmethod
     def create_breed(cls, species_id, breed_name):

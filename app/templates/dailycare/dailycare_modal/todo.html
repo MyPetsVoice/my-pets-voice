@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../../static/css/dailycare/modal.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div data-pet-id="{{ pet_id }}"></div>
+    <input type="hidden" id="modal-pet-id" value="{{pet_id}}">
+    
+    <!-- Modal Backdrop -->
+    <div class="modal-backdrop fixed inset-0 flex items-center justify-center z-50">
+        <!-- Modal Content -->
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden modal-enter">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r px-8 py-6" id="header">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-5 8h0m-5-8V9a2 2 0 012-2h6a2 2 0 012 2v2m-7 4v-8m5 8V11"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-semibold text-white">📅 케어 일정 등록</h2>
+                    </div>
+                    <button onclick="closeModal()" class="text-white/80 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="px-8 py-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+                <form class="space-y-6">
+                    <!-- 첫 번째 행 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700 label-required">케어 제목</label>
+                            <input type="text" 
+                                   id="title_input" 
+                                   placeholder="케어 제목을 입력하세요" 
+                                   class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700 label-required">우선순위</label>
+                            <select id="priority_option" class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 bg-white">
+                                <option value="">우선순위를 선택하세요</option>
+                                <option value="낮음">🟢 낮음</option>
+                                <option value="보통">🟡 보통</option>
+                                <option value="높음">🔴 높음</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- 두 번째 행 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700 label-required">일정 날짜</label>
+                            <input type="date" 
+                                   id="todo_date_input"
+                                   class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">상태</label>
+                            <select id="status_option" class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 bg-white">
+                                <option value="미완료">⏳ 미완료</option>
+                                <option value="완료">✅ 완료</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- 세부 내용 -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">세부 내용</label>
+                        <textarea rows="4" 
+                                  id="description_input"
+                                  placeholder="케어 일정의 세부 내용을 입력하세요" 
+                                  class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-gray-700 placeholder-gray-400 resize-none"></textarea>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="bg-gray-50 px-8 py-6 flex justify-end space-x-4 border-t border-gray-200">
+                <button onclick="closeModal()" 
+                        class="btn-cancel px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">
+                    취소
+                </button>
+                <button type="submit" 
+                        id="save_schedule_button"
+                        class="btn-primary px-8 py-3 text-white rounded-lg font-medium flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span>저장</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+            
+        </div>
+    </div>
+
+    <script src="../../../static/js/dailycare/todo.js" defer></script>
+    
+    
+</body>
+</html>

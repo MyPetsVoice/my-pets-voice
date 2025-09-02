@@ -1,0 +1,6 @@
+/* Tailwind 기반, 선택된 버튼 강조 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+
+.filter-btn.active {
+  @apply bg-orange-500 text-white border-orange-500;
+}

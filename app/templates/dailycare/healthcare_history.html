@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}반려동물의 목소리가 들려 - 건강기록 {% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="../../static/css/dailycare/healtcare_history.css">
+
+<div class="bg-gray-50 min-h-screen">
+    <!-- Hero Section -->
+    <section class="gradient-hero py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="mb-8" >
+                <h1 class="text-4xl font-bold text-white mb-4">
+                    🐾 데일리케어
+                </h1>
+                <p class="text-xl text-white opacity-90 mb-8">우리 반려동물의 건강을 함께 관리해요</p>
+                <div id="pet_info" ></div>
+                
+              
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Section - Medical Records -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="section-border bg-gray-50 px-6 py-4">
+                        <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                            <i class="fas fa-file-medical-alt text-orange-500 mr-3"></i>
+                            건강기록 관리
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 gap-6" >
+                            <!-- Daily Record Card -->
+                          <div id="history">
+
+                          </div>
+
+                            <!-- Add New Record Section -->
+                            <div class="text-center py-8 text-gray-500 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+                                <i class="fas fa-plus-circle text-4xl mb-4 opacity-50"></i>
+                                <p class="text-lg mb-2">새로운 건강 기록을 추가해보세요</p>
+                                <p class="text-sm text-gray-400">반려동물의 건강 상태를 꾸준히 기록해보세요</p>
+                            </div>
+                        </div>
+                     
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Section - AI Health Consultant -->
+            <div class="lg:col-span-1">
+                <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-6 text-white sticky top-6">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-white bg-opacity-20 p-3 rounded-full">
+                            <span class="text-2xl">🤖</span>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="font-semibold">AI 건강상담</h3>
+                        </div>
+                    </div>
+                    
+                    <p class="text-purple-100 mb-6">반려동물 전문 AI가 24시간 상담해드려요</p>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="bg-white bg-opacity-20 rounded-full p-2 mt-1">
+                                    <i class="fas fa-robot text-sm"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-1">상담 내용</h4>
+                                    <p class="text-sm text-purple-100">코코의 오늘 기록을 보니 모든 수치가 정상 범위에 있어요. 건강 관리를 잘 하고 계시네요!</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                            <h4 class="font-medium mb-2">오늘의 건강 팁 💡</h4>
+                            <p class="text-sm text-purple-100">산책 시간을 조금 더 늘려보세요. 푸들은 활발한 견종이라 더 많은 운동이 도움됩니다.</p>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm border border-white border-opacity-30 text-white py-3 rounded-xl font-medium transition-all">
+                        <i class="fas fa-comments mr-2"></i>AI 상담 시작하기
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+  
+</script>
+
+<script src="../../static/js/dailycare/healtcare.js" defer></script>
+{% endblock %}

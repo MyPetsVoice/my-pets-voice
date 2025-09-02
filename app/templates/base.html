@@ -45,7 +45,7 @@
                 }
             }
         </script>
-        <script src="static/js/base.js" defer></script>
+        <script src="{{ url_for('static', filename='js/base.js') }}" defer></script>
     </head>
     <body class="font-korean text-gray-800 bg-gray-50 min-h-screen">
         <!-- 네비게이션 -->
@@ -54,7 +54,7 @@
                 <a href="/" class="flex items-center text-secondary-500 hover:text-secondary-600 transition-colors">
                     <div class="flex items-center text-2xl font-bold">
                         <!-- <i class="fas fa-paw mr-2 text-3xl"></i> -->
-                        <img src="../static/img/my_pet_voice.PNG" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
+                        <img src="{{ url_for('static', filename='img/my_pet_voice.PNG') }}" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
                         <span>MyPet's Voice</span>
                     </div>
                 </a>
@@ -65,8 +65,8 @@
                 
                 <div class="hidden md:flex space-x-4" id="nav-menu">
                     <a href="{{ url_for('chat.chat_views.chat')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">반려동물과 대화하기</a>
-                    <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">너의 일기장</a>
-                    <a href="#" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">데일리 케어</a>
+                    <a href="{{ url_for('diary.diary_views.diary')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">너의 일기장</a>
+                    <a href="{{ url_for('dailycare.dailycare_views.get_dailycare')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">데일리 케어</a>
                     <a href="{{ url_for('mypage.mypage_views.mypage')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">마이페이지</a>
                 </div>
                 
@@ -101,7 +101,7 @@
                     <div class="md:col-span-2 lg:col-span-1">
                         <div class="flex items-center text-2xl font-bold text-secondary-400 mb-4">
                             <!-- <i class="fas fa-paw mr-2 text-3xl"></i> -->
-                            <img src="../static/img/my_pet_voice.PNG" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
+                            <img src="{{ url_for('static', filename='img/my_pet_voice.PNG') }}" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
                             <span>MyPet's Voice</span>
                         </div>
                         <p class="text-gray-300 leading-relaxed mb-6">

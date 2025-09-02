@@ -5,9 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const closePetModal = document.getElementById('close-pet-modal');
     const cancelPetForm = document.getElementById('cancel-pet-form');
     
-    const personaModal = document.getElementById('add-persona-modal');
-    const closePersonaModal = document.getElementById('close-persona-modal');
-    const cancelPersonaForm = document.getElementById('cancel-persona-form');
+    let personaModal = null;
+    let closePersonaModal = null;
+    let cancelPersonaForm = null;
 
     // 프로필 모달 관련 요소들
     const viewPetModal = document.getElementById('view-pet-modal');
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const petBreed = document.getElementById('pet_breed')
 
     const addPetForm = document.getElementById('add-pet-form')
-    const addPersonaForm = document.getElementById('add-persona-modal')
+    let addPersonaForm = null;
 
     // 반려동물 등록 모달 열기 및 동물 종류 데이터 가져오기
     addPetBtn.addEventListener('click', async () => {
@@ -34,12 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // 페르소나 모달 닫기
-    [closePersonaModal, cancelPersonaForm].forEach(btn => {
-        btn.addEventListener('click', () => {
-            personaModal.classList.add('hidden');
-        });
-    });
+    // 페르소나 모달 닫기 (동적 생성 시 이벤트 처리)
     
     // 프로필 모달 닫기
     closeProfileModal.addEventListener('click', () => {
@@ -80,19 +75,26 @@ document.addEventListener('DOMContentLoaded', function() {
         let personaData;
         if (mode === 'edit') {
             personaData = JSON.parse(e.currentTarget.dataset.persona)
-            addPersonaForm.dataset.mode = 'edit';
         } else {
-            delete personaData;
-            addPersonaForm.dataset.mode = 'add';
+            personaData = null;
         }
 
+        const petProfile = e.target.closest('[data-current-pet-id]')
+        const petId = petProfile.dataset.currentPetId
+        console.log(petId)
+
+        // 페르소나 모달을 동적으로 생성
+        await createPersonaModal();
         
-        const petProfile = e.target.closest('[data-current-pet-id]') // 펫 프로필 모달창... 여기서 펫 아이디 가져와야할 듯.
-        console.log(petProfile.dataset.currentPetId)
-
-        addPersonaForm.dataset.currentPetId = petProfile.dataset.currentPetId
-        console.log(addPersonaForm)
-
+        // 모달 관련 변수들을 다시 할당
+        personaModal = document.getElementById('add-persona-modal');
+        closePersonaModal = document.getElementById('close-persona-modal');
+        cancelPersonaForm = document.getElementById('cancel-persona-form');
+        addPersonaForm = document.getElementById('add-persona-form');
+        
+        // 이벤트 리스너 설정
+        setupPersonaModalEvents(mode, petId, personaData);
+        
         viewPetModal.classList.add('hidden');
         personaModal.classList.remove('hidden');
         personaModal.querySelector('.bg-white').classList.add('modal-enter');
@@ -107,97 +109,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // 존댓말/반말 태그 클릭 효과 등록
         setupPolitenessTagEvents();
 
-        // 페르소나 수정인 경우
+        // 페르소나 수정인 경우 데이터 채우기
         if (mode === 'edit') {
-            // DOM 업데이트가 완료될 때까지 기다림
-            requestAnimationFrame(() => {
-            console.log(personaData)
-
-            document.getElementById('user_call').value = personaData.user_call;
-
-            // 존댓말 여부 라디오버튼
-            const politeness = document.querySelectorAll('input[name="politeness"]')
-            console.log(personaData.politeness, typeof(personaData.politeness))
-            politeness.forEach(radio => {
-                if (radio.value == personaData.politeness) {
-                    radio.checked = true;
-                    // 시각적 상태도 함께 업데이트
-                    const span = radio.closest('.politeness-tag').querySelector('span');
-                    span.classList.add('bg-primary-500', 'text-white');
-                    span.classList.remove('bg-white', 'text-primary-500');
-                } else {
-                    radio.checked = false;
-                    // 다른 버튼들은 기본 상태로
-                    const span = radio.closest('.politeness-tag').querySelector('span');
-                    span.classList.remove('bg-primary-500', 'text-white');
-                    span.classList.add('bg-white', 'text-primary-500');
-                }
-            })
-
-            // 말투 스타일
-            const styles = document.querySelectorAll('input[name="style_id"]') // 동적 렌더링... 확인 필요
-            styles.forEach(radio => {
-                if (radio.value == personaData.style_id) {
-                    radio.checked = true;
-                    // 시각적 상태도 함께 업데이트
-                    const span = radio.closest('.speech-style-tag').querySelector('span');
-                    span.style.backgroundColor = span.dataset.bgColor;
-                    span.style.color = '#ffffff';
-                    span.style.borderColor = span.dataset.bgColor;
-                } else {
-                    radio.checked = false;
-                    // 다른 버튼들은 기본 상태로
-                    const span = radio.closest('.speech-style-tag').querySelector('span');
-                    span.style.backgroundColor = '#ffffff';
-                    span.style.color = span.dataset.textColor;
-                    span.style.borderColor = span.dataset.textColor;
-                }
-            })
-
-            document.getElementById('speech_habit').value = personaData.speech_habit;
-            
-            // 성격 특성 (체크박스)
-            const traits = document.querySelectorAll('input[name="trait_id"]')
-            if (personaData.traits && personaData.traits.length > 0) {
-                traits.forEach(checkbox => {
-                    // personaData.traits 배열에서 현재 체크박스의 value와 일치하는 trait_id가 있는지 확인
-                    const isSelected = personaData.traits.some(trait => 
-                        trait.trait_id == parseInt(checkbox.value)
-                    );
-                    
-                    if (isSelected) {
-                        checkbox.checked = true;
-                        // 시각적 상태도 함께 업데이트
-                        const span = checkbox.closest('.personality-tag').querySelector('span');
-                        const bgColor = span.dataset.bgColor || '#FFD43B';
-                        span.style.setProperty('background-color', bgColor, 'important');
-                        span.style.setProperty('color', '#ffffff', 'important');
-                        span.style.setProperty('border-color', bgColor, 'important');
-                    } else {
-                        checkbox.checked = false;
-                        // 선택 해제 상태로
-                        const span = checkbox.closest('.personality-tag').querySelector('span');
-                        const textColor = span.dataset.textColor || '#FFD43B';
-                        span.style.setProperty('background-color', '#ffffff', 'important');
-                        span.style.setProperty('color', textColor, 'important');
-                        span.style.setProperty('border-color', textColor, 'important');
-                    }
-                });
-            }
-
-
-
-            document.getElementById('likes').value = personaData.likes
-            document.getElementById('dislikes').value = personaData.dislikes
-            document.getElementById('habits').value = personaData.habits
-            document.getElementById('family_info').value = personaData.family_info
-            document.getElementById('special_note').value = personaData.special_note
-        })
+            populatePersonaData(personaData);
         }
     });
 
-    // 모달 외부 클릭시 닫기
-    [petModal, personaModal, viewPetModal].forEach(modal => {
+    // 모달 외부 클릭시 닫기 (반려동물 등록, 프로필 모달)
+    [petModal, viewPetModal].forEach(modal => {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.classList.add('hidden');
@@ -272,52 +191,6 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.reset();
     })
 
-    
-    addPersonaForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        console.log(addPersonaForm.dataset.currentPetId)
-        const petId = addPersonaForm.dataset.currentPetId
-        const mode = addPersonaForm.dataset.mode
-        const formData = new FormData(e.target);
-        const trimedFormData = {}
-
-        // trait_id(체크박스)는 여러 개 선택될 수 있으므로 getAll로 배열로 받기
-        trimedFormData['trait_id'] = formData.getAll('trait_id');
-        
-        for (let [key, value] of formData.entries()) {
-            if (key !== 'trait_id' && value.trim() !== '') {
-                trimedFormData[key] = value;
-            }
-        }
-
-        console.log(trimedFormData)
-
-        let response;
-        if (mode === 'add') {
-            response = await fetch(`/api/save-persona/${petId}`,{
-            method: 'POST',
-            body: JSON.stringify(trimedFormData),
-            headers: {'Content-Type': 'application/json'}
-        }
-        )
-        } else {
-            response = await fetch(`/api/update-persona/${petId}`, {
-            method: 'PUT',
-            body: JSON.stringify(trimedFormData),
-            headers: {'Content-Type': 'application/json'}
-            })
-        }
-
-        const data = await response.json()
-            if (data.success) {
-                // 모달 닫기
-                personaModal.classList.add('hidden');
-                console.log(data.success)
-            
-                // 폼 리셋
-                e.target.reset()
-        }
-    })
 
     // 기존 성격 태그 클릭 효과는 동적 렌더링에서 처리됩니다
 
@@ -328,10 +201,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const petId = petCard.dataset.petId
             try {
                 const response = await fetch(`/api/pet-profile/${petId}`)
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const petData = await response.json()
                 showPetProfile(petData)
             } catch (error) {
                 console.error('펫 프로필 로딩 실패:', error)
+                console.error('Response details:', error.message)
             }
         }
     })
@@ -339,6 +218,341 @@ document.addEventListener('DOMContentLoaded', function() {
     getPetInfo()
     getUserProfile()
 });
+
+// 페르소나 모달 동적 생성 함수
+function createPersonaModal() {
+    // 기존 모달이 있다면 제거
+    const existingModal = document.getElementById('add-persona-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const modalHTML = `
+    <!-- 페르소나 생성 모달 -->
+    <div id="add-persona-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-t-xl">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold">
+                        <i class="fas fa-magic mr-2"></i>
+                        페르소나 - <span id="selected-pet-name">반려동물</span>
+                    </h2>
+                    <button id="close-persona-modal" class="text-white hover:text-gray-300 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <form id="add-persona-form" class="space-y-8" method="POST">
+                    <!-- 호칭 설정 -->
+                    <div class="bg-gray-50 p-6 rounded-xl">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-user text-primary-500 mr-2"></i>
+                            호칭 설정
+                        </h3>
+                        <div class="form-group">
+                            <label for="user_call" class="block text-sm font-medium text-gray-700 mb-2">
+                                사용자를 부르는 호칭 *
+                            </label>
+                            <input type="text" name="user_call" id="user_call" required
+                                   class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                                   placeholder="예: 엄마, 아빠, 주인">
+                        </div>
+                    </div>
+
+                    <!-- 말투 설정 -->
+                    <div class="bg-gray-50 p-6 rounded-xl">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-comment text-primary-500 mr-2"></i>
+                            말투 설정
+                        </h3>
+                        
+                        <!-- 존댓말/반말 -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">존댓말/반말</label>
+                            <div class="flex gap-3">
+                                <label class="politeness-tag">
+                                    <input type="radio" name="politeness" value="formal" class="hidden">
+                                    <span class="block px-4 py-2 text-center bg-white border-2 border-primary-500 text-primary-500 rounded-lg cursor-pointer hover:bg-primary-50 transition-all">존댓말</span>
+                                </label>
+                                <label class="politeness-tag">
+                                    <input type="radio" name="politeness" value="informal" class="hidden">
+                                    <span class="block px-4 py-2 text-center bg-white border-2 border-primary-500 text-primary-500 rounded-lg cursor-pointer hover:bg-primary-50 transition-all">반말</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 말투 스타일 -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">말투 스타일 (한 개 선택)</label>
+                            <div id="speech-styles-container" class="flex flex-wrap gap-2">
+                                <!-- 말투 스타일들이 동적으로 렌더링됩니다 -->
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="speech_habit" class="block text-sm font-medium text-gray-700 mb-2">
+                                특별한 말버릇
+                            </label>
+                            <input type="text" name="speech_habit" id="speech_habit"
+                                   class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                                   placeholder="예: 끝에 ~냥 붙이기, 말끝을 '~멍'으로 끝내기">
+                        </div>
+                    </div>
+
+                    <!-- 성격 설정 -->
+                    <div class="bg-gray-50 p-6 rounded-xl">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-heart text-primary-500 mr-2"></i>
+                            성격 및 특징(여러 개 선택 가능)
+                        </h3>
+                        
+                        <div id="personality-traits-container">
+                            <!-- 성격 특성들이 동적으로 렌더링됩니다 -->
+                        </div>
+                    </div>
+
+                    <!-- 추가 정보 -->
+                    <div class="bg-gray-50 p-6 rounded-xl">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-info-circle text-primary-500 mr-2"></i>
+                            추가 정보
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label for="likes" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-thumbs-up text-green-500 mr-1"></i>
+                                    좋아하는 것
+                                </label>
+                                <textarea id="likes" name="likes" rows="3" 
+                                          class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all resize-y"
+                                          placeholder="쉼표로 구분해서 입력하세요. 예: 산책, 간식, 공놀이"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dislikes" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-thumbs-down text-red-500 mr-1"></i>
+                                    싫어하는 것
+                                </label>
+                                <textarea id="dislikes" name="dislikes" rows="3"
+                                          class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all resize-y"
+                                          placeholder="쉼표로 구분해서 입력하세요. 예: 목욕, 큰 소리, 낯선 사람"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="habits" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-sync text-yellow-500 mr-1"></i>
+                                    습관
+                                </label>
+                                <textarea id="habits" name="habits" rows="3"
+                                          class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all resize-y"
+                                          placeholder="쉼표로 구분해서 입력하세요. 예: 꼬리 흔들기, 골골거리기"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="family_info" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-home text-blue-500 mr-1"></i>
+                                    가족 정보
+                                </label>
+                                <textarea id="family_info" name="family_info" rows="3"
+                                          class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all resize-y"
+                                          placeholder="가족 구성원, 관계 등을 입력하세요"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <label for="special_note" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-star text-yellow-500 mr-1"></i>
+                                특별한 사항
+                            </label>
+                            <textarea id="special_note" name="special_note" rows="3"
+                                      class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all resize-y"
+                                      placeholder="외형, 특별한 에피소드 등 대화에 반영되었으면 하는 점을 자유롭게 작성하세요"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                        <button type="button" id="cancel-persona-form" 
+                                class="px-6 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all">
+                            취소
+                        </button>
+                        <button id="save-persona-btn" type="submit"
+                                class="px-6 py-2 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white rounded-lg hover:from-secondary-600 hover:to-secondary-700 transition-all hover:-translate-y-0.5 shadow-md">
+                            저장
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>`;
+
+    // body에 모달 추가
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+// 페르소나 모달 이벤트 설정 함수
+function setupPersonaModalEvents(mode, petId, personaData) {
+    const personaModal = document.getElementById('add-persona-modal');
+    const closePersonaModal = document.getElementById('close-persona-modal');
+    const cancelPersonaForm = document.getElementById('cancel-persona-form');
+    const addPersonaForm = document.getElementById('add-persona-form');
+
+    // 모달 데이터 설정
+    addPersonaForm.dataset.mode = mode;
+    addPersonaForm.dataset.currentPetId = petId;
+
+    // 모달 닫기 이벤트
+    const closeModal = () => {
+        personaModal.classList.add('hidden');
+        // 모달 제거
+        setTimeout(() => {
+            personaModal.remove();
+        }, 300);
+    };
+
+    [closePersonaModal, cancelPersonaForm].forEach(btn => {
+        btn.addEventListener('click', closeModal);
+    });
+
+    // 모달 외부 클릭시 닫기
+    personaModal.addEventListener('click', (e) => {
+        if (e.target === personaModal) {
+            closeModal();
+        }
+    });
+
+    // 폼 제출 이벤트
+    addPersonaForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const trimedFormData = {};
+
+        // trait_id(체크박스)는 여러 개 선택될 수 있으므로 getAll로 배열로 받기
+        trimedFormData['trait_id'] = formData.getAll('trait_id');
+        
+        for (let [key, value] of formData.entries()) {
+            if (key !== 'trait_id' && value.trim() !== '') {
+                trimedFormData[key] = value;
+            }
+        }
+
+        console.log(trimedFormData);
+
+        let response;
+        if (mode === 'add') {
+            response = await fetch(`/api/save-persona/${petId}`, {
+                method: 'POST',
+                body: JSON.stringify(trimedFormData),
+                headers: {'Content-Type': 'application/json'}
+            });
+        } else {
+            response = await fetch(`/api/update-persona/${petId}`, {
+                method: 'PUT',
+                body: JSON.stringify(trimedFormData),
+                headers: {'Content-Type': 'application/json'}
+            });
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            // 모달 닫기
+            closeModal();
+            console.log(data.success);
+            
+            // 폼 리셋
+            e.target.reset();
+        }
+    });
+}
+
+// 페르소나 데이터를 폼에 채우는 함수
+function populatePersonaData(personaData) {
+    // DOM 업데이트가 완료될 때까지 기다림
+    requestAnimationFrame(() => {
+        console.log(personaData);
+
+        document.getElementById('user_call').value = personaData.user_call;
+
+        // 존댓말 여부 라디오버튼
+        const politeness = document.querySelectorAll('input[name="politeness"]');
+        console.log(personaData.politeness, typeof(personaData.politeness));
+        politeness.forEach(radio => {
+            if (radio.value == personaData.politeness) {
+                radio.checked = true;
+                // 시각적 상태도 함께 업데이트
+                const span = radio.closest('.politeness-tag').querySelector('span');
+                span.classList.add('bg-primary-500', 'text-white');
+                span.classList.remove('bg-white', 'text-primary-500');
+            } else {
+                radio.checked = false;
+                // 다른 버튼들은 기본 상태로
+                const span = radio.closest('.politeness-tag').querySelector('span');
+                span.classList.remove('bg-primary-500', 'text-white');
+                span.classList.add('bg-white', 'text-primary-500');
+            }
+        });
+
+        // 말투 스타일
+        const styles = document.querySelectorAll('input[name="style_id"]');
+        styles.forEach(radio => {
+            if (radio.value == personaData.style_id) {
+                radio.checked = true;
+                // 시각적 상태도 함께 업데이트
+                const span = radio.closest('.speech-style-tag').querySelector('span');
+                span.style.backgroundColor = span.dataset.bgColor;
+                span.style.color = '#ffffff';
+                span.style.borderColor = span.dataset.bgColor;
+            } else {
+                radio.checked = false;
+                // 다른 버튼들은 기본 상태로
+                const span = radio.closest('.speech-style-tag').querySelector('span');
+                span.style.backgroundColor = '#ffffff';
+                span.style.color = span.dataset.textColor;
+                span.style.borderColor = span.dataset.textColor;
+            }
+        });
+
+        document.getElementById('speech_habit').value = personaData.speech_habit;
+        
+        // 성격 특성 (체크박스)
+        const traits = document.querySelectorAll('input[name="trait_id"]');
+        if (personaData.traits && personaData.traits.length > 0) {
+            traits.forEach(checkbox => {
+                // personaData.traits 배열에서 현재 체크박스의 value와 일치하는 trait_id가 있는지 확인
+                const isSelected = personaData.traits.some(trait => 
+                    trait.trait_id == parseInt(checkbox.value)
+                );
+                
+                if (isSelected) {
+                    checkbox.checked = true;
+                    // 시각적 상태도 함께 업데이트
+                    const span = checkbox.closest('.personality-tag').querySelector('span');
+                    const bgColor = span.dataset.bgColor || '#FFD43B';
+                    span.style.setProperty('background-color', bgColor, 'important');
+                    span.style.setProperty('color', '#ffffff', 'important');
+                    span.style.setProperty('border-color', bgColor, 'important');
+                } else {
+                    checkbox.checked = false;
+                    // 선택 해제 상태로
+                    const span = checkbox.closest('.personality-tag').querySelector('span');
+                    const textColor = span.dataset.textColor || '#FFD43B';
+                    span.style.setProperty('background-color', '#ffffff', 'important');
+                    span.style.setProperty('color', textColor, 'important');
+                    span.style.setProperty('border-color', textColor, 'important');
+                }
+            });
+        }
+
+        document.getElementById('likes').value = personaData.likes;
+        document.getElementById('dislikes').value = personaData.dislikes;
+        document.getElementById('habits').value = personaData.habits;
+        document.getElementById('family_info').value = personaData.family_info;
+        document.getElementById('special_note').value = personaData.special_note;
+    });
+}
 
 
 // 반려동물 등록/수정 모달창 여는 함수
@@ -416,7 +630,7 @@ async function getPetInfo() {
     showLoadingState();
     
     try {
-        const response = await fetch('/api/pets');
+        const response = await fetch('/api/pets/');
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

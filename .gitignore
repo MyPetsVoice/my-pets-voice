@@ -1,4 +1,9 @@
 .env
+# 루트 + 하위 폴더 db 파일 무시
+db
+**/db
+*.db
+instance/mypetsvoice.db
 # Python cache
 
 # python 어쩌꾸
@@ -11,8 +16,12 @@ instance/
 db생성요청사항.txt
 insert_data.py
 
+# 로그파일
 logs/
 app.log
+
+# vscode 파일
+.vscode
 
 # 개인 파일(태민)
 mypage요구사항

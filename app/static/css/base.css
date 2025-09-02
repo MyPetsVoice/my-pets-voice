@@ -321,3 +321,8 @@
         @apply flex-col items-stretch gap-4;
     }
 }
+
+.footer {
+    margin: none;
+    padding : none
+}

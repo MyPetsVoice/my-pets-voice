@@ -1,0 +1,49 @@
+  <!-- AI 건강상담 대화창 -->
+   <style>
+  chat-container .message.ai {
+  background: #f1f5f9;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 5px 0;
+  line-height: 1.5;
+  white-space: pre-wrap; /* 줄바꿈 반영 */
+}
+chat-container .message.ai strong {
+  color: #333;
+}
+chat-container .message.ai ul {
+  padding-left: 20px;
+}
+
+   </style>
+        <div class="chat-container">
+            <input type="hidden" id="modal-pet-id" value="{{pet_id}}">
+            <div class="chat-header">
+                <h3>🤖 AI 건강상담 <span id="pet-info-header" class="pet-info-header"></span></h3>
+                
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai">
+                    안녕하세요! 반려동물 전문 AI 수의사입니다. 🐾<br>
+                    어떤 건강 상담이 필요하신가요?<br>
+                    🐾 <strong>반려동물 건강 상담 챗봇</strong><br>
+                    명령어 예시:<br>
+                    - '📝 건강기록 알려줘'<br>
+                    - '🙅 알러지 뭐 있어?'<br>
+                    - '💉예방접종 언제했어?'<br>
+                    - '📝 전체기록 보여줘'<br>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="궁금한 것을 물어보세요..." onkeypress="handleChatKeyPress(event)">
+                <button class="chat-send" onclick="sendMessage()">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M15.854 0.146a.5.5 0 0 1 0 .708L5.707 10.5H2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1.293L8.146 15.354a.5.5 0 0 0 .708-.708L15.854 0.146z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    

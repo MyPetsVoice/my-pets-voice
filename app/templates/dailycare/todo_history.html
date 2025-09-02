@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}반려동물의 목소리가 들려 - TODO{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="../../static/css/dailycare/todo_history.css">
+<div >
+  <div id="userInfo" data-user-id="{{ user }}"></div>
+  <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+    <!-- 헤더 -->
+    <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-8 text-center text-white">
+      <h1 class="text-3xl font-bold drop-shadow-md mb-2">TODO List</h1>
+      <p class="opacity-90 text-lg">일정을 기록하고 관리하세요.</p>
+    </div>
+
+    <!-- 필터 버튼 -->
+    <div class="flex flex-wrap gap-3 p-6 border-b border-gray-200">
+      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 " onclick="filterTodos('all')" data-filter="all" >전체</button>
+      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 " onclick="filterTodos('미완료')" data-filter="미완료">대기중</button>
+      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 " onclick="filterTodos('완료')" data-filter="완료">완료</button>
+      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 " onclick="filterTodos('높음')" data-filter="높음">높은 우선순위</button>
+    </div>
+
+    <!-- 일정 목록 -->
+    <div class="p-6">
+      <div id="todoList" class="space-y-4"></div>
+    </div>
+
+    <!-- 통계 영역 -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-gray-50 p-6 border-t border-gray-200 text-center">
+      <div class="bg-white rounded-lg shadow p-4">
+        <div class="text-2xl font-bold text-orange-500 mb-1" id="totalCount">0</div>
+        <div class="text-sm text-gray-600">전체 일정</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4">
+        <div class="text-2xl font-bold text-orange-500 mb-1" id="pendingCount">0</div>
+        <div class="text-sm text-gray-600">대기 중</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4">
+        <div class="text-2xl font-bold text-orange-500 mb-1" id="completedCount">0</div>
+        <div class="text-sm text-gray-600">완료</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4">
+        <div class="text-2xl font-bold text-orange-500 mb-1" id="highPriorityCount">0</div>
+        <div class="text-sm text-gray-600">높은 우선순위</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../static/js/dailycare/todo_history.js"></script>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends "base.html" %} {% block title %}반려동물의 목소리가 들려 - 의료기록{%
+endblock %} {% block content %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/dailycare/medical_history.css') }}"
+/>
+
+<div class="container mx-auto p-6 max-w-6xl">
+  <!-- 헤더 -->
+  <div class="header-section mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">의료기록 관리</h1>
+        <div id="pet-info" class="text-gray-600">
+          <span id="pet-name">펫을 불러오는 중...</span>의 의료기록을 확인하세요
+        </div>
+      </div>
+      <button
+        onclick="history.back()"
+        class="back-btn px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+      >
+        ← 돌아가기
+      </button>
+    </div>
+  </div>
+
+  <!-- 카테고리 선택 -->
+  <div class="category-section mb-8">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">
+        카테고리를 선택해주세요
+      </h2>
+      <div class="category-tabs flex flex-wrap gap-3">
+        <button class="category-tab active" data-category="allergy">
+          <span class="tab-icon">🤧</span>
+          <span class="tab-text">알러지</span>
+        </button>
+        <button class="category-tab" data-category="disease">
+          <span class="tab-icon">🏥</span>
+          <span class="tab-text">질병이력</span>
+        </button>
+        <button class="category-tab" data-category="surgery">
+          <span class="tab-icon">⚕️</span>
+          <span class="tab-text">수술이력</span>
+        </button>
+        <button class="category-tab" data-category="vaccination">
+          <span class="tab-icon">💉</span>
+          <span class="tab-text">예방접종</span>
+        </button>
+        <button class="category-tab" data-category="medication">
+          <span class="tab-icon">💊</span>
+          <span class="tab-text">복용약물</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 기록 목록 -->
+  <div class="records-section">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+      <!-- 기록 헤더 -->
+      <div class="record-header px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-800">
+            <span id="current-category">알러지</span> 기록
+          </h3>
+          <div class="record-count">총 <span id="record-count">0</span>개</div>
+        </div>
+      </div>
+
+      <!-- 로딩 상태 -->
+      <div id="loading-state" class="text-center py-12">
+        <div
+          class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-gray-500 bg-white transition ease-in-out duration-150"
+        >
+          <svg
+            class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          데이터를 불러오는 중...
+        </div>
+      </div>
+
+      <!-- 기록 목록 -->
+      <div id="records-list" class="p-6">
+        <!-- JavaScript로 동적 생성 -->
+      </div>
+
+      <!-- 빈 상태 -->
+      <div id="empty-state" class="text-center py-12 hidden">
+        <div class="empty-icon text-6xl mb-4">📋</div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">기록이 없습니다</h3>
+        <p class="text-gray-500">
+          아직 등록된 <span id="empty-category">알러지</span> 기록이 없습니다.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 상세보기 모달 -->
+<div
+  id="detail-modal"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
+>
+  <div
+    id="modal-content"
+    class="bg-white rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden"
+  >
+    <!-- JavaScript로 모달 내용 동적 생성 -->
+  </div>
+</div>
+
+<script>
+  const CURRENT_PET_ID = "{{ pet_id }}";
+</script>
+
+<script src="{{ url_for('static', filename='js/dailycare/medical_history.js') }}"></script>
+
+{% endblock %}
