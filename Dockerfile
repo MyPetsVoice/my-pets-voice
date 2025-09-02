@@ -8,10 +8,15 @@ RUN apt-get update && apt-get install -y \
     libffi-dev \
     libssl-dev \
     postgresql-client \
+    build-essential \
+    python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # 작업 디렉토리 설정
 WORKDIR /app
+
+# pip 업그레이드
+RUN pip install --upgrade pip
 
 # requirements.txt 복사 및 패키지 설치
 COPY requirements.txt .
