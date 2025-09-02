@@ -13,9 +13,19 @@ def diary():
 
 @diary_views_bp.route("/write")
 def write():
-    return render_template("diary/write.html")
+    user = session.get('user')
+    if user:
+        user_nickname = user['kakao_account']['profile']['nickname']
+        return render_template("diary/write.html", user=user_nickname)
+
+    return redirect(url_for('index'))
 
 @diary_views_bp.route("/detail/<int:diary_id>")
 def detail(diary_id):
-    return render_template("diary/detail.html", diary_id=diary_id)
+    user = session.get('user')
+    if user:
+        user_nickname = user['kakao_account']['profile']['nickname']
+        return render_template("diary/detail.html", diary_id=diary_id, user=user_nickname)
+    
+    return redirect(url_for('index'))
 

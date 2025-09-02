@@ -62,13 +62,26 @@ def get_my_pet_by_user_id(user_id,pet_id):
 @dailycare_api_bp.route('/save/healthcare/<pet_id>', methods = ['POST'])
 def save_healthcare(pet_id):
     data = request.json
+    # Convert empty strings to None for numeric fields
+    food = data.get('food')
+    food = int(food) if food and food.strip() else None
+    
+    water = data.get('water') 
+    water = float(water) if water and water.strip() else None
+    
+    weight_kg = data.get('weight_kg')
+    weight_kg = float(weight_kg) if weight_kg and weight_kg.strip() else None
+    
+    walk_time_minutes = data.get('walk_time_minutes')
+    walk_time_minutes = int(walk_time_minutes) if walk_time_minutes and walk_time_minutes.strip() else None
+    
     record = HealthCareService.create_health_record(
         pet_id=pet_id,
-        food=data.get('food'),
-        water=data.get('water'),
+        food=food,
+        water=water,
         excrement_status=data.get('excrement_status'),
-        weight_kg=data.get('weight_kg'),
-        walk_time_minutes=data.get('walk_time_minutes'),
+        weight_kg=weight_kg,
+        walk_time_minutes=walk_time_minutes,
     )
      # 2. Medication 연결 (여러 개 가능)
     medication_ids = data.get('medication_ids') or []
