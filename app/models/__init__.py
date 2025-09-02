@@ -47,12 +47,30 @@ def create_database_if_not_exists(app):
     if not database_url or not database_url.startswith('postgresql'):
         return  # PostgreSQL이 아니면 스킵
     
+    print(f"연결된 database :  {database_url}")
+    
     try:
-        # URL 파싱
+        # 먼저 대상 데이터베이스에 직접 연결 시도
         parsed = urlparse(database_url)
         db_name = parsed.path[1:]  # '/' 제거
         
-        # postgres 데이터베이스에 연결
+        # 대상 데이터베이스에 직접 연결 시도
+        try:
+            test_conn = psycopg2.connect(
+                host=parsed.hostname,
+                port=parsed.port or 5432,
+                user=parsed.username,
+                password=parsed.password,
+                database=db_name
+            )
+            test_conn.close()
+            print(f"데이터베이스 '{db_name}'가 이미 존재합니다.")
+            return
+        except psycopg2.OperationalError:
+            # 데이터베이스가 없으면 생성 시도
+            pass
+        
+        # postgres 데이터베이스에 연결해서 생성
         postgres_url = database_url.replace(f'/{db_name}', '/postgres')
         parsed_postgres = urlparse(postgres_url)
         
@@ -65,22 +83,16 @@ def create_database_if_not_exists(app):
         )
         conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         
-        # 데이터베이스 존재 확인
         cursor = conn.cursor()
-        cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s", (db_name,))
-        exists = cursor.fetchone()
-        
-        if not exists:
-            cursor.execute(f'CREATE DATABASE "{db_name}"')
-            print(f"데이터베이스 '{db_name}'가 생성되었습니다.")
-        else:
-            print(f"데이터베이스 '{db_name}'가 이미 존재합니다.")
+        cursor.execute(f'CREATE DATABASE "{db_name}"')
+        print(f"데이터베이스 '{db_name}'가 생성되었습니다.")
             
         cursor.close()
         conn.close()
         
     except Exception as e:
         print(f"데이터베이스 생성 중 오류: {e}")
+        print("데이터베이스를 수동으로 생성해주세요.")
         # 오류가 발생해도 앱 실행은 계속
 
 # 모델들을 import하여 다른 모듈에서 사용할 수 있도록 함
