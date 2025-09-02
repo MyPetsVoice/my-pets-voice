@@ -29,6 +29,7 @@ services:
     volumes:
       - ./nginx.prod.conf:/etc/nginx/nginx.conf
       - ./ssl:/etc/nginx/ssl
+      - ./app/static:/app/app/static:ro
     depends_on:
       - web
     restart: unless-stopped
