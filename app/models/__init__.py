@@ -3,8 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 def init_db(app):
-    # PostgreSQL 데이터베이스 자동 생성
-    create_database_if_not_exists(app)
+    # PostgreSQL 데이터베이스 자동 생성 (비활성화 - 이미 존재)
+    # create_database_if_not_exists(app)
     
     db.init_app(app)
 
@@ -37,63 +37,7 @@ def init_db(app):
         except ImportError:
             print("초기 데이터 삽입 함수를 찾을 수 없습니다. 수동으로 init_db_with_check.py를 실행해주세요.")
 
-def create_database_if_not_exists(app):
-    """PostgreSQL 데이터베이스가 존재하지 않으면 생성"""
-    import psycopg2
-    from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-    from urllib.parse import urlparse
-    
-    database_url = app.config.get('SQLALCHEMY_DATABASE_URI')
-    if not database_url or not database_url.startswith('postgresql'):
-        return  # PostgreSQL이 아니면 스킵
-    
-    print(f"연결된 database :  {database_url}")
-    
-    try:
-        # 먼저 대상 데이터베이스에 직접 연결 시도
-        parsed = urlparse(database_url)
-        db_name = parsed.path[1:]  # '/' 제거
-        
-        # 대상 데이터베이스에 직접 연결 시도
-        try:
-            test_conn = psycopg2.connect(
-                host=parsed.hostname,
-                port=parsed.port or 5432,
-                user=parsed.username,
-                password=parsed.password,
-                database=db_name
-            )
-            test_conn.close()
-            print(f"데이터베이스 '{db_name}'가 이미 존재합니다.")
-            return
-        except psycopg2.OperationalError:
-            # 데이터베이스가 없으면 생성 시도
-            pass
-        
-        # postgres 데이터베이스에 연결해서 생성
-        postgres_url = database_url.replace(f'/{db_name}', '/postgres')
-        parsed_postgres = urlparse(postgres_url)
-        
-        conn = psycopg2.connect(
-            host=parsed_postgres.hostname,
-            port=parsed_postgres.port or 5432,
-            user=parsed_postgres.username,
-            password=parsed_postgres.password,
-            database='postgres'
-        )
-        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        
-        cursor = conn.cursor()
-        cursor.execute(f'CREATE DATABASE "{db_name}"')
-        print(f"데이터베이스 '{db_name}'가 생성되었습니다.")
-            
-        cursor.close()
-        conn.close()
-        
-    except Exception as e:
-        print(f"데이터베이스 생성 중 오류: {e}")
-        print("데이터베이스를 수동으로 생성해주세요.")
-        # 오류가 발생해도 앱 실행은 계속
+# 데이터베이스 자동 생성 함수 제거 (이미 존재하므로 불필요)
 
 # 모델들을 import하여 다른 모듈에서 사용할 수 있도록 함
 from app.models.base import BaseModel
