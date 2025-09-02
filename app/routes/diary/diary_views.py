@@ -7,7 +7,7 @@ def diary():
     user = session.get('user')
     if user:
         user_nickname = user['kakao_account']['profile']['nickname']
-        return render_template('diary/index.html', user=user_nickname)
+        return render_template('diary/diary.html', user=user_nickname)
 
     return redirect(url_for('index'))
 

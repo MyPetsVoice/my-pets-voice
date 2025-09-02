@@ -5,5 +5,5 @@ from .diary_api import diary_api_bp
 diary_bp = Blueprint('diary', __name__)
 
 diary_bp.register_blueprint(diary_views_bp)
-diary_bp.register_blueprint(diary_api_bp, url_prefix='/api')
+diary_bp.register_blueprint(diary_api_bp, url_prefix='/api/diary/')
 
