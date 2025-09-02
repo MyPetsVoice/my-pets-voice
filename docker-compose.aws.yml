@@ -8,6 +8,9 @@ services:
     env_file:
       - .env.production
     volumes:
+      - ./app:/app/app
+      - ./run.py:/app/run.py
+      - ./config.py:/app/config.py
       - ./app/static/uploads:/app/app/static/uploads
       - ./logs:/app/logs
     restart: unless-stopped
