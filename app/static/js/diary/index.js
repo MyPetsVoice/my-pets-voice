@@ -23,11 +23,31 @@ async function setupEventListeners() {
       }
     });
 
+  // 일기 추가 버튼 이벤트 추가
+  const addDiaryBtn = document.getElementById("addDiaryBtn");
+  if (addDiaryBtn) {
+    addDiaryBtn.addEventListener("click", function () {
+      goToWritePage();
+    });
+  }
+
   // "전체 일기" 버튼 이벤트 (있다면)
   const showAllButton = document.getElementById("showAllDiariesBtn");
   if (showAllButton) {
     showAllButton.addEventListener("click", showAllDiaries);
   }
+}
+
+// 일기 작성 페이지로 이동하는 함수
+function goToWritePage() {
+  let writeUrl = "/diary/write";
+
+  // 선택된 펫이 있다면 URL에 펫 ID 추가
+  if (selectedPetPersonaId && selectedPetPersonaId !== "all") {
+    writeUrl += `?pet_id=${selectedPetPersonaId}`;
+  }
+
+  window.location.href = writeUrl;
 }
 
 // 전체 일기 로드
