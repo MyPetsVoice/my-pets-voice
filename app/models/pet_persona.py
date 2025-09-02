@@ -13,7 +13,7 @@ class PetPersona(BaseModel):
 
     user_call = db.Column(db.String(50), nullable=False)
     style_id = db.Column(db.Integer, db.ForeignKey('speech_styles.style_id'), nullable=False)
-    politeness = db.Column(db.String, nullable=False)
+    politeness = db.Column(db.String(50), nullable=False)
     speech_habit = db.Column(db.Text)
     likes = db.Column(db.Text)
     dislikes = db.Column(db.Text)
