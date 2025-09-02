@@ -1,4 +1,5 @@
 const user_id = 1;
+export let pet_id;
 const pet_selector = document.getElementById("pet-selector");
 const pet_detail = document.getElementById("pet-detail");
 let current_pet_id = null;
@@ -31,6 +32,10 @@ async function getAllPetsById(user_id) {
 
         // 현재 선택된 pet_id 숫자로 변환
         current_pet_id = Number(this.dataset.petId);
+        pet_id = current_pet_id
+        window.dispatchEvent(
+          new CustomEvent("petChanged", { detail: current_pet_id })
+        );
 
         // 개별 펫 조회
         try {
