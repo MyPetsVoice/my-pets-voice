@@ -12,5 +12,5 @@ langchain-text-splitters>=0.3.9
 langsmith>=0.4.10
 openai==1.99.9
 SQLAlchemy==2.0.42
-requests==2.31.0
+requests==2.32.5
 psycopg2-binary==2.9.7
