@@ -104,7 +104,7 @@ def logout():
     """로그아웃 처리"""
     try:
         client_id = current_app.config['KAKAO_REST_API_KEY']
-        logout_redirect_uri = current_app.config['KAKAO_LOGOUT_REDIRECT_URI']
+        logout_redirect_uri = current_app.config.get('KAKAO_LOGOUT_REDIRECT_URI') or request.url_root.rstrip('/')
         print(f'로그아웃 리다이렉트 uri : {logout_redirect_uri}')
 
         # 세션 정보 삭제
@@ -126,4 +126,4 @@ def logout():
     except Exception as e:
         logger.error(f'로그아웃 처리 중 오류: {str(e)}')
         session.clear()  # 세션은 삭제
-        return redirect(url_for('mypage.mypage_views.mypage'))
+        return redirect('/')
