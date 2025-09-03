@@ -35,6 +35,8 @@ class HealthCare(BaseModel):
     # 관계 설정
     pet = db.relationship('Pet', back_populates='health_care')
     medication = db.relationship('Medication', back_populates='health_cares')
+    # HealthCareMedication과의 관계 - HealthCare 삭제시 관련 HealthCareMedication도 함께 삭제
+    medication_links = db.relationship('HealthCareMedication', backref='healthcare', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"<HealthCare(id={self.care_id}, created_at='{self.created_at}', medication_id={self.medication_id})>"
