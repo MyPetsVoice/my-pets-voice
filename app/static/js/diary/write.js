@@ -306,7 +306,44 @@ async function convertToAI() {
   }
 }
 
-// AI 내용 적용 삭제함
+// AI 필수 js
+async function submitDiary(event) {
+  event.preventDefault();
+
+  if (!selectedPetPersonaId) {
+    alert("반려동물을 선택해주세요.");
+    return;
+  }
+
+  // AI 변환이 완료되었는지 확인
+  if (!currentAIContent) {
+    alert("AI 변환을 먼저 진행해주세요. '너의 목소리로' 버튼을 눌러주세요.");
+    return;
+  }
+
+  // content_ai가 있는지 확인
+  const contentAi = document.getElementById("finalContentInput").value;
+  if (!contentAi || contentAi.trim() === "") {
+    alert("AI 변환된 일기 내용이 없습니다. '너의 목소리로' 버튼을 눌러주세요.");
+    return;
+  }
+
+  const formData = new FormData(event.target);
+
+  const response = await fetch("/api/diary/create", {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (data.success) {
+    alert("일기가 성공적으로 저장되었습니다!");
+    window.location.href = "/diary";
+  } else {
+    alert(`저장 실패: ${data.message}`);
+  }
+}
 
 // 폼 제출
 async function submitDiary(event) {
