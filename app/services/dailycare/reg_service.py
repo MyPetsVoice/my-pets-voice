@@ -17,7 +17,7 @@ driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), opti
 base_url = "http://medi.qia.go.kr/searchMedicine?csSignature=pEwDBK30q42YqSM%2Faec2jw%3D%3D&searchDivision=detail&page={}"
 all_data = []
 
-for page in range(1, 2):  # 일단 1페이지만 테스트
+for page in range(1, 1059):  # 일단 1페이지만 테스트
     print(f"===== {page} 페이지 크롤링 중 =====")
     driver.get(base_url.format(page))
     time.sleep(2)

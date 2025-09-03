@@ -84,6 +84,11 @@ def save_healthcare(pet_id):
         weight_kg=weight_kg,
         walk_time_minutes=walk_time_minutes,
     )
+    
+    if not record:
+        return jsonify({"message": f"{pet_id}번 반려동물의 건강기록이 이미 존재합니다."}), 400
+
+    
      # 2. Medication 연결 (여러 개 가능)
     medication_ids = data.get('medication_ids') or []
     if medication_ids:

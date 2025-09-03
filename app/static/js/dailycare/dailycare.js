@@ -157,9 +157,11 @@ async function saveHealthcare(pet_id) {
   });
 
   if (!response.ok) {
-    alert("기록저장이 실패되었습니다.");
+    const errorData = await response.json()
+    alert( errorData.message ||"기록저장이 실패되었습니다.");
   } else {
     console.log("기록저장완료");
+    alert('건강기록이 저장되었습니다.')
   }
   resetHealthcareForm();
 } // end saveHealthCares

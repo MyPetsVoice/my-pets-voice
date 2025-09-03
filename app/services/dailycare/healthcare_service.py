@@ -11,9 +11,16 @@ from datetime import datetime
 class HealthCareService:
  
         @staticmethod
-        def create_health_record(**kwargs):
-            """HealthCare 기록 생성 (BaseModel.create 활용)"""
-            return HealthCare.create(**kwargs)
+        def create_health_record(pet_id: int, **kwargs):
+            """HealthCare 기록 생성 (BaseModel.create 활용), 하루에 한 개만 저장"""
+            existing_record = HealthCare.query.filter_by(pet_id=pet_id).filter(
+                HealthCare.created_at >= datetime.now().date()
+            ).first()
+
+            if existing_record:
+                print(f"[HealthCareService] 이미 오늘({datetime.now().date()}) {pet_id}번 반려동물의 건강기록이 존재합니다.")
+                return None
+            return HealthCare.create(pet_id=pet_id, **kwargs)
 
         @staticmethod
         def get_health_records_by_pet(pet_id: int):
