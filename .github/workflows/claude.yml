@@ -1,0 +1,56 @@
+name: Claude PR Action
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+
+jobs:
+  claude-pr:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'issues' && contains(github.event.issue.body, '@claude'))
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ap-northeast-2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ap-northeast-2
+
+      - uses: ./.github/actions/claude-pr-action
+        with:
+          trigger_phrase: "@claude"
+          timeout_minutes: "60"
+          github_token: ${{ steps.app-token.outputs.token }}
+          use_bedrock: "true"
+          # 서울 리전 표준 모델 ID들 (순서대로 시도해보세요)
+          # 1순위: Claude 3.5 Sonnet (가장 안정적)
+          model: "anthropic.claude-3-5-sonnet-20240620-v1:0"
+          
+          # 만약 위가 안 되면 아래 ID들을 차례로 시도:
+          # model: "anthropic.claude-3-sonnet-20240229-v1:0"
+          # model: "anthropic.claude-3-5-sonnet-20241022-v2:0"
+          # model: "anthropic.claude-v2:1"
