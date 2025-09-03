@@ -1,4 +1,8 @@
-const user_id = 1;
+
+const userIdElement = document.getElementById("user-id");
+const user_id = Number(userIdElement.value) 
+console.log(user_id)
+
 export let pet_id;
 const pet_selector = document.getElementById("pet-selector");
 const pet_detail = document.getElementById("pet-detail");
