@@ -18,7 +18,10 @@ def allowed_file(filename):
 # 전체 일기 목록 조회 
 @diary_api_bp.route("/list")
 def list_diaries():
-    diaries = DiaryService.get_all_diaries()
+    user_id = session.get('user_id')
+
+    diaries = DiaryService.get_all_diaries(user_id)
+    print(diaries)
     return jsonify({
         "success": True,
         "diaries": [diary.to_dict() for diary in diaries]

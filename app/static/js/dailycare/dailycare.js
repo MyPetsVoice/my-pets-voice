@@ -1,12 +1,12 @@
-const user_id = 1;
+
 const pet_selector = document.getElementById("pet-selector");
 const pet_detail = document.getElementById("pet-detail");
 let current_pet_id = null;
 
 // 전체 펫 조회
-async function getAllPetsById(user_id) {
+async function getAllPetsById() {
   try {
-    const response = await fetch(`/api/dailycares/get-pet/${user_id}`);
+    const response = await fetch(`/api/dailycares/get-pet/`);
     if (!response.ok) throw new Error("Failed to fetch pet list");
     const pets = await response.json();
     console.log("회원의 petList입니다. ", pets);
@@ -35,7 +35,7 @@ async function getAllPetsById(user_id) {
         // 개별 펫 조회
         try {
           const response = await fetch(
-            `/api/dailycares/get-pet/${user_id}/${current_pet_id}`
+            `/api/dailycares/get-pet/${current_pet_id}`
           );
           if (!response.ok) {
             pet_detail.innerHTML = "<p>Pet 정보를 불러올 수 없습니다.</p>";
@@ -78,7 +78,7 @@ async function getAllPetsById(user_id) {
 
 
 // 페이지 로딩 시 실행
-getAllPetsById(user_id);
+getAllPetsById();
 // 
 const medicationSelect = document.getElementById("medication-select");
 // pet에 medication정보 불러오기
@@ -168,9 +168,9 @@ function resetHealthcareForm() {
 }
 
 
-async function getTodo(user_id) {
+async function getTodo() {
   try {
-    const response = await fetch(`/api/dailycares/todo/${user_id}`);
+    const response = await fetch(`/api/dailycares/todo/`);
     const todos = await response.json();
     console.log("todo data", todos);
 
@@ -261,7 +261,7 @@ async function getTodo(user_id) {
        if (response.ok) {
          target.textContent = newStatus; // 화면 업데이트
          alert('상태가 변경되었습니다.')
-         getTodo(user_id)
+         getTodo()
          if(newStatus === "완료") {
            target.classList.remove("bg-green-100", "text-green-800");
            target.classList.add("bg-gray-200", "text-gray-600"); // 완료된 스타일 변경
@@ -282,5 +282,5 @@ async function getTodo(user_id) {
   }
 }
 
-getTodo(user_id)
+getTodo()
 
