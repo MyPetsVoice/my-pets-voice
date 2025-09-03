@@ -26,6 +26,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
 
       - name: Generate GitHub App token
         id: app-token
@@ -45,8 +48,11 @@ jobs:
           echo "Checking available models in ap-northeast-2..."
           aws bedrock list-foundation-models --region ap-northeast-2 --query 'modelSummaries[?contains(modelId, `claude`)].modelId' --output table
 
-      - uses: anthropics/claude-code-action@v1
+      - name: Run Claude Code Action
+        uses: anthropics/claude-code-action@v1
         with:
           github_token: ${{ steps.app-token.outputs.token }}
           use_bedrock: "true"
           claude_args: '--model arn:aws:bedrock:ap-northeast-2:533267186857:inference-profile/apac.anthropic.claude-3-5-sonnet-20240620-v1:0'
+        env:
+          AWS_REGION: ap-northeast-2
