@@ -29,7 +29,7 @@ class User(BaseModel):
 
     @classmethod
     def create_user_from_kakao(cls, user):
-        username = f'kakao_{user['id']}'
+        username = f"kakao_{user['id']}"
         profile = user['kakao_account']['profile']
         kakao_account = user['kakao_account']
 

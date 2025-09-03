@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, jsonify, render_template, request
+from flask import Flask, Blueprint, jsonify, render_template, request, session
 from app.services.pet import PetService
 from app.services.dailycare.healthcare_service import HealthCareService
 from app.services.dailycare.medicalcare_service import MedicalCareService
@@ -444,14 +444,14 @@ def get_all_todo(user_id):
     return jsonify(todo_list), 200
 
 
-@dailycare_api_bp.route('/save/todo/<user_id>', methods = ['POST'])
-def save_todo(user_id):
+@dailycare_api_bp.route('/save/todo/', methods = ['POST'])
+def save_todo():
     data = request.json
     todo_date_str = data.get("todo_date")  # '2025-08-16'
     todo_date = datetime.strptime(todo_date_str, "%Y-%m-%d").date() if todo_date_str else None
     record = HealthCareService.create_todo_record(
     
-    user_id = user_id,
+    user_id = session.get('user_id'),
     todo_date = todo_date,
     title = data.get('title'),
     description = data.get('description'),

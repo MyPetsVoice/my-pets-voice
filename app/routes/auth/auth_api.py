@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 auth_api_bp = Blueprint('auth_api', __name__)
 
-@auth_api_bp.route('/auth')
+@auth_api_bp.route('/auth/kakao/login')
 def kakao_login():
     """카카오 로그인 인증 요청"""
     # config에서 설정값 가져오기
