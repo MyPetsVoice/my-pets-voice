@@ -41,14 +41,5 @@ jobs:
       - uses: ./.github/actions/claude-pr-action
         with:
           trigger_phrase: "@claude"
-          timeout_minutes: "60"
           github_token: ${{ steps.app-token.outputs.token }}
           use_bedrock: "true"
-          # 서울 리전 표준 모델 ID들 (순서대로 시도해보세요)
-          # 1순위: Claude 3.5 Sonnet (가장 안정적)
-          model: "anthropic.claude-3-5-sonnet-20240620-v1:0"
-          
-          # 만약 위가 안 되면 아래 ID들을 차례로 시도:
-          # model: "anthropic.claude-3-sonnet-20240229-v1:0"
-          # model: "anthropic.claude-3-5-sonnet-20241022-v2:0"
-          # model: "anthropic.claude-v2:1"
