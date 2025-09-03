@@ -2,8 +2,8 @@
 {% block title %}반려동물의 목소리가 들려 -데일리케어{% endblock %}
 {% block content %}
 
-<link rel="stylesheet" href=".././../static/css/dailycare/dailcare.css">
-<link rel="stylesheet" href="../../static/css/dailycare/todo.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dailycare/dailcare.css', v=static_version) }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dailycare/todo.css', v=static_version) }}">
 </head>
 <body style=" padding: 0;">
     <div class="container" style="padding: 30px;">
@@ -193,12 +193,12 @@ function goToMedicalHistory() {
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
-<script src="../../static/js/dailycare/care_chatbot.js"></script>
-<script src="../../static/js/dailycare/care_base.js"></script>
-<script src="../../static/js/dailycare/modal.js"></script>
-<script src="../../static/js/dailycare/todo.js"></script>
-<script src=".././../static/js/dailycare/dailycare.js"></script>
-<script src="../../static/js/dailycare/calender.js"></script>
+<script src="{{ url_for('static', filename='js/dailycare/care_chatbot.js', v=static_version) }}"></script>
+<script src="{{ url_for('static', filename='js/dailycare/care_base.js', v=static_version) }}"></script>
+<script src="{{ url_for('static', filename='js/dailycare/modal.js', v=static_version) }}"></script>
+<script src="{{ url_for('static', filename='js/dailycare/todo.js', v=static_version) }}"></script>
+<script src="{{ url_for('static', filename='js/dailycare/dailycare.js', v=static_version) }}"></script>
+<script src="{{ url_for('static', filename='js/dailycare/calender.js', v=static_version) }}"></script>
       
 
 {% endblock %}
