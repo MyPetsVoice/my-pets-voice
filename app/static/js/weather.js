@@ -1,4 +1,3 @@
-// 지역 선택 기능이 있는 날씨 위젯
 class WeatherWidget {
   constructor(containerId, location = "서울") {
     this.container = document.getElementById(containerId);
@@ -35,27 +34,24 @@ class WeatherWidget {
       });
   }
 
-  // 위젯 HTML 구조 생성
+  // 위젯 HTML 구조 생성 (가로 배치)
   render() {
     this.container.innerHTML = `
-            <div class="weather-widget bg-gradient-to-r from-orange-400 to-yellow-400 rounded-lg p-2 text-white shadow-lg max-w-xs">
-                <!-- 지역 선택 드롭다운 -->
-                <div class="flex items-center justify-between mb-2">
-                    <select id="locationSelect" class="bg-orange-500 bg-opacity-70 text-white text-sm rounded px-2 py-1 border-0 focus:outline-none focus:bg-orange-600">
-                        <option value="${this.location}">${this.location}</option>
-                    </select>
-                    <button id="refreshBtn" class="text-white hover:text-orange-100 transition-colors">
-                        <i class="fas fa-sync-alt text-sm"></i>
-                    </button>
-                </div>
-                
-                <!-- 날씨 정보 -->
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div id="currentTemp" class="text-xl font-bold">--°</div>
-                        <div id="weatherText" class="text-sm opacity-90">로딩중...</div>
+            <div class="weather-widget bg-gradient-to-r from-orange-400 to-yellow-400 rounded-lg p-3 text-white shadow-lg">
+                <div class="flex items-center justify-between space-x-4">
+                    <!-- 왼쪽: 지역 선택 드롭다운 -->
+                    <div class="flex-shrink-0">
+                        <select id="locationSelect" class="bg-orange-500 bg-opacity-70 text-white text-sm rounded px-2 py-1 border-0 focus:outline-none focus:bg-orange-600 min-w-16">
+                            <option value="${this.location}">${this.location}</option>
+                        </select>
                     </div>
-                    <div class="text-right">
+                    
+                    <!-- 오른쪽: 날씨 정보 -->
+                    <div class="flex items-center space-x-3">
+                        <div class="text-center">
+                            <div id="currentTemp" class="text-xl font-bold">--°</div>
+                            <div id="weatherText" class="text-sm opacity-90 whitespace-nowrap">로딩중...</div>
+                        </div>
                         <div id="weatherIcon" class="text-3xl">⏳</div>
                     </div>
                 </div>
@@ -70,14 +66,6 @@ class WeatherWidget {
     if (locationSelect) {
       locationSelect.addEventListener("change", (e) => {
         this.setLocation(e.target.value);
-      });
-    }
-
-    // 새로고침 버튼 클릭
-    const refreshBtn = document.getElementById("refreshBtn");
-    if (refreshBtn) {
-      refreshBtn.addEventListener("click", () => {
-        this.loadWeatherData();
       });
     }
   }
@@ -120,7 +108,7 @@ class WeatherWidget {
       });
   }
 
-  // 화면에 날씨 정보 v표시
+  // 화면에 날씨 정보 표시
   updateDisplay(weatherData) {
     document.getElementById(
       "currentTemp"
