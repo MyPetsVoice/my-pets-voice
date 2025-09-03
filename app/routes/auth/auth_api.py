@@ -104,7 +104,12 @@ def logout():
     """로그아웃 처리"""
     try:
         client_id = current_app.config['KAKAO_REST_API_KEY']
-        logout_redirect_uri = current_app.config.get('KAKAO_LOGOUT_REDIRECT_URI') or request.url_root.rstrip('/')
+        logout_redirect_uri = (
+            current_app.config.get('KAKAO_LOGOUT_REDIRECT_URI') or 
+            (request.url_root.rstrip('/') if request.url_root else None) or
+            request.host_url.rstrip('/') or
+            'http://3.34.185.194/'
+        )
         print(f'로그아웃 리다이렉트 uri : {logout_redirect_uri}')
 
         # 세션 정보 삭제
@@ -112,6 +117,11 @@ def logout():
         session.clear()
         
         logger.info(f'사용자 로그아웃: {user_id}')
+        
+        # logout_redirect_uri가 여전히 None이면 직접 리다이렉트
+        if not logout_redirect_uri or logout_redirect_uri == 'None':
+            session.clear()
+            return redirect('/')
         
         # 카카오 로그아웃 URL 구성
         kakao_logout_url = (
