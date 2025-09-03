@@ -41,6 +41,8 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
+        timeout: 60s
+        command_timeout: 10m
         script: |
           cd ~/my-pets-voice
           git pull origin main
