@@ -103,6 +103,7 @@ def update_healthcare(care_id):
     data.pop('care_id', None)
 
     updated_record = HealthCareService.update_health_record(care_id, **data)
+    print(f'######## update record', updated_record)
     
     if updated_record is None:
         return jsonify({"error": "healthcare record not found"}), 404
