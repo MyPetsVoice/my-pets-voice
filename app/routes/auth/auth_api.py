@@ -104,19 +104,7 @@ def logout():
     """로그아웃 처리"""
     try:
         client_id = current_app.config['KAKAO_REST_API_KEY']
-        logout_redirect_uri = (
-            current_app.config.get('KAKAO_LOGOUT_REDIRECT_URI') or 
-            (request.url_root.rstrip('/') if request.url_root else None) or
-            request.host_url.rstrip('/') or
-            'http://3.34.185.194/'
-        )
-        logger.info(f'로그아웃 리다이렉트 uri : {logout_redirect_uri}')
-        logger.info(f'config에서 가져온 값: {current_app.config.get("KAKAO_LOGOUT_REDIRECT_URI")}')
-        logger.info(f'request.url_root: {request.url_root}')
-        logger.info(f'request.host_url: {request.host_url}')
-        
-        # 임시 디버그용 - 브라우저에서 확인
-        return f"<h1>DEBUG INFO</h1><p>KAKAO_LOGOUT_REDIRECT_URI: {current_app.config.get('KAKAO_LOGOUT_REDIRECT_URI')}</p><p>logout_redirect_uri: {logout_redirect_uri}</p>"
+        logout_redirect_uri = 'http://3.34.185.194'
 
         # 세션 정보 삭제
         user_id = session.get('user_id')
@@ -124,21 +112,15 @@ def logout():
         
         logger.info(f'사용자 로그아웃: {user_id}')
         
-        # 임시 주석 처리
-        # # logout_redirect_uri가 여전히 None이면 직접 리다이렉트
-        # if not logout_redirect_uri or logout_redirect_uri == 'None':
-        #     session.clear()
-        #     return redirect('/')
-        # 
-        # # 카카오 로그아웃 URL 구성
-        # kakao_logout_url = (
-        #     f'https://kauth.kakao.com/oauth/logout?'
-        #     f'client_id={client_id}&'
-        #     f'logout_redirect_uri={logout_redirect_uri}&'
-        #     f'state=logout'
-        # )
-        # 
-        # return redirect(kakao_logout_url)
+        # 카카오 로그아웃 URL 구성
+        kakao_logout_url = (
+            f'https://kauth.kakao.com/oauth/logout?'
+            f'client_id={client_id}&'
+            f'logout_redirect_uri={logout_redirect_uri}&'
+            f'state=logout'
+        )
+        
+        return redirect(kakao_logout_url)
         
     except Exception as e:
         logger.error(f'로그아웃 처리 중 오류: {str(e)}')
