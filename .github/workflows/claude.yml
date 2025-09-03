@@ -27,10 +27,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 공식 Anthropic 앱 사용 시 GITHUB_TOKEN 사용
-      - name: Use GitHub token
+      - name: Generate GitHub App token
         id: app-token
-        run: echo "token=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_OUTPUT
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -38,8 +40,8 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ap-northeast-2
 
-      - uses: ./.github/actions/claude-pr-action
+      - uses: anthropics/claude-code-action@v1
         with:
-          trigger_phrase: "@claude"
           github_token: ${{ steps.app-token.outputs.token }}
           use_bedrock: "true"
+          claude_args: '--model anthropic.claude-3-5-sonnet-20240620-v1:0 --max-turns 10'
