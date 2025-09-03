@@ -40,12 +40,8 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ap-northeast-2
 
-      - name: Test Bedrock access
-        run: |
-          echo "Testing Bedrock access..."
-          aws bedrock list-foundation-models --region ap-northeast-2 --query 'modelSummaries[?contains(modelId, `claude`)].modelId'
-
       - uses: anthropics/claude-code-action@v1
         with:
           github_token: ${{ steps.app-token.outputs.token }}
           use_bedrock: "true"
+          claude_args: '--model anthropic.claude-3-5-sonnet-20240620-v1:0'
