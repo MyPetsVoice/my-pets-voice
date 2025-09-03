@@ -22,6 +22,7 @@ class Config:
     KAKAO_REST_API_KEY = os.getenv('KAKAO_REST_API_KEY')
     KAKAO_CLIENT_SECRET = os.getenv('KAKAO_CLIENT_SECRET')
     KAKAO_REDIRECT_URI = os.getenv('KAKAO_REDIRECT_URI')
+    KAKAO_LOGOUT_REDIRECT_URI = os.getenv('KAKAO_LOGOUT_REDIRECT_URI')
     KAPI_HOST = os.getenv('KAPI_HOST')
     KAUTH_HOST = os.getenv('KAUTH_HOST')
     
@@ -42,7 +43,8 @@ class Config:
             'OPENAI_API_KEY': cls.OPENAI_API_KEY,
             'KAKAO_REST_API_KEY': cls.KAKAO_REST_API_KEY,
             'KAKAO_CLIENT_SECRET': cls.KAKAO_CLIENT_SECRET,
-            'KAKAO_REDIRECT_URI': cls.KAKAO_REDIRECT_URI
+            'KAKAO_REDIRECT_URI': cls.KAKAO_REDIRECT_URI,
+            'KAKAO_LOGOUT_REDIRECT_URI': cls.KAKAO_LOGOUT_REDIRECT_URI
         }
         missing = [key for key, value in required_vars.items() if not value]
         if missing:
