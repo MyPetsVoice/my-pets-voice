@@ -1,7 +1,9 @@
 document.getElementById("create_todo").addEventListener("click", (e) => {
-  const userId = e.currentTarget.dataset.userId;
-  console.log("userId", userId);
-  openModalTodo("todo", userId);
+  const userIdElement = document.getElementById("user-id");
+  const user_id = Number(userIdElement.value);
+  console.log(user_id);
+  console.log("userId", user_id);
+  openModalTodo("todo", user_id);
 });
 
 // 모달 열기 함수

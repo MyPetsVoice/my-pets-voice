@@ -210,7 +210,7 @@ async function saveMedicalRecord(modalType, pet_id) {
       alert(`${config.title}이(가) 성공적으로 저장되었습니다.`);
 
       // 폼 초기화
-      resetForm(config.fields);
+      // resetForm(config.fields);
 
       // 모달 닫기
       closeModal();
@@ -222,15 +222,15 @@ async function saveMedicalRecord(modalType, pet_id) {
 }
 
 // 폼 초기화
-function resetForm(fields) {
-  Object.values(fields).forEach((inputId) => {
-    const element = document.getElementById(inputId);
-    if (element) {
-      if (element.type === "select-one") {
-        element.selectedIndex = 0;
-      } else {
-        element.value = "";
-      }
-    }
-  });
-}
+// function resetForm(fields) {
+//   Object.values(fields).forEach((inputId) => {
+//     const element = document.getElementById(inputId);
+//     if (element) {
+//       if (element.type === "select-one") {
+//         element.selectedIndex = 0;
+//       } else {
+//         element.value = "";
+//       }
+//     }
+//   });
+// }

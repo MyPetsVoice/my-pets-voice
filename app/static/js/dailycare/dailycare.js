@@ -243,15 +243,15 @@ async function getTodo(user_id) {
       <span class="todo-status bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium" data-id="${
         e.todo_id
       }">
-    <i class="fas fa-check-circle mr-1"></i>${e.status}
-  </span>
-</div>
-          </div>
-        </div>
-      `;
+        <i class="fas fa-check-circle mr-1"></i>${e.status}
+      </span>
+    </div>
+              </div>
+            </div>
+          `;
 
-      resultDiv.appendChild(todoCard);
-    });
+          resultDiv.appendChild(todoCard);
+        });
 
     resultDiv.addEventListener("click", async (event) => {
       const target = event.target.closest(".todo-status"); // 클릭한 요소가 상태 span인지 확인
@@ -296,4 +296,7 @@ async function getTodo(user_id) {
   }
 }
 
-getTodo(user_id);
+document.addEventListener('DOMContentLoaded', ()=>{
+  getTodo(user_id);
+})
+

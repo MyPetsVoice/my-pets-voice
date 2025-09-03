@@ -450,6 +450,7 @@ def get_all_todo(user_id):
 
 @dailycare_api_bp.route('/save/todo/<user_id>', methods = ['POST'])
 def save_todo(user_id):
+    print('######save todo userid :', user_id)
     data = request.json
     todo_date_str = data.get("todo_date")  # '2025-08-16'
     todo_date = datetime.strptime(todo_date_str, "%Y-%m-%d").date() if todo_date_str else None
