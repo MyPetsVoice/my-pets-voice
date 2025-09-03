@@ -108,13 +108,21 @@
                                 <label>🚶 산책 시간</label>
                                 <input type="number" id="walk-input" placeholder="분 단위로 입력">
                             </div>
-                            <!-- 영양제 -->
-                             <div class="form-group">
-                                <label>💊 약/영양제</label>
-                                <select id="medication-select" >
-                                    <option value="">약/영양제를 선택해주세요</option>
-                                </select>
-                        </div>
+                    
+                        <div class="form-group mb-4">
+                            <label class="block text-gray-700 font-medium mb-2">💊 약/영양제</label>
+
+                            <!-- 셀렉트 박스 -->
+                         <select id="medication-select" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-yellow-400">
+    <option value="">약물을 선택하세요</option>
+</select>
+
+                            <!-- 선택된 태그 표시 영역 -->
+                            <div id="selected-tags" 
+                                class="flex flex-wrap gap-2 mt-3">
+                                <!-- JS로 태그 추가됨 -->
+                            </div>
+                            </div>
                         </form>
                         <div class="quick-actions">
                             <button class="btn btn-primary" id="save_healthcare">📝 기록 저장</button>
@@ -191,6 +199,59 @@ function goToMedicalHistory() {
     }
     window.location.href = `/dailycare/medication-history/${current_pet_id}`;
 }
+</script>
+
+<script>
+  const medicationSelect = document.getElementById("medication-select");
+  const selectedTags = document.getElementById("selected-tags");
+
+  // [{value, text}] 형태로 저장
+  let selectedItems = [];
+
+  medicationSelect.addEventListener("change", () => {
+    const selectedOption = medicationSelect.options[medicationSelect.selectedIndex];
+    const value = selectedOption.value;
+    const text = selectedOption.text;
+
+    // 중복 방지
+    if (value && !selectedItems.some(item => item.value === value)) {
+      selectedItems.push({ value, text });
+      renderTags();
+    }
+
+    // 다시 초기화 (다음 선택 가능하도록)
+    medicationSelect.value = "";
+  });
+
+  // 태그 렌더링 함수
+  function renderTags() {
+    selectedTags.innerHTML = "";
+    selectedItems.forEach(item => {
+      const tag = document.createElement("span");
+      tag.className =
+        "flex items-center bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium";
+
+      tag.innerHTML = `
+        ${item.text}
+        <button type="button" 
+          class="ml-2 text-yellow-600 hover:text-yellow-800 focus:outline-none"
+          data-value="${item.value}">
+          ✕
+        </button>
+      `;
+
+      selectedTags.appendChild(tag);
+    });
+  }
+
+  // 태그 X 버튼 클릭 → 선택 해제
+  selectedTags.addEventListener("click", (e) => {
+    if (e.target.tagName === "BUTTON") {
+      const value = e.target.getAttribute("data-value");
+      selectedItems = selectedItems.filter(item => item.value !== value);
+      renderTags();
+    }
+  });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
