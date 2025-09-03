@@ -40,8 +40,16 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ap-northeast-2
 
+      - name: Debug environment
+        run: |
+          echo "AWS_REGION: $AWS_REGION"
+          echo "GitHub event: ${{ github.event_name }}"
+          echo "Repository: ${{ github.repository }}"
+
       - uses: anthropics/claude-code-action@v1
         with:
           github_token: ${{ steps.app-token.outputs.token }}
           use_bedrock: "true"
           claude_args: '--model anthropic.claude-3-5-sonnet-20240620-v1:0 --max-turns 10'
+        env:
+          ACTIONS_STEP_DEBUG: true
