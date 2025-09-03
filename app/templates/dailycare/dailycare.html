@@ -184,6 +184,7 @@
 
 <script>
 function goToMedicalHistory() {
+    const current_pet_id = localStorage.getItem('currentPetId')
     if (!current_pet_id) {
         alert("펫을 먼저 선택해주세요.");
         return;

@@ -76,6 +76,7 @@ const medicalConfigs = {
 // 공용 모달 열기: 각 health-item 클릭 시 모달 열기
 document.querySelectorAll(".health-item.mdc").forEach((item) => {
   item.addEventListener("click", () => {
+    const current_pet_id = localStorage.getItem('currentPetId')
     const name = item.dataset.modal; // 모달 종류
     if (!current_pet_id) {
       alert("펫을 먼저 선택해주세요.");
@@ -94,6 +95,7 @@ function openModal(name, pet_id) {
       return res.text();
     })
     .then((html) => {
+      
       const modal = document.getElementById("common-modal");
       const content = modal.querySelector("#modalContent");
 

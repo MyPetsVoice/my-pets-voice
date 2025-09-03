@@ -403,6 +403,38 @@ def save_medication(pet_id):
     
     return jsonify(record.to_dict()), 200
 
+# medication 수정
+@dailycare_api_bp.route('/medication/<int:medication_id>', methods=['PUT'])
+def update_medication(medication_id):
+    data = request.json
+    medication = Medication.query.get(medication_id)
+    
+    medication.medication_name = data.get('medication_name', medication.medication_name)
+    medication.purpose = data.get('purpose', medication.purpose)
+    medication.dosage = data.get('dosage', medication.dosage)
+    medication.frequency = data.get('frequency', medication.frequency)
+    medication.side_effects_notes = data.get('side_effects_notes', medication.side_effects_notes)
+    medication.hospital_name = data.get('hospital_name', medication.hospital_name)
+    
+    # 시작 날짜
+    if data.get('start_date'):
+        medication.start_date = datetime.strptime(data.get('start_date'), "%Y-%m-%d").date()
+    # 끝? 날짜
+    if data.get('end_date'):
+        medication.end_date = datetime.strptime(data.get('end_date'), "%Y-%m-%d").date()
+    
+    db.session.commit()
+    return jsonify(medication.to_dict()), 200
+
+#  medication 삭제
+@dailycare_api_bp.route('/medication/<int:medication_id>', methods=['DELETE'])
+def delete_medication(medication_id):
+    medication = Medication.query.get(medication_id)
+    
+    db.session.delete(medication)
+    db.session.commit()
+    return jsonify({"message": "삭제완료"}), 200
+
 @dailycare_api_bp.route('/todo/<user_id>')
 def get_todo(user_id):
     todos= HealthCareService.get_todo_records_by_user_limit3(user_id)
