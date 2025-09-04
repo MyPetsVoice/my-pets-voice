@@ -490,7 +490,7 @@ def deleteTodo(todo_id):
 
 @dailycare_api_bp.route('/care-chatbot' , methods = ['POST'])
 def ask_chatbot():
-    current_user = 1
+    current_user = 1 # 수정해야함.
     """careChatbot Service"""
     data = request.get_json()
     user_input = data.get('message')

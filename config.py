@@ -56,7 +56,7 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    LOG_LEVEL = 'WARNING'
+    LOG_LEVEL = 'DEBUG'
 
 config = {
     'development': DevelopmentConfig,
