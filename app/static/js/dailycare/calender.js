@@ -1,12 +1,6 @@
-pet_id = localStorage.getItem('currentPetId')
-console.log(pet_id)
-window.addEventListener("petChanged", (e) => {
-  
-  renderCalendar(current, pet_id);
-});
-
 let today = dayjs();
 let current = dayjs();
+
 const monthLabel = document.getElementById("current-month");
 const grid = document.getElementById("calendar-grid");
 
@@ -27,8 +21,17 @@ async function renderHealthcare(pet_id) {
 }
 
 async function renderCalendar(date, pet_id) {
+  console.log("renderCalendar 실행");
+
+  if (!pet_id) {
+    grid.innerHTML = "<p>펫을 선택해주세요 🐾</p>";
+    monthLabel.textContent = date.format("YYYY년 M월");
+    return;
+  }
+
+  // ✅ 초기화
+  grid.innerHTML = "";
   monthLabel.textContent = date.format("YYYY년 M월");
-  grid.querySelectorAll(".calendar-day").forEach((e) => e.remove());
 
   const firstDay = date.startOf("month").day();
   const lastDate = date.endOf("month").date();
@@ -38,8 +41,8 @@ async function renderCalendar(date, pet_id) {
     grid.appendChild(document.createElement("div"));
   }
 
-  // 📌 헬스케어 데이터 불러오기 (await 추가)
-  const healthcareData = pet_id ? await renderHealthcare(pet_id) : [];
+  // 📌 헬스케어 데이터 불러오기
+  const healthcareData = await renderHealthcare(pet_id);
 
   for (let d = 1; d <= lastDate; d++) {
     const cell = document.createElement("div");
@@ -56,7 +59,7 @@ async function renderCalendar(date, pet_id) {
     }
 
     // 📌 updated_at 기준으로 데이터 표시
-    const hasData = healthcareData.some((care) => {
+    const matchedCare = healthcareData.find((care) => {
       const updated = dayjs(care.updated_at);
       return (
         updated.year() === date.year() &&
@@ -65,8 +68,9 @@ async function renderCalendar(date, pet_id) {
       );
     });
 
-    if (hasData) {
+    if (matchedCare) {
       cell.classList.add("has-data"); // 스타일링용 class
+
       const dot = document.createElement("span");
       dot.style.display = "block";
       dot.style.width = "6px";
@@ -75,22 +79,13 @@ async function renderCalendar(date, pet_id) {
       dot.style.backgroundColor = "blue";
       dot.style.margin = "0 auto";
 
-      const careId = healthcareData.find(care => {
-        const updated = dayjs(care.updated_at);
-        return (
-          updated.year() === date.year() &&
-          updated.month() === date.month() &&
-          updated.date() === d
-        );
-      })?.care_id;
-
-      if (careId) {
-        dot.dataset.careId = careId;
+      if (matchedCare.care_id) {
+        dot.dataset.careId = matchedCare.care_id;
         cell.addEventListener("click", () => {
-          window.location.href = `/dailycare/health-history?care_id=${careId}`;
+          window.location.href = `/dailycare/health-history?care_id=${matchedCare.care_id}`;
         });
       }
-    
+
       cell.appendChild(dot);
     }
 
@@ -98,18 +93,25 @@ async function renderCalendar(date, pet_id) {
   }
 }
 
-// 이전/다음 달 이동 (async 추가)
+// 🔹 이전/다음 달 이동 → 매번 최신 pet_id 읽기
 document.getElementById("prev-month").onclick = async () => {
   current = current.subtract(1, "month");
+  const pet_id = localStorage.getItem("currentPetId");
   await renderCalendar(current, pet_id);
 };
 
 document.getElementById("next-month").onclick = async () => {
   current = current.add(1, "month");
+  const pet_id = localStorage.getItem("currentPetId");
   await renderCalendar(current, pet_id);
 };
 
-// 초기 렌더링 (async 처리)
-(async () => {
+// 🔹 펫 변경 이벤트 반영 (단일 진입점)
+window.addEventListener("petChanged", async () => {
+  const pet_id = localStorage.getItem("currentPetId");
+  if (!pet_id) return;
+  console.log("펫 변경됨 → 달력 갱신", pet_id);
   await renderCalendar(current, pet_id);
-})();
+});
+
+

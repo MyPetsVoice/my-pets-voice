@@ -29,8 +29,13 @@ async function getAllPetsById() {
         // 현재 선택된 pet_id 숫자로 변환
         current_pet_id = Number(this.dataset.petId);
 
+        
+
         // 🔹 localStorage 에 저장
         localStorage.setItem("currentPetId", current_pet_id);
+
+        window.dispatchEvent(new Event("petChanged"));
+
 
         // 개별 펫 조회
         try {
