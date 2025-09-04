@@ -90,6 +90,12 @@ function displayPhotoGallery(photoList) {
 
 // 일기 내용 표시
 function displayDiaryContent(diary) {
+  // 사용자가 작성한 원본 내용
+  if (diary.content_user) {
+    document.getElementById("userContentText").textContent = diary.content_user;
+    document.getElementById("userContent").classList.remove("hidden");
+  }
+
   // AI가 변환한 내용
   if (diary.content_ai) {
     document.getElementById("aiContentText").textContent = diary.content_ai;

@@ -11,7 +11,6 @@ def get_dailycare():
     if 'user_id' not in session:
         return redirect(url_for('index'))
 
-    user_nickname = user['kakao_account']['profile']['nickname']
 
     return render_template('dailycare/dailycare.html', user=user_nickname)
 
@@ -29,6 +28,7 @@ def get_analysis():
 @dailycare_views_bp.route('/medication-history/<int:pet_id>')
 def get_medication_history(pet_id):
     user = session.get('user')
+    user_nickname = user['kakao_account']['profile']['nickname']
     if 'user_id' not in session:
             return redirect(url_for('index'))
 

@@ -260,7 +260,7 @@ function resetHealthcareForm() {
 
 async function getTodo() {
   try {
-    const response = await fetch(`/api/dailycares/todo/`);
+    const response = await fetch(`/api/dailycares/todo/${user_id}`);
     const todos = await response.json();
     console.log("todo data", todos);
 
