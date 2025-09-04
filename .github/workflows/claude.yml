@@ -37,6 +37,18 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
           fetch-depth: 0
 
+      # 🔽 브랜치 자동 생성 스텝 추가
+      - name: Ensure claude branch exists
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number || github.event.comment.issue_url && github.event.issue.number }}
+          BRANCH="claude/issue-${ISSUE_NUMBER}-$(date +%Y%m%d-%H%M)"
+          echo "Using branch: $BRANCH"
+
+          git checkout -b "$BRANCH"
+          git push origin "$BRANCH" || echo "Branch already exists, skipping push"
+
+          echo "CLAUDE_BRANCH=$BRANCH" >> $GITHUB_ENV
+
       - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -53,6 +65,9 @@ jobs:
         with:
           github_token: ${{ steps.app-token.outputs.token }}
           use_bedrock: "true"
-          claude_args: '--model arn:aws:bedrock:ap-northeast-2:533267186857:inference-profile/apac.anthropic.claude-3-5-sonnet-20240620-v1:0'
+          claude_args: >
+            --model arn:aws:bedrock:ap-northeast-2:533267186857:inference-profile/apac.anthropic.claude-3-5-sonnet-20240620-v1:0
+            --branch ${{ env.CLAUDE_BRANCH }}
+            --base-branch main
         env:
           AWS_REGION: ap-northeast-2
