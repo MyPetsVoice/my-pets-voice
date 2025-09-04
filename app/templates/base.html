@@ -45,7 +45,7 @@
                 }
             }
         </script>
-        <script src="{{ url_for('static', filename='js/base.js') }}" defer></script>
+        <script src="{{ url_for('static', filename='js/base.js', v=static_version) }}" defer></script>
     </head>
     <body class="font-korean text-gray-800 bg-gray-50 min-h-screen">
         <!-- 네비게이션 -->
@@ -54,7 +54,7 @@
                 <a href="/" class="flex items-center text-secondary-500 hover:text-secondary-600 transition-colors">
                     <div class="flex items-center text-2xl font-bold">
                         <!-- <i class="fas fa-paw mr-2 text-3xl"></i> -->
-                        <img src="{{ url_for('static', filename='img/my_pet_voice.PNG') }}" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
+                        <img src="{{ url_for('static', filename='img/my_pet_voice.PNG', v=static_version) }}" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
                         <span>MyPet's Voice</span>
                     </div>
                 </a>
@@ -79,7 +79,7 @@
                     <a href="{{ url_for('auth.auth_api.logout')}}">로그아웃</a>
                 {% else %}
                     <a href="{{ url_for('auth.auth_api.kakao_login')}}">
-                        <img src="{{ url_for('static', filename='img/auth/kakao_login_medium.png')}}">
+                        <img src="{{ url_for('static', filename='img/auth/kakao_login_medium.png', v=static_version) }}">
                     </a>
                     <button class="inline-flex items-center px-4 py-2 bg-secondary-500 text-white rounded-lg hover:bg-secondary-600 transition-all duration-300 hover:-translate-y-0.5 shadow-md text-sm font-medium">
                         <i class="fas fa-sign-in-alt mr-2"></i> 로그인
@@ -102,7 +102,7 @@
                     <div class="md:col-span-2 lg:col-span-1">
                         <div class="flex items-center text-2xl font-bold text-secondary-400 mb-4">
                             <!-- <i class="fas fa-paw mr-2 text-3xl"></i> -->
-                            <img src="{{ url_for('static', filename='img/my_pet_voice.PNG') }}" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
+                            <img src="{{ url_for('static', filename='img/my_pet_voice.PNG', v=static_version) }}" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
                             <span>MyPet's Voice</span>
                         </div>
                         <p class="text-gray-300 leading-relaxed mb-6">

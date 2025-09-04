@@ -20,12 +20,13 @@ def allowed_file(filename):
 def list_diaries():
     page = request.args.get('page', 1, type=int)  # 페이지 번호
     per_page = 5 
+    user_id = session.get('user_id')
     
     # 전체 일기 수 조회
-    total_diaries = Diary.query.count()
+    total_diaries = Diary.query.filter_by(user_id=user_id).count()
     
     # 페이징 처리하여 일기 조회
-    diaries = Diary.query.order_by(Diary.diary_date.desc()).paginate(
+    diaries = Diary.query.filter_by(user_id=user_id).order_by(Diary.diary_date.desc()).paginate(
         page=page, 
         per_page=per_page, 
         error_out=False
