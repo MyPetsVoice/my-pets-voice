@@ -435,8 +435,11 @@ def delete_medication(medication_id):
     return jsonify({"message": "삭제완료"}), 200
 
 
-@dailycare_api_bp.route('/todo/<user_id>')
-def get_todo(user_id):
+@dailycare_api_bp.route('/todo/')
+def get_todo():
+
+    user_id = session.get('user_id')
+
     todos= HealthCareService.get_todo_records_by_user_limit3(user_id)
     todo_list = [t.to_dict() for t in todos]
     return jsonify(todo_list), 200
