@@ -1,30 +1,55 @@
 name: Claude PR Comment Auto Code
 
+permissions:
+  contents: write       # 코드 커밋 가능
+  pull-requests: write  # PR 수정 가능
+  issues: write         # 코멘트 업데이트 가능
+  id-token: write       # AWS OIDC 인증
+
 on:
+  issue_comment:
+    types: [created]
   pull_request_review_comment:
     types: [created]
 
 jobs:
   claude-pr-comment:
+    # PR 댓글이고 @claude 멘션이 있을 때만 실행
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '@claude') }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: write       # 코드 커밋 권한
-      pull-requests: write  # PR 업데이트 권한
+    env:
+      AWS_REGION: us-west-2
 
     steps:
-      # 1️⃣ 레포 체크아웃
-      - name: Checkout repository
+      # 1️⃣ PR 브랜치 체크아웃
+      - name: Checkout PR branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }} # PR 브랜치 기준으로 체크아웃
+          ref: ${{ github.event.issue.pull_request.head.ref }}
 
-      # 2️⃣ Claude Code Action 실행
+      # 2️⃣ GitHub App token 생성
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      # 3️⃣ AWS Bedrock 인증
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 4️⃣ Claude 코드 수정 액션 실행
       - name: Run Claude Code Action
         uses: anthropics/claude-code-action@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         with:
-          # PR 브랜치를 그대로 사용
-          base: main           # PR 대상 브랜치
-          branch: ${{ github.event.pull_request.head.ref }}  # PR 브랜치
-          claude_args: "--model arn:aws:bedrock:ap-northeast-2:533267186857:inference-profile/apac.anthropic.claude-3-5-sonnet-20240620-v1:0"
+          base: main
+          branch: ${{ github.event.issue.pull_request.head.ref }}
+          use_bedrock: "true"
+          # PR 댓글 내용 그대로 Claude 프롬프트로 전달
+          claude_args: ${{ github.event.comment.body }}
