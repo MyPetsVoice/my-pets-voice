@@ -1,23 +1,30 @@
-name: Claude Auto Code PR
+name: Claude PR Comment Auto Code
 
 on:
-  issue_comment:
+  pull_request_review_comment:
     types: [created]
 
 jobs:
-  claude-code:
+  claude-pr-comment:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
+      contents: write       # 코드 커밋 권한
+      pull-requests: write  # PR 업데이트 권한
 
     steps:
+      # 1️⃣ 레포 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }} # PR 브랜치 기준으로 체크아웃
 
+      # 2️⃣ Claude Code Action 실행
       - name: Run Claude Code Action
         uses: anthropics/claude-code-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          base: main
+          # PR 브랜치를 그대로 사용
+          base: main           # PR 대상 브랜치
+          branch: ${{ github.event.pull_request.head.ref }}  # PR 브랜치
+          claude_args: "--model arn:aws:bedrock:ap-northeast-2:533267186857:inference-profile/apac.anthropic.claude-3-5-sonnet-20240620-v1:0"
