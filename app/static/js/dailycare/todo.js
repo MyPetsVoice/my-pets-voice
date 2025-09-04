@@ -4,6 +4,13 @@ document.getElementById("create_todo").addEventListener("click", (e) => {
   console.log(user_id);
   console.log("userId", user_id);
   openModalTodo("todo", user_id);
+ 
+    const dateInput = document.getElementById("todo_date_input");
+    if (dateInput && !dateInput.value) {
+      const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+      dateInput.value = today;
+    
+    }
 });
 
 // 모달 열기 함수
@@ -20,6 +27,12 @@ function openModalTodo(name, user_id) {
 
       // 서버에서 받은 HTML 삽입
       content.innerHTML = html;
+      // 오늘 날짜 기본값 세팅
+      const dateInput = document.getElementById("todo_date_input");
+      if (dateInput && !dateInput.value) {
+        const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+        dateInput.value = today;
+      }
       modal.classList.remove("hidden");
 
       // 닫기 버튼 이벤트
@@ -50,31 +63,27 @@ function closeModal() {
 
 
 
-async function createTodo(user_id){
+async function createTodo() {
   const send_data = {
-    user_id : user_id,
-    todo_date : document.getElementById('todo_date_input').value,
-    title : document.getElementById('title_input').value,
-    description : document.getElementById('description_input').value,
-    status : document.getElementById('status_option').value,
-    priority : document.getElementById('priority_option').value,
-    
-  }
+    // user_id가 user_nickname이라서 삭제
+    todo_date: document.getElementById("todo_date_input").value,
+    title: document.getElementById("title_input").value,
+    description: document.getElementById("description_input").value,
+    status: document.getElementById("status_option").value,
+    priority: document.getElementById("priority_option").value,
+  };
 
-  console.log('보낼 데이터 ', send_data)
-  const response = await fetch(`/api/dailycares/save/todo/${user_id}`,{
-    method : 'POST',
-    headers : {'Content-type' : 'application/json'},
-    body : JSON.stringify(send_data)
-    
-  })
+  console.log("보낼 데이터 ", send_data);
+  const response = await fetch(`/api/dailycares/save/todo/`, {
+    method: "POST",
+    headers: { "Content-type": "application/json" },
+    body: JSON.stringify(send_data),
+  });
 
-    if (!response.ok) {
+  if (!response.ok) {
     alert("기록 저장에 실패했습니다.");
   } else {
     console.log("기록 저장 완료");
     closeModal();
   }
-  
 }
-
