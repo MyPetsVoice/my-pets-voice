@@ -1,5 +1,7 @@
 let selectedPetPersonaId = null;
 let allDiaries = [];
+let currentPage = 1; // 현재 페이지 추가
+let totalPages = 1; // 총 페이지 수 추가
 
 // 페이지 로드 시 초기화
 document.addEventListener("DOMContentLoaded", async function () {
@@ -23,6 +25,14 @@ async function setupEventListeners() {
       }
     });
 
+  // 일기 추가 버튼 이벤트 추가
+  const addDiaryBtn = document.getElementById("addDiaryBtn");
+  if (addDiaryBtn) {
+    addDiaryBtn.addEventListener("click", function () {
+      goToWritePage();
+    });
+  }
+
   // "전체 일기" 버튼 이벤트 (있다면)
   const showAllButton = document.getElementById("showAllDiariesBtn");
   if (showAllButton) {
@@ -30,8 +40,20 @@ async function setupEventListeners() {
   }
 }
 
-// 전체 일기 로드
-async function loadAllDiaries() {
+// 일기 작성 페이지로 이동하는 함수
+function goToWritePage() {
+  let writeUrl = "/diary/write";
+
+  // 선택된 펫이 있다면 URL에 펫 ID 추가
+  if (selectedPetPersonaId && selectedPetPersonaId !== "all") {
+    writeUrl += `?pet_id=${selectedPetPersonaId}`;
+  }
+
+  window.location.href = writeUrl;
+}
+
+// 전체 일기 로드 (페이징 추가)
+async function loadAllDiaries(page = 1) {
   try {
     const tableBody = document.getElementById("diaryTableBody");
 
@@ -45,12 +67,16 @@ async function loadAllDiaries() {
       </tr>
     `;
 
-    const response = await fetch("/api/diary/list");
+    const response = await fetch(`/api/diary/list?page=${page}`);
     const data = await response.json();
 
     if (data.success && data.diaries.length > 0) {
       allDiaries = data.diaries;
+      currentPage = data.pagination.current_page;
+      totalPages = data.pagination.total_pages;
+
       displayAllDiaries(data.diaries);
+      updatePagination(data.pagination, "all");
 
       // 전체 일기 표시 상태로 설정
       document.getElementById("selectedPetName").textContent = "전체 일기";
@@ -65,6 +91,7 @@ async function loadAllDiaries() {
           </td>
         </tr>
       `;
+      hidePagination();
     }
   } catch (error) {
     console.error("전체 일기 로드 실패:", error);
@@ -77,6 +104,7 @@ async function loadAllDiaries() {
         </td>
       </tr>
     `;
+    hidePagination();
   }
 }
 
@@ -102,7 +130,9 @@ function displayAllDiaries(diaries) {
         <tr class="diary-row border-b hover:bg-orange-50 transition-colors duration-200 cursor-pointer" onclick="viewDiaryDetail(${
           diary.diary_id
         })">
-          <td class="py-4 px-4 text-gray-600">${index + 1}</td>
+          <td class="py-4 px-4 text-gray-600">${
+            (currentPage - 1) * 5 + index + 1
+          }</td>
           <td class="py-4 px-4">
             <div class="flex flex-col space-y-1">
               <div class="flex items-center space-x-2">
@@ -209,19 +239,24 @@ async function showAllDiaries() {
   document.getElementById("selectedPetName").textContent = "전체 일기";
   document.getElementById("selectedPetInfo").style.display = "block";
 
-  // 전체 일기 로드
-  await loadAllDiaries();
+  // 전체 일기 로드 (첫 페이지)
+  await loadAllDiaries(1);
 }
 
 // 각 펫의 일기 수
 async function loadPetDiaryCounts(personas) {
   for (const persona of personas) {
     try {
-      const response = await fetch(`/api/diary/list/${persona.pet_persona_id}`);
+      const response = await fetch(
+        `/api/diary/list/${persona.pet_persona_id}?page=1`
+      );
       const data = await response.json();
 
       if (data.success) {
-        updateDiaryCount(persona.pet_persona_id, data.diaries.length);
+        updateDiaryCount(
+          persona.pet_persona_id,
+          data.pagination ? data.pagination.total_items : data.diaries.length
+        );
       }
     } catch (error) {
       console.error(`펫 ${persona.pet_name}의 일기 수 로드 실패:`, error);
@@ -308,16 +343,16 @@ async function selectPet(petPersonaId, petName) {
 
     console.log(`선택한 펫: ${petName} (ID: ${petPersonaId})`);
 
-    // 해당 펫의 일기 목록 로드
-    await loadPetDiaries(petPersonaId);
+    // 해당 펫의 일기 목록 로드 (첫 페이지)
+    await loadPetDiaries(petPersonaId, 1);
   } catch (error) {
     console.error("펫 선택 실패:", error);
     alert("펫 선택 중 오류가 발생했습니다.");
   }
 }
 
-// 특정 펫의 일기 목록 로드
-async function loadPetDiaries(petPersonaId) {
+// 특정 펫의 일기 목록 로드 (페이징 추가)
+async function loadPetDiaries(petPersonaId, page = 1) {
   const tableBody = document.getElementById("diaryTableBody");
 
   try {
@@ -331,7 +366,9 @@ async function loadPetDiaries(petPersonaId) {
       </tr>
     `;
 
-    const response = await fetch(`/api/diary/list/${petPersonaId}`);
+    const response = await fetch(
+      `/api/diary/list/${petPersonaId}?page=${page}`
+    );
     const data = await response.json();
 
     if (!response.ok) {
@@ -340,16 +377,14 @@ async function loadPetDiaries(petPersonaId) {
 
     if (data.success && data.diaries.length > 0) {
       allDiaries = data.diaries;
+      currentPage = data.pagination.current_page;
+      totalPages = data.pagination.total_pages;
+
       displayDiaries(data.diaries);
+      updatePagination(data.pagination, "pet", petPersonaId);
 
       // 일기 수 업데이트
-      updateDiaryCount(petPersonaId, data.diaries.length);
-
-      // 페이지네이션 표시 (구현된 경우)
-      const pagination = document.getElementById("pagination");
-      if (pagination) {
-        pagination.style.display = "flex";
-      }
+      updateDiaryCount(petPersonaId, data.pagination.total_items);
     } else {
       tableBody.innerHTML = `
         <tr>
@@ -360,6 +395,7 @@ async function loadPetDiaries(petPersonaId) {
           </td>
         </tr>
       `;
+      hidePagination();
     }
   } catch (error) {
     console.error("일기 목록 로드 실패:", error);
@@ -371,6 +407,7 @@ async function loadPetDiaries(petPersonaId) {
         </td>
       </tr>
     `;
+    hidePagination();
   }
 }
 
@@ -396,7 +433,9 @@ function displayDiaries(diaries) {
         <tr class="diary-row border-b hover:bg-orange-50 transition-colors duration-200 cursor-pointer" onclick="viewDiaryDetail(${
           diary.diary_id
         })">
-          <td class="py-4 px-4 text-gray-600">${index + 1}</td>
+          <td class="py-4 px-4 text-gray-600">${
+            (currentPage - 1) * 5 + index + 1
+          }</td>
           <td class="py-4 px-4">
             <div class="flex items-center space-x-2">
               <span class="font-medium text-gray-800">${diary.title}</span>
@@ -412,6 +451,80 @@ function displayDiaries(diaries) {
       `
     )
     .join("");
+}
+
+// 페이지네이션 업데이트 (새로 추가)
+function updatePagination(pagination, type, petId = null) {
+  const paginationDiv = document.getElementById("pagination");
+
+  if (pagination.total_pages <= 1) {
+    hidePagination();
+    return;
+  }
+
+  let paginationHTML = "";
+
+  // 이전 페이지 버튼
+  if (pagination.has_prev) {
+    paginationHTML += `
+      <button onclick="changePage(${
+        pagination.current_page - 1
+      }, '${type}', ${petId})" 
+              class="px-3 py-1 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors duration-200">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+    `;
+  }
+
+  // 페이지 번호 버튼들
+  const startPage = Math.max(1, pagination.current_page - 2);
+  const endPage = Math.min(pagination.total_pages, pagination.current_page + 2);
+
+  for (let i = startPage; i <= endPage; i++) {
+    const isActive = i === pagination.current_page;
+    paginationHTML += `
+      <button onclick="changePage(${i}, '${type}', ${petId})" 
+              class="px-3 py-1 rounded-lg ${
+                isActive
+                  ? "bg-orange-400 text-white"
+                  : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+              } transition-colors duration-200">
+        ${i}
+      </button>
+    `;
+  }
+
+  // 다음 페이지 버튼
+  if (pagination.has_next) {
+    paginationHTML += `
+      <button onclick="changePage(${
+        pagination.current_page + 1
+      }, '${type}', ${petId})" 
+              class="px-3 py-1 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors duration-200">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    `;
+  }
+
+  paginationDiv.innerHTML = paginationHTML;
+  paginationDiv.style.display = "flex";
+}
+
+// 페이지 변경 함수 (새로 추가)
+function changePage(page, type, petId = null) {
+  if (type === "all") {
+    loadAllDiaries(page);
+  } else if (type === "pet" && petId) {
+    loadPetDiaries(petId, page);
+  }
+}
+
+// 페이지네이션 숨기기 (새로 추가)
+function hidePagination() {
+  const pagination = document.getElementById("pagination");
+  if (pagination) {
+    pagination.style.display = "none";
+  }
 }
 
 // 일기 상세보기 함수
