@@ -30,5 +30,6 @@ class HealthCareMedication(BaseModel):
         nullable=False
     )
 
-    # 관계 설정 - HealthCare에서 정의됨 (cascade 적용)
+    # 관계 설정
+    healthcare = relationship("HealthCare", backref="medication_links")
     medication = relationship("Medication", backref="healthcare_links")

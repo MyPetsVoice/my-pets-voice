@@ -74,15 +74,14 @@ class DiaryService:
             raise Exception(f"AI 변환 중 오류가 발생했습니다: {str(e)}")
 
     # 페르소나 가져오기
-    @staticmethod
-    def get_pet_personas_by_user(user_id):
+    def get_pet_personas_by_user(self, user_id):
         personas = PetPersona.query.filter_by(user_id=user_id).all()
         return personas
     
     @staticmethod
-    def get_all_diaries(user_id):
+    def get_all_diaries():
         """전체 일기 목록 (최신순)"""
-        return Diary.query.filter_by(user_id=user_id).order_by(Diary.diary_date.desc()).all()
+        return Diary.query.order_by(Diary.diary_date.desc()).all()
     
     @staticmethod
     def get_by_pet_persona(pet_persona_id):

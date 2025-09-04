@@ -1,6 +1,4 @@
 .env
-.env.production
-
 # 루트 + 하위 폴더 db 파일 무시
 db
 **/db
