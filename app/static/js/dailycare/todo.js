@@ -50,9 +50,9 @@ function closeModal() {
 
 
 
-async function createTodo(user_id){
+async function createTodo(){
   const send_data = {
-    user_id : user_id,
+    // user_id가 user_nickname이라서 삭제
     todo_date : document.getElementById('todo_date_input').value,
     title : document.getElementById('title_input').value,
     description : document.getElementById('description_input').value,
@@ -62,7 +62,7 @@ async function createTodo(user_id){
   }
 
   console.log('보낼 데이터 ', send_data)
-  const response = await fetch(`/api/dailycares/save/todo/${user_id}`,{
+  const response = await fetch(`/api/dailycares/save/todo/`,{
     method : 'POST',
     headers : {'Content-type' : 'application/json'},
     body : JSON.stringify(send_data)

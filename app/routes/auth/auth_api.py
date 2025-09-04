@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 auth_api_bp = Blueprint('auth_api', __name__)
 
-@auth_api_bp.route('/auth')
+@auth_api_bp.route('/auth/kakao/login')
 def kakao_login():
     """카카오 로그인 인증 요청"""
     # config에서 설정값 가져오기
@@ -104,7 +104,7 @@ def logout():
     """로그아웃 처리"""
     try:
         client_id = current_app.config['KAKAO_REST_API_KEY']
-        logout_redirect_uri = 'http://127.0.0.1:5000'
+        logout_redirect_uri = 'http://3.34.185.194'
 
         # 세션 정보 삭제
         user_id = session.get('user_id')
@@ -125,4 +125,4 @@ def logout():
     except Exception as e:
         logger.error(f'로그아웃 처리 중 오류: {str(e)}')
         session.clear()  # 세션은 삭제
-        return redirect(url_for('mypage.mypage_views.mypage'))
+        return redirect('/')

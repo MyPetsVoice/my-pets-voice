@@ -1,103 +1,84 @@
-
-const userIdElement = document.getElementById("user-id");
-const user_id = Number(userIdElement.value) 
-console.log(user_id)
-
-export let pet_id;
 const pet_selector = document.getElementById("pet-selector");
 const pet_detail = document.getElementById("pet-detail");
 let current_pet_id = null;
 
-// 펫 상세 정보를 가져와 화면에 표시
-async function showPetDetail(petId) {
+// 전체 펫 조회
+async function getAllPetsById() {
   try {
-    const res = await fetch(`/api/dailycares/get-pet/${user_id}/${petId}`);
-    if (!res.ok) throw new Error("Pet 정보를 불러올 수 없습니다.");
-    const petData = await res.json();
-    console.log("선택된 pet 데이터:", petData);
-
-    // 약/영양제 가져오기
-    getMedications(petId);
-
-    pet_detail.innerHTML = `
-      <h3>${petData.pet_name} (${petData.species_name})</h3>
-      <p>종: ${petData.breed_name}</p>
-      <p>나이: ${petData.pet_age}</p>
-      <p>성별: ${petData.pet_gender}</p>
-      <p>중성화 여부: ${petData.is_neutered ? "Yes" : "No"}</p>
-    `;
-  } catch (err) {
-    console.error(err);
-    pet_detail.innerHTML = "<p>Pet 정보를 불러오는 중 오류가 발생했습니다.</p>";
-  }
-}
-
-// 펫 선택 처리
-function selectPet(petId, cardElement) {
-  // active 표시
-  pet_selector
-    .querySelectorAll(".pet-card")
-    .forEach((c) => c.classList.remove("active"));
-  cardElement.classList.add("active");
-
-  current_pet_id = Number(petId);
-  pet_id = current_pet_id;
-  localStorage.setItem("currentPetId", current_pet_id);
-
-  // 이벤트 발생 (다른 파일에서 처리 가능)
-  window.dispatchEvent(
-    new CustomEvent("petChanged", { detail: current_pet_id })
-  );
-
-  showPetDetail(current_pet_id);
-}
-
-// 전체 펫 조회 및 렌더링
-async function getAllPetsById(user_id) {
-  try {
-    const res = await fetch(`/api/dailycares/get-pet/${user_id}`);
-    if (!res.ok) throw new Error("Failed to fetch pet list");
-    const pets = await res.json();
+    const response = await fetch(`/api/dailycares/get-pet/`);
+    if (!response.ok) throw new Error("Failed to fetch pet list");
+    const pets = await response.json();
     console.log("회원의 petList입니다. ", pets);
 
-    pet_selector.innerHTML = ""; // 초기화
+    // pet-card 생성 (전체 pet)
     pets.forEach((pet) => {
       const card = document.createElement("div");
       card.className = "pet-card";
       card.dataset.petId = pet.pet_id;
       card.innerHTML = `<strong>${pet.pet_name}</strong><small>${pet.species_name}</small>`;
-      card.addEventListener("click", () => selectPet(pet.pet_id, card));
       pet_selector.appendChild(card);
     });
 
-    // 이전에 선택된 펫 유지
-    const storedPetId = localStorage.getItem("currentPetId");
-    if (storedPetId) {
-      const card = pet_selector.querySelector(
-        `.pet-card[data-pet-id="${storedPetId}"]`
-      );
-      if (card) selectPet(storedPetId, card);
-    }
-  } catch (err) {
-    console.error(err);
+    // 클릭 이벤트 (개별 pet 정보)
+    pet_selector.querySelectorAll(".pet-card").forEach((card) => {
+      card.addEventListener("click", async function () {
+        // active 표시
+        pet_selector
+          .querySelectorAll(".pet-card")
+          .forEach((c) => c.classList.remove("active"));
+        this.classList.add("active");
+
+        // 현재 선택된 pet_id 숫자로 변환
+        current_pet_id = Number(this.dataset.petId);
+
+        // 개별 펫 조회
+        try {
+          const response = await fetch(
+            `/api/dailycares/get-pet/${current_pet_id}`
+          );
+          if (!response.ok) {
+            pet_detail.innerHTML = "<p>Pet 정보를 불러올 수 없습니다.</p>";
+            return;
+          }
+          const petData = await response.json();
+          console.log("선택된 pet 데이터:", petData);
+          getMedications(current_pet_id);
+
+          pet_detail.innerHTML = `
+            <h3>${petData.pet_name} (${petData.species_name})</h3>
+            <p>종: ${petData.breed_name}</p>
+            <p>나이: ${petData.pet_age}</p>
+            <p>성별: ${petData.pet_gender}</p>
+            <p>중성화 여부: ${petData.is_neutered ? "Yes" : "No"}</p>
+          `;
+        } catch (err) {
+          console.error(err);
+          pet_detail.innerHTML =
+            "<p>Pet 정보를 불러오는 중 오류가 발생했습니다.</p>";
+        }
+      });
+    });
+
+    const historyBtn = document.getElementById("link_healthcare_history");
+    historyBtn.addEventListener("click", () => {
+      if (!current_pet_id || current_pet_id < 0) {
+        alert("펫을 선택해주세요");
+        return;
+      }
+      localStorage.setItem("currentPetId", current_pet_id);
+      console.log(localStorage.getItem("currentPetId"));
+      window.location.href = `/dailycare/health-history`;
+    });
+  } catch (error) {
+    console.error(error);
     pet_selector.innerHTML = "<p>Pet 리스트를 불러올 수 없습니다.</p>";
   }
 }
 
-// 링크 버튼 처리
-document
-  .getElementById("link_healthcare_history")
-  ?.addEventListener("click", () => {
-    if (!current_pet_id) return alert("펫을 선택해주세요");
-    localStorage.setItem("currentPetId", current_pet_id);
-    window.location.href = `/dailycare/health-history`;
-  });
+// 페이지 로딩 시 실행
 
-// 초기 실행
-getAllPetsById(user_id);
-
-const medicationSelect = document.getElementById("medication-select");
-const selectedTags = document.getElementById("selected-tags");
+var medicationSelect = document.getElementById("medication-select");
+var selectedTags = document.getElementById("selected-tags");
 
 // 선택된 약물 정보 저장 배열
 let selectedItems = [];
@@ -134,7 +115,6 @@ async function getMedications(pet_id) {
       option.disabled = true;
       medicationSelect.appendChild(option);
     }
-
   } catch (error) {
     console.error("❌ 약물 목록 로드 실패:", error);
   }
@@ -195,7 +175,6 @@ function renderTags() {
 
     selectedTags.appendChild(tag);
   });
-
 }
 
 // 태그 삭제
@@ -208,7 +187,6 @@ selectedTags.addEventListener("click", (e) => {
     renderTags();
   }
 });
-
 
 // 저장 버튼
 document
@@ -233,8 +211,7 @@ async function saveHealthcare(pet_id) {
     parseInt(btn.getAttribute("data-value"), 10)
   );
 
-  console.log(medication_ids)
-
+  console.log(medication_ids);
 
   const send_data = {
     pet_id: pet_id,
@@ -269,7 +246,6 @@ async function saveHealthcare(pet_id) {
   }
 }
 
-
 // 폼 리셋
 function resetHealthcareForm() {
   document.getElementById("food-input").value = "";
@@ -282,9 +258,9 @@ function resetHealthcareForm() {
   renderTags();
 }
 
-async function getTodo(user_id) {
+async function getTodo() {
   try {
-    const response = await fetch(`/api/dailycares/todo/${user_id}`);
+    const response = await fetch(`/api/dailycares/todo/`);
     const todos = await response.json();
     console.log("todo data", todos);
 
@@ -348,8 +324,8 @@ async function getTodo(user_id) {
             </div>
           `;
 
-          resultDiv.appendChild(todoCard);
-        });
+      resultDiv.appendChild(todoCard);
+    });
 
     resultDiv.addEventListener("click", async (event) => {
       const target = event.target.closest(".todo-status"); // 클릭한 요소가 상태 span인지 확인
@@ -374,7 +350,7 @@ async function getTodo(user_id) {
         if (response.ok) {
           target.textContent = newStatus; // 화면 업데이트
           alert("상태가 변경되었습니다.");
-          getTodo(user_id);
+          getTodo();
           if (newStatus === "완료") {
             target.classList.remove("bg-green-100", "text-green-800");
             target.classList.add("bg-gray-200", "text-gray-600"); // 완료된 스타일 변경
@@ -394,8 +370,7 @@ async function getTodo(user_id) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', ()=>{
- 
-  getTodo(user_id);
-})
-
+document.addEventListener("DOMContentLoaded", () => {
+  getTodo();
+  getAllPetsById();
+});

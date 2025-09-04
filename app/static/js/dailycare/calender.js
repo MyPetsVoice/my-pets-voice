@@ -1,8 +1,7 @@
-import { pet_id } from "./dailycare.js";
-console.log(pet_id);
-
+pet_id = localStorage.getItem('currentPetId')
+console.log(pet_id)
 window.addEventListener("petChanged", (e) => {
-  const pet_id = e.detail;
+  
   renderCalendar(current, pet_id);
 });
 

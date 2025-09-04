@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, jsonify, render_template, request
+from flask import Flask, Blueprint, jsonify, render_template, request, session
 from app.services.pet import PetService
 from app.services.dailycare.healthcare_service import HealthCareService
 from app.services.dailycare.medicalcare_service import MedicalCareService
@@ -27,8 +27,11 @@ def load_modal(name):
 logging.basicConfig(level=logging.INFO)
 
 # 회원의 전체 펫 조회
-@dailycare_api_bp.route("/get-pet/<user_id>")
-def get_my_pet(user_id):
+@dailycare_api_bp.route("/get-pet/")
+def get_my_pet():
+    user_id = session.get('user_id')
+    print(f'######## get-pet : {user_id}')
+
     pets = PetService.get_pets_by_user(user_id)
     
     if not pets:
@@ -48,8 +51,10 @@ def get_pet_info(pet_id):
     return jsonify(pet) , 200
 
 # 개별 펫 조회
-@dailycare_api_bp.route('/get-pet/<user_id>/<pet_id>')
-def get_my_pet_by_user_id(user_id,pet_id):
+@dailycare_api_bp.route('/get-pet/<pet_id>')
+def get_my_pet_by_user_id(pet_id):
+    user_id = session.get('user_id')
+
     print(f'입력된 petId : {pet_id} userId {user_id}')
     pets = PetService.get_pet_by_id(pet_id, user_id)
     print(pets)
@@ -436,28 +441,30 @@ def delete_medication(medication_id):
     db.session.commit()
     return jsonify({"message": "삭제완료"}), 200
 
-@dailycare_api_bp.route('/todo/<user_id>')
-def get_todo(user_id):
+@dailycare_api_bp.route('/todo/')
+def get_todo():
+    user_id = session.get('user_id')
     todos= HealthCareService.get_todo_records_by_user_limit3(user_id)
     todo_list = [t.to_dict() for t in todos]
     return jsonify(todo_list), 200
 
-@dailycare_api_bp.route('/todo/all/<user_id>')
-def get_all_todo(user_id):
+@dailycare_api_bp.route('/todo/all/')
+def get_all_todo():
+    user_id = session.get('user_id')
+
     todos= HealthCareService.get_todo_records_by_user(user_id)
     todo_list = [t.to_dict() for t in todos]
     return jsonify(todo_list), 200
 
 
-@dailycare_api_bp.route('/save/todo/<user_id>', methods = ['POST'])
-def save_todo(user_id):
-    print('######save todo userid :', user_id)
+@dailycare_api_bp.route('/save/todo/', methods = ['POST'])
+def save_todo():
     data = request.json
     todo_date_str = data.get("todo_date")  # '2025-08-16'
     todo_date = datetime.strptime(todo_date_str, "%Y-%m-%d").date() if todo_date_str else None
     record = HealthCareService.create_todo_record(
     
-    user_id = user_id,
+    user_id = session.get('user_id'),
     todo_date = todo_date,
     title = data.get('title'),
     description = data.get('description'),

@@ -2,8 +2,8 @@
 {% block title %}반려동물의 목소리가 들려 -데일리케어{% endblock %}
 {% block content %}
 
-<link rel="stylesheet" href=".././../static/css/dailycare/dailcare.css">
-<link rel="stylesheet" href="../../static/css/dailycare/todo.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dailycare/dailcare.css', v=static_version) }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dailycare/todo.css', v=static_version) }}">
 </head>
 <body style=" padding: 0;">
     <input type="hidden" id="user-id" value="{{ user_id }}">
@@ -201,67 +201,17 @@ function goToMedicalHistory() {
 }
 </script>
 
-<script>
-  const medicationSelect = document.getElementById("medication-select");
-  const selectedTags = document.getElementById("selected-tags");
 
-  // [{value, text}] 형태로 저장
-  let selectedItems = [];
-
-  medicationSelect.addEventListener("change", () => {
-    const selectedOption = medicationSelect.options[medicationSelect.selectedIndex];
-    const value = selectedOption.value;
-    const text = selectedOption.text;
-
-    // 중복 방지
-    if (value && !selectedItems.some(item => item.value === value)) {
-      selectedItems.push({ value, text });
-      renderTags();
-    }
-
-    // 다시 초기화 (다음 선택 가능하도록)
-    medicationSelect.value = "";
-  });
-
-  // 태그 렌더링 함수
-  function renderTags() {
-    selectedTags.innerHTML = "";
-    selectedItems.forEach(item => {
-      const tag = document.createElement("span");
-      tag.className =
-        "flex items-center bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium";
-
-      tag.innerHTML = `
-        ${item.text}
-        <button type="button" 
-          class="ml-2 text-yellow-600 hover:text-yellow-800 focus:outline-none"
-          data-value="${item.value}">
-          ✕
-        </button>
-      `;
-
-      selectedTags.appendChild(tag);
-    });
-  }
-
-  // 태그 X 버튼 클릭 → 선택 해제
-  selectedTags.addEventListener("click", (e) => {
-    if (e.target.tagName === "BUTTON") {
-      const value = e.target.getAttribute("data-value");
-      selectedItems = selectedItems.filter(item => item.value !== value);
-      renderTags();
-    }
-  });
-</script>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
-<script src="../../static/js/dailycare/care_chatbot.js"></script>
-<script src="../../static/js/dailycare/care_base.js"></script>
-<script src="../../static/js/dailycare/modal.js"></script>
-<script src="../../static/js/dailycare/todo.js"></script>
-<script type='module'src=".././../static/js/dailycare/dailycare.js"></script>
-<script type='module' src="../../static/js/dailycare/calender.js"></script>
+<script src="{{ url_for('static', filename='js/dailycare/care_chatbot.js', v=static_version) }}"></script>
+<script src="{{ url_for('static', filename='js/dailycare/calender.js', v=static_version) }}"></script>
+<script src="{{ url_for('static', filename='js/dailycare/care_base.js', v=static_version) }}"></script>
+<script src="{{ url_for('static', filename='js/dailycare/modal.js', v=static_version) }}"></script>
+<script src="{{ url_for('static', filename='js/dailycare/todo.js', v=static_version) }}"></script>
+<script src="{{ url_for('static', filename='js/dailycare/dailycare.js', v=static_version) }}"></script>
+
       
 
 {% endblock %}
