@@ -4,8 +4,8 @@ from app.models.dailycare.healthCare.healthCare import HealthCare
 from app.models.dailycare.healthCare.healthcareMedication import HealthCareMedication
 from app.models.dailycare.healthCare.todo import TodoList
 from app.models.dailycare.medicalCare.medication import Medication
+from datetime import datetime, date, timedelta
 
-from datetime import datetime
 
     
 class HealthCareService:
@@ -13,14 +13,21 @@ class HealthCareService:
         @staticmethod
         def create_health_record(pet_id: int, **kwargs):
             """HealthCare 기록 생성 (BaseModel.create 활용), 하루에 한 개만 저장"""
+
+            today = date.today()
+            start_of_day = datetime.combine(today, datetime.min.time())
+            end_of_day = datetime.combine(today, datetime.max.time())
+
             existing_record = HealthCare.query.filter_by(pet_id=pet_id).filter(
-                HealthCare.created_at >= datetime.now().date()
+                HealthCare.created_at.between(start_of_day, end_of_day)
             ).first()
 
             if existing_record:
-                print(f"[HealthCareService] 이미 오늘({datetime.now().date()}) {pet_id}번 반려동물의 건강기록이 존재합니다.")
+                print(f"[HealthCareService] 이미 오늘({today}) {pet_id}번 반려동물의 건강기록이 존재합니다.")
                 return None
+
             return HealthCare.create(pet_id=pet_id, **kwargs)
+
 
         @staticmethod
         def get_health_records_by_pet(pet_id: int):
@@ -49,12 +56,11 @@ class HealthCareService:
                 if hasattr(record, key) and key not in ['medication_id', 'medication_ids']:
                     setattr(record, key, value)
 
-            # 📌 Medication 연결 덮어쓰기
-            if medication_ids is not None:
-                # 기존 연결 제거
-                HealthCareMedication.query.filter_by(record_id=record.care_id).delete()
+           # ✅ 기존 약물 연결 삭제
+            HealthCareMedication.query.filter_by(record_id=record.care_id).delete()
 
-                # 새로 연결
+            # ✅ 새 약물 연결 삽입
+            if medication_ids:
                 for mid in medication_ids:
                     new_link = HealthCareMedication(
                         record_id=record.care_id,
@@ -86,11 +92,20 @@ class HealthCareService:
     
         @staticmethod
         def link_medications(care_id, medication_ids):
+            """헬스케어-약물 관계를 덮어쓰기 (기존 삭제 후 새로 추가)"""
+
+            # 1. 기존 연결 삭제
+            HealthCareMedication.query.filter_by(record_id=care_id).delete()
+
+            # 2. 새 연결 삽입
             for med_id in medication_ids:
                 HealthCareMedication.create(
-                record_id=care_id,
-                medication_id=med_id
-            )
+                    record_id=care_id,
+                    medication_id=med_id
+                )
+
+            db.session.commit()
+
 
         @staticmethod
         def get_linked_medications(care_id: int):

@@ -37,9 +37,8 @@ async function getAllPetsById() {
         window.dispatchEvent(new Event("petChanged"));
 
 
-        // 개별 펫 조회
-        try {
-          const response = await fetch(
+        if(current_pet_id){
+            const response = await fetch(
             `/api/dailycares/get-pet/${current_pet_id}`
           );
           if (!response.ok) {
@@ -57,8 +56,8 @@ async function getAllPetsById() {
             <p>성별: ${petData.pet_gender}</p>
             <p>중성화 여부: ${petData.is_neutered ? "Yes" : "No"}</p>
           `;
-        } catch (err) {
-          console.error(err);
+        } else {
+          
           pet_detail.innerHTML =
             "<p>Pet 정보를 불러오는 중 오류가 발생했습니다.</p>";
         }
@@ -87,7 +86,6 @@ async function getAllPetsById() {
       window.location.href = `/dailycare/health-history`;
     });
   } catch (error) {
-    console.error(error);
     pet_selector.innerHTML = "<p>Pet 리스트를 불러올 수 없습니다.</p>";
   }
 }

@@ -35,7 +35,7 @@ def get_my_pet():
     pets = PetService.get_pets_by_user(user_id)
     
     if not pets:
-        return jsonify({"error": "Pet not found"}), 404
+        return jsonify({"error": "Pet이 존재하지 않습니다."})
 
     if isinstance(pets, list):
         result = [p.to_dict() for p in pets]

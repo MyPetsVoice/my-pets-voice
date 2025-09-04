@@ -32,6 +32,7 @@ class HealthCare(BaseModel):
         Index('idx_health_records_user_date', 'pet_id', 'created_at'),
     )
     
+  
     # 관계 설정
     pet = db.relationship('Pet', back_populates='health_care')
     medication = db.relationship('Medication', back_populates='health_cares')
