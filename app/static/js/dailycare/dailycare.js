@@ -17,10 +17,8 @@ async function getAllPetsById() {
       card.dataset.petId = pet.pet_id;
       card.innerHTML = `<strong>${pet.pet_name}</strong><small>${pet.species_name}</small>`;
       pet_selector.appendChild(card);
-    });
 
-    // 클릭 이벤트 (개별 pet 정보)
-    pet_selector.querySelectorAll(".pet-card").forEach((card) => {
+      // 클릭 이벤트 (개별 pet 정보)
       card.addEventListener("click", async function () {
         // active 표시
         pet_selector
@@ -30,6 +28,9 @@ async function getAllPetsById() {
 
         // 현재 선택된 pet_id 숫자로 변환
         current_pet_id = Number(this.dataset.petId);
+
+        // 🔹 localStorage 에 저장
+        localStorage.setItem("currentPetId", current_pet_id);
 
         // 개별 펫 조회
         try {
@@ -59,13 +60,24 @@ async function getAllPetsById() {
       });
     });
 
+    // 🔹 페이지 로드 후, 이전에 선택한 pet 자동 선택
+    const storedPetId = localStorage.getItem("currentPetId");
+    if (storedPetId) {
+      const card = pet_selector.querySelector(
+        `.pet-card[data-pet-id="${storedPetId}"]`
+      );
+      if (card) {
+        card.click(); // 클릭 이벤트 강제로 실행해서 데이터 불러오기
+      }
+    }
+
     const historyBtn = document.getElementById("link_healthcare_history");
     historyBtn.addEventListener("click", () => {
       if (!current_pet_id || current_pet_id < 0) {
         alert("펫을 선택해주세요");
         return;
       }
-      localStorage.setItem("currentPetId", current_pet_id);
+      // 여기서는 이미 localStorage 저장됨 (중복 저장은 괜찮음)
       console.log(localStorage.getItem("currentPetId"));
       window.location.href = `/dailycare/health-history`;
     });
