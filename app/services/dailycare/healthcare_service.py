@@ -33,8 +33,8 @@ class HealthCareService:
             return HealthCare.query.get(care_id)
 
         @staticmethod
-        def update_health_record(care_id: int, **kwargs):
-            """특정 care_id 기록 갱신 + 연관 약물 처리"""
+        def update_health_record(care_id: int, medication_ids=None, **kwargs):
+            """특정 care_id 기록 갱신 + 연관 약물 덮어쓰기"""
             record = HealthCare.query.get(care_id)
             if not record:
                 return None
@@ -46,20 +46,26 @@ class HealthCareService:
 
             # HealthCare 필드 업데이트
             for key, value in kwargs.items():
-                if hasattr(record, key) and key != 'medication_id':
+                if hasattr(record, key) and key not in ['medication_id', 'medication_ids']:
                     setattr(record, key, value)
 
-            # Medication 업데이트
-            medication_id = kwargs.get('medication_id')
-            if medication_id:
-                med = HealthCareMedication.query.get(medication_id)
-                if med:
-                    med.record_id = record.care_id
-                    med.updated_at = datetime.now()
-                    db.session.add(med)
+            # 📌 Medication 연결 덮어쓰기
+            if medication_ids is not None:
+                # 기존 연결 제거
+                HealthCareMedication.query.filter_by(record_id=record.care_id).delete()
+
+                # 새로 연결
+                for mid in medication_ids:
+                    new_link = HealthCareMedication(
+                        record_id=record.care_id,
+                        medication_id=mid,
+                        updated_at=datetime.now()
+                    )
+                    db.session.add(new_link)
 
             db.session.commit()
             return record
+
 
         @staticmethod
         def delete_health_record(care_id: int):

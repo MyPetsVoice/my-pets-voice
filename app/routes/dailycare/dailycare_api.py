@@ -101,25 +101,25 @@ def save_healthcare(pet_id):
         
     return jsonify(record.to_dict()), 201
 
-@dailycare_api_bp.route('/update/healthcare/<int:care_id>', methods=['PUT'])
+# 수정
+@dailycare_api_bp.route('/update/healthcare/<care_id>', methods=['PUT'])
 def update_healthcare(care_id):
-    data = request.get_json() or {}
-    # 중복 방지: data에 care_id가 있으면 제거
-    data.pop('care_id', None)
+    data = request.json
 
-    updated_record = HealthCareService.update_health_record(care_id, **data)
-    print(f'######## update record', updated_record)
-    
-    if updated_record is None:
-        return jsonify({"error": "healthcare record not found"}), 404
+    record = HealthCareService.update_health_record(
+        care_id=care_id,
+        food=int(data['food']) if data.get('food') not in (None, "") else None,
+        water=float(data['water']) if data.get('water') not in (None, "") else None,
+        excrement_status=data.get('excrement_status'),
+        weight_kg=float(data['weight_kg']) if data.get('weight_kg') not in (None, "") else None,
+        walk_time_minutes=int(data['walk_time_minutes']) if data.get('walk_time_minutes') not in (None, "") else None,
+        medication_ids=data.get('medication_ids') or []   # ✅ 새로 반영
+    )
 
-    # updated_record가 dict이면 그대로 반환, 아니면 to_dict 호출
-    if isinstance(updated_record, dict):
-        return jsonify(updated_record), 200
-    elif hasattr(updated_record, 'to_dict'):
-        return jsonify(updated_record.to_dict()), 200
-    else:
-        return jsonify({"error": "updated record has invalid type"}), 500
+    if not record:
+        return jsonify({"message": "해당 기록을 찾을 수 없습니다."}), 404
+
+    return jsonify(record.to_dict()), 200
 
 
 
