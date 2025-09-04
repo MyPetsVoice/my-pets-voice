@@ -28,7 +28,16 @@ class OpenAIService:
         except Exception as e:
             return f"❌ GPT 호출 중 오류 발생: {str(e)}"
 
+# 전역 인스턴스 (싱글톤)
+_openai_service = None
+
+def get_openai_service():
+    global _openai_service
+    if _openai_service is None:
+        _openai_service = OpenAIService()
+    return _openai_service
+
 # 호환성을 위한 전역 함수
 def get_gpt_response(prompt: str) -> str:
-    service = OpenAIService()
+    service = get_openai_service()
     return service.get_gpt_response(prompt)

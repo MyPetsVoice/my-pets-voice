@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(/C:\\Users\\temnt\\Desktop\\src\\MypetsVoice\\rag data\\medications/**)",
+      "Read(/C:\\Users\\temnt\\Desktop\\src\\MypetsVoice\\rag data\\medications/**)",
+      "Bash(python:*)",
+      "Read(/C:\\Users\\temnt\\Desktop\\src\\MypetsVoice\\rag data\\medications\\rag_documents/**)",
+      "Read(/C:\\Users\\temnt\\Desktop\\src\\MypetsVoice\\rag data\\medications\\rag_documents/**)",
+      "Read(/C:\\Users\\temnt\\Desktop\\src\\MypetsVoice\\rag data\\medications\\rag_documents/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

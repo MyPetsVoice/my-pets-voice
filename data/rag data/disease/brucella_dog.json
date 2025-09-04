@@ -1,0 +1,331 @@
+{
+  "document_metadata": {
+    "title": "개 브루셀라병 예방수칙",
+    "source": "농림축산검역본부",
+    "document_type": "disease_prevention_guide",
+    "language": "korean",
+    "categories": ["개", "브루셀라병", "예방", "감염병", "인수공통감염병"],
+    "target_audience": ["반려동물 소유자", "수의사", "축산 관련자"]
+  },
+  
+  "disease_definition": {
+    "id": "def_001",
+    "category": "질병정의",
+    "disease_name": "개 브루셀라병",
+    "pathogen": "브루셀라(Brucella) 균",
+    "classification": "법정 제2종 가축전염병",
+    "zoonotic": true,
+    "description": "브루셀라(Brucella) 균에 의해 소, 돼지, 양, 개, 들쥐 거의 모든 가축과 야생동물에 감염되며 독성, 생식기 및 태반의 염증과 유산, 불임 등을 특징으로 하는 질병",
+    "characteristics": [
+      "인수공통전염병",
+      "축수, 수의사, 인공수정사 등 축산관련 종사자 고위험",
+      "세계적으로 발생",
+      "만성소모성 질병",
+      "치료 어려움",
+      "지속적 균 전파"
+    ],
+    "keywords": ["브루셀라균", "인수공통감염병", "생식기감염", "유산", "불임"]
+  },
+
+  "pathogen_info": {
+    "id": "pathogen_001",
+    "category": "병원체정보",
+    "scientific_name": "Brucella canis",
+    "characteristics": {
+      "size": "1.0 ~ 1.5㎛",
+      "gram_stain": "그람 음성",
+      "oxygen_requirement": "편성 혐기성",
+      "shape": "단간균",
+      "habitat": "세포내 기생균"
+    },
+    "environmental_resistance": "토양이나 식물에서 분리된 균으로는 비교적 환경에 대한 저항성이 강함",
+    "survival_periods": [
+      {
+        "environment": "월경조직",
+        "temperature": "상온",
+        "duration": "월경조직"
+      },
+      {
+        "environment": "생존기간",
+        "temperature": "상온",
+        "duration": "4~5시간"
+      },
+      {
+        "environment": "토양(광선)",
+        "temperature": "상온",
+        "duration": "6개월"
+      },
+      {
+        "environment": "토양",
+        "temperature": "5°C",
+        "duration": "8개월"
+      }
+    ],
+    "disinfection": "일반 소독제에 쉽게 사멸되므로 철저한 소독을 통해 관리가 가능",
+    "keywords": ["브루셀라카니스", "원인균", "그람음성", "세포내기생균"]
+  },
+
+  "transmission": {
+    "id": "trans_001",
+    "category": "감염경로",
+    "transmission_materials": [
+      {
+        "type": "유산관련 물질",
+        "materials": ["양수", "태반", "유산태아", "질분비물"]
+      },
+      {
+        "type": "동물 분비물",
+        "materials": ["유즙", "정액"]
+      },
+      {
+        "type": "간접 전파",
+        "materials": ["감염/보균감염 동물의 임상", "사람 및 축산도구"]
+      }
+    ],
+    "infection_routes": [
+      {
+        "route": "직접 접촉",
+        "description": "외부생식기, 비강, 결막을 통해 세포내로 들어감"
+      },
+      {
+        "route": "경구 감염",
+        "description": "오염된 사료나 물을 통한 감염"
+      },
+      {
+        "route": "교배 감염",
+        "description": "감염된 동물과의 교배를 통한 전파"
+      }
+    ],
+    "pathogenesis": [
+      {
+        "stage": 1,
+        "description": "외부생식기, 비강, 결막을 통해 세포내로 들어감"
+      },
+      {
+        "stage": 2,
+        "description": "감염 후 1~4주내 균혈증이 시작되고, 최초 6개월간 균 배출"
+      },
+      {
+        "stage": 3,
+        "description": "혈액을 통해 표적장기로 이동하여 발병 유발",
+        "target_organs": {
+          "reproductive": ["태아", "태반", "자궁", "부고환", "고환", "전립선"],
+          "other": ["충간", "신장", "신장", "포도막"]
+        }
+      }
+    ],
+    "keywords": ["접촉감염", "경구감염", "교배감염", "태반감염"]
+  },
+
+  "clinical_symptoms": {
+    "id": "symptoms_001",
+    "category": "임상증상",
+    "animal_symptoms": {
+      "female": {
+        "primary": [
+          {
+            "symptom": "유산",
+            "timing": "임신 7~29일 (임신 2~3주차부터 증상 시작)",
+            "details": "분만은 6개월~1년 이상경과시 감신 또는 사산"
+          },
+          {
+            "symptom": "질병상 특이 임상증상 없음",
+            "note": "일반 신체검사에서 감염여부 파악 어려움"
+          }
+        ],
+        "chronic": [
+          "임신률저하",
+          "45~60일령 유산",
+          "육아폐쇄", 
+          "불임",
+          "산륜저하",
+          "테이올수 저하",
+          "지저분화",
+          "임신분비 위해부 중괴",
+          "환과분비 복절체 문비"
+        ]
+      },
+      "male": {
+        "primary": [
+          "고환염",
+          "부고환염", 
+          "임삭감염시 고환위축",
+          "관절염"
+        ],
+        "systemic": [
+          "특별한술름",
+          "공정등",
+          "다관성 관절염",
+          "시스이역",
+          "포도막염"
+        ],
+        "chronic": [
+          "죽주등",
+          "사지마비",
+          "브필었계",
+          "행동이상"
+        ]
+      }
+    },
+    "human_symptoms": {
+      "incubation_period": "7~29일 (김낭 2~3주차부터 증상 나타나기 시작)",
+      "early_symptoms": [
+        "신체 감기 증상",
+        "박성령",
+        "요법",
+        "두통",
+        "근육통"
+      ],
+      "chronic_forms": [
+        "관절함",
+        "일반령뎀",
+        "최수열",
+        "신발탄"
+      ]
+    },
+    "related_conditions": [
+      "유산태아",
+      "부고환염", 
+      "포도막염",
+      "추간원화슐류"
+    ],
+    "keywords": ["유산", "불임", "부고환염", "고환위축", "전립선염"]
+  },
+
+  "diagnosis": {
+    "id": "diag_001",
+    "category": "진단방법",
+    "pathogen_isolation": {
+      "method": "범례체 동정",
+      "duration": "10일 ~ 4주 소요",
+      "specimens": ["혈액", "유산분비물", "일반태하"],
+      "confirmation": "PCR 등으로 확인"
+    },
+    "serological_tests": [
+      "신속항원진단키트(2ME-RSAT)",
+      "면역친화키트(ICT)",
+      "한국걱극역잘섬법(AGID)",
+      "ELISA"
+    ],
+    "recommendation": "병원체 동정과 병행하여 진단하는 것을 추천",
+    "keywords": ["혈청학적검사", "PCR검사", "세균분리", "항체검사"]
+  },
+
+  "prevention_control": {
+    "id": "prev_001",
+    "category": "방역관리",
+    "key_principle": "예방백신이 없어 철저한 방역관리가 유일한 방법",
+    "prevention_measures": [
+      {
+        "measure": "구매/분양시 검사 확인",
+        "description": "브루셀라병 검사유무 확인"
+      },
+      {
+        "measure": "정기 검사",
+        "description": "고기, 전 정기 강사, 타당성 검리시술"
+      },
+      {
+        "measure": "유산시 대처",
+        "description": "유산, 조산시 접촉 차단 및 신속한 검사"
+      },
+      {
+        "measure": "철저한 소독",
+        "description": "유산관련 물질의 철저한 소독 후 폐기"
+      }
+    ],
+    "treatment_policy": {
+      "positive_case": "브루셀라병 양성일 경우 안락사 권고",
+      "rationale": [
+        "세계적으로 기생행륜크도 치료가 어려움",
+        "계획기능성 상초",
+        "계속적으로 균 배출"
+      ]
+    },
+    "chronic_infection": "한번 감염된 감염계하는 두병에 인삽부터 유신은 드뭊지만 균을 계속 배출하기 됨",
+    "keywords": ["방역관리", "소독", "안락사", "격리"]
+  },
+
+  "reporting_system": {
+    "id": "report_001",
+    "category": "신고절차",
+    "animal_cases": {
+      "target": "가축 브루셀라병 의사증",
+      "contact": "농림축산검역본부 및 지자체",
+      "phone": "1588-4060 / 9060"
+    },
+    "human_cases": {
+      "target": "사람 브루셀라병 의심환자",
+      "contact": "질병관리본부",
+      "phone": "국번없이 1339"
+    },
+    "keywords": ["신고의무", "가축브루셀라병", "농림축산검역본부", "질병관리본부"]
+  },
+
+  "risk_assessment": {
+    "id": "risk_001",
+    "category": "위험평가",
+    "high_risk_groups": [
+      "축산업 종사자",
+      "수의사", 
+      "인공수정사",
+      "반려동물 소유자",
+      "도축업 종사자"
+    ],
+    "risk_activities": [
+      "감염동물 접촉",
+      "유산 처리",
+      "교배 관리",
+      "분만 도움",
+      "검체 채취"
+    ],
+    "prevention_for_humans": [
+      "보호구 착용",
+      "철저한 손씻기", 
+      "상처부위 보호",
+      "의심증상시 즉시 진료"
+    ]
+  },
+
+  "emergency_response": {
+    "id": "emerg_001", 
+    "category": "응급대응",
+    "suspected_case_actions": [
+      "즉시 격리",
+      "접촉 차단",
+      "검사 의뢰",
+      "소독 실시",
+      "관련자 추적"
+    ],
+    "confirmed_case_actions": [
+      "안락사 실시",
+      "사체 안전 처리", 
+      "환경 소독",
+      "역학조사",
+      "추가 검사"
+    ],
+    "disinfection_protocol": {
+      "target_areas": ["사육시설", "도구", "의복", "차량"],
+      "disinfectants": ["일반 소독제 효과적"],
+      "concentration": "제조사 권장농도",
+      "contact_time": "충분한 접촉시간 확보"
+    }
+  },
+
+  "educational_points": {
+    "id": "edu_001",
+    "category": "교육요점",
+    "key_messages": [
+      "브루셀라병은 인수공통감염병입니다",
+      "예방백신이 없어 방역관리가 핵심입니다", 
+      "유산 발생시 즉시 신고하고 검사받으세요",
+      "철저한 소독이 감염 확산을 방지합니다",
+      "의심증상 발생시 전문가와 상담하세요"
+    ],
+    "awareness_raising": [
+      "질병의 심각성 인식",
+      "조기 신고의 중요성",
+      "개인 보호의 필요성",
+      "지역사회 협력"
+    ]
+  }
+}
