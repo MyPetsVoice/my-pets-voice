@@ -71,6 +71,7 @@
                 </div>
                 
                 <!-- 날씨 api 가져와서 렌더링 -->
+                 <div id="weather" class="mb-4" style="margin-top: 15px;"></div>
                 
                 
                 {% if user %}
@@ -163,6 +164,12 @@
                 </div>
             </div>
         </footer>
-
+<script src="{{ url_for('static', filename='js/weather.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 서울 날씨 위젯 초기화
+        const weatherWidget = initWeatherWidget('weather', '서울');
+    });
+</script>
     </body>
 </html>
