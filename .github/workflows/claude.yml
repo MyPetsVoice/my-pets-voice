@@ -1,73 +1,31 @@
-name: Claude PR Action
-
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
-  id-token: write
+name: Claude Auto Code PR
 
 on:
   issue_comment:
     types: [created]
-  pull_request_review_comment:
-    types: [created]
-  issues:
-    types: [opened, assigned]
 
 jobs:
-  claude-pr:
-    if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'issues' && contains(github.event.issue.body, '@claude'))
+  claude-code:
     runs-on: ubuntu-latest
-    env:
-      AWS_REGION: ap-northeast-2
-    steps:
-      - name: Generate GitHub App token
-        id: app-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+    permissions:
+      contents: write
+      pull-requests: write
 
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          token: ${{ steps.app-token.outputs.token }}
-          fetch-depth: 0
+          bun-version: 1.2.11
 
-      # 🔽 브랜치 자동 생성 스텝 추가
-      - name: Ensure claude branch exists
-        run: |
-          ISSUE_NUMBER=${{ github.event.issue.number || github.event.comment.issue_url && github.event.issue.number }}
-          BRANCH="claude/issue-${ISSUE_NUMBER}-$(date +%Y%m%d-%H%M)"
-          echo "Using branch: $BRANCH"
-
-          git checkout -b "$BRANCH"
-          git push origin "$BRANCH" || echo "Branch already exists, skipping push"
-
-          echo "CLAUDE_BRANCH=$BRANCH" >> $GITHUB_ENV
-
-      - name: Configure AWS Credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ap-northeast-2
-
-      - name: List available models
-        run: |
-          echo "Checking available models in ap-northeast-2..."
-          aws bedrock list-foundation-models --region ap-northeast-2 --query 'modelSummaries[?contains(modelId, `claude`)].modelId' --output table
+      - name: Install dependencies
+        run: bun install
 
       - name: Run Claude Code Action
         uses: anthropics/claude-code-action@v1
-        with:
-          github_token: ${{ steps.app-token.outputs.token }}
-          use_bedrock: "true"
-          claude_args: >
-            --model arn:aws:bedrock:ap-northeast-2:533267186857:inference-profile/apac.anthropic.claude-3-5-sonnet-20240620-v1:0
-            --branch ${{ env.CLAUDE_BRANCH }}
-            --base-branch main
         env:
-          AWS_REGION: ap-northeast-2
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          base: main
