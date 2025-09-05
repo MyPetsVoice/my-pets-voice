@@ -5,7 +5,7 @@ from app.models.dailycare.healthCare.healthcareMedication import HealthCareMedic
 from app.models.dailycare.healthCare.todo import TodoList
 from app.models.dailycare.medicalCare.medication import Medication
 from datetime import datetime, date, timedelta
-
+from datetime import datetime, timedelta, timezone
 
     
 class HealthCareService:
@@ -40,9 +40,14 @@ class HealthCareService:
             """특정 care_id 조회"""
             return HealthCare.query.get(care_id)
 
+         
+
+        
+
         @staticmethod
         def update_health_record(care_id: int, medication_ids=None, **kwargs):
             """특정 care_id 기록 갱신 + 연관 약물 덮어쓰기"""
+            KST = timezone(timedelta(hours=9))
             record = HealthCare.query.get(care_id)
             if not record:
                 return None
@@ -57,7 +62,7 @@ class HealthCareService:
                 if hasattr(record, key) and key not in ['medication_id', 'medication_ids']:
                     setattr(record, key, value)
 
-           # ✅ 기존 약물 연결 삭제
+            # ✅ 기존 약물 연결 삭제
             HealthCareMedication.query.filter_by(record_id=record.care_id).delete()
 
             # ✅ 새 약물 연결 삽입
@@ -66,9 +71,12 @@ class HealthCareService:
                     new_link = HealthCareMedication(
                         record_id=record.care_id,
                         medication_id=mid,
-                        updated_at=datetime.now()
+                        updated_at=datetime.now(KST)   # ✅ 한국시간 적용
                     )
                     db.session.add(new_link)
+
+            # record 자체도 갱신된 시간 반영
+            record.updated_at = datetime.now(KST)
 
             db.session.commit()
             return record
@@ -163,3 +171,6 @@ class HealthCareService:
             if not record:
                 return None
             return record.delete()
+        
+       
+            

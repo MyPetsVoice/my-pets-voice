@@ -35,6 +35,10 @@ def get_medication_history(pet_id):
     user_nickname = user['kakao_account']['profile']['nickname']
     return render_template('dailycare/medication_history.html', pet_id=pet_id, user=user_nickname)
 
+from datetime import datetime, timedelta, timezone
+
+KST = timezone(timedelta(hours=9))
+
 # 건강기록 모아보기 ('기록보기')
 @dailycare_views_bp.route('/health-history')
 def get_healthcare_history():
@@ -49,8 +53,15 @@ def get_healthcare_history():
     if care_id:
         record = HealthCareService.get_health_record_by_id(care_id)
         medication = HealthCareService.get_linked_medications(care_id) or []
+
+        # ✅ updated_at 포맷팅 (한국시간 변환 + 보기 좋은 문자열)
+        if hasattr(record, "updated_at") and isinstance(record.updated_at, datetime):
+            if record.updated_at.tzinfo is None:
+                record.updated_at = record.updated_at.replace(tzinfo=timezone.utc)
+        record.updated_at = record.updated_at.astimezone(KST).strftime("%Y-%m-%d %H:%M:%S")
+
         return render_template(
-            'dailycare/healthcare_detail.html', record =record, medication = medication
+            'dailycare/healthcare_detail.html', record=record, medication=medication
         )
     else:
         return render_template('dailycare/healthcare_history.html', user=user_nickname)
