@@ -124,15 +124,15 @@ document.getElementById("next-month").onclick = async () => {
   await renderCalendar(current, pet_id);
 };
 
-// // 🔹 펫 변경 이벤트 반영 (단일 진입점)
-// window.addEventListener("petChanged", async () => {
-//   const pet_id = localStorage.getItem("currentPetId");
-//   if(!pet_id){
-//     await renderCalendar(current, null)
-//   }
-//   console.log("펫 변경됨 → 달력 갱신", pet_id);
-//   await renderCalendar(current, pet_id);
-// });
+// 🔹 펫 변경 이벤트 반영 (단일 진입점)
+window.addEventListener("petChanged", async () => {
+  const pet_id = localStorage.getItem("currentPetId");
+  if(!pet_id){
+    await renderCalendar(current, null)
+  }
+  console.log("펫 변경됨 → 달력 갱신", pet_id);
+  await renderCalendar(current, pet_id);
+});
 
 // ✅ 페이지 로드 시 바로 현재 달 렌더링 (pet_id가 없을 때 기준)
 window.addEventListener("DOMContentLoaded", async () => {
@@ -140,8 +140,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (!pet_id) {
     console.log("펫 없음 → 일반 달력 출력 (첫 로드)");
     await renderCalendar(current, null);  // 초기 로드시 달력 출력
-  } else {
-    console.log("펫 있음 → 헬스케어 달력 출력 (첫 로드)", pet_id);
-    await renderCalendar(current, pet_id);
   }
 });
+
+window.addEventListener('healthcareSaved', async (e) =>{
+  console.log('건강기록이 저장됐습니다 캘린더를 갱신하겠습니다')
+  await renderCalendar(current,e.detail.pet_id)
+})

@@ -257,6 +257,9 @@ async function saveHealthcare(pet_id) {
 
     console.log("기록저장완료:", result.data);
     alert("건강기록이 저장되었습니다.");
+    window.dispatchEvent(new CustomEvent('healthcareSaved',{
+      detail:{pet_id : pet_id}
+    }))
     resetHealthcareForm();
 
   } catch (error) {
