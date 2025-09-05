@@ -7,7 +7,6 @@ from flask import current_app as app
 
 load_dotenv()
 
-
 class CareChatbotService:
     # record_type 별 attribute 매핑
     ATTRIBUTE_MAP = {
@@ -16,19 +15,30 @@ class CareChatbotService:
             "food": ["음식", "사료", "밥"],
             "water": ["물", "음수", '수분'],
             "excrement_status": ["배변", "변", '똥'],
-            "walk_time": ["산책", "걷기", '산책시간'],
+            "walk_time_minutes": ["산책", "걷기", '산책시간'],
         },
         "allergy": {
             "allergen": ["알러지", "알레르기"],
-            "reaction": ["반응", "증상"],
+            "symptoms": ["반응", "증상"],
+            'severity' : ['심각도', '중증도'],
+            'allergy_type' : ['알러지 유형', '알러지원']
         },
         "disease": {
             "disease_name": ["질병", "병명"],
             "diagnosis_date": ["진단일", "발병일"],
+            'doctor_name' : ['의사', '수의사', '선생님'],
+            'hospital_name' : ['병원명', '병원', '진단병원'],
+            'medical_cost' : ['병원비' , '진료비'],
+            'symptoms' : ['증상'],
+            'treatment_details' : ['치료'], 
         },
         "medication": {
             "medication_name": ["약", "약품", "투약"],
             "dosage": ["용량", "복용량"],
+            'purpose' : ['목적', '이유'],
+            'side_effects_notes' : ['부작용'],
+            'hospital_name' : ['병원명'],
+            'frequency' : ['주기', '횟수' ]
         },
         "surgery": {
             "surgery_type": ["수술", "수술종류"],
@@ -42,6 +52,9 @@ class CareChatbotService:
             "vaccine_name": ["백신", "예방접종"],
             "vaccination_date": ["접종일", "맞은날"],
             "next_vaccination_date": ["다음 접종", "재접종"],
+            'side_effects' : ['부작용'],
+            'manufacturer' : ['제조회사', '제조사'],
+            'lot_number' : ['로트번호']
         },
     }
 

@@ -3,7 +3,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
-
+# 매번 인스턴스 생성하지 않게 하기!
 class OpenAIService:
     def __init__(self):
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
