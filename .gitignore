@@ -26,6 +26,7 @@ app.log
 .vscode
 
 # 개인 파일(태민)
+.claude
 mypage요구사항
 test_pet_models.py
 recreate_pets_table.py
