@@ -28,17 +28,13 @@ class BaseModel(db.Model):
         return self
 
     def to_dict(self):
-        result = {}
-        KST = timezone(timedelta(hours=9))
-        for c in self.__table__.columns:
-            value = getattr(self, c.name)
-            if isinstance(value, datetime):
-            # tz 없는 datetime일 경우 강제로 UTC로 가정
-                if value.tzinfo is None:
-                    value = value.replace(tzinfo=timezone.utc)
-                result[c.name] = value.astimezone(KST).strftime("%Y-%m-%d %H:%M:%S")
-            elif isinstance(value, date):
-                result[c.name] = value.isoformat()
-            else:
-                result[c.name] = value
-        return result
+            result = {}
+            for c in self.__table__.columns:
+                value = getattr(self, c.name)
+                if isinstance(value, datetime):
+                    result[c.name] = value.isoformat()
+                elif isinstance(value, date):
+                    result[c.name] = value.isoformat()
+                else:
+                    result[c.name] = value
+            return result

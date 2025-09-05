@@ -43,11 +43,9 @@ class HealthCareService:
          
 
         
-
         @staticmethod
-        def update_health_record(care_id: int, medication_ids=None, **kwargs):
-            """특정 care_id 기록 갱신 + 연관 약물 덮어쓰기"""
-            KST = timezone(timedelta(hours=9))
+        def update_health_record(care_id: int, **kwargs):
+            """특정 care_id 기록 갱신 + 연관 약물 처리"""
             record = HealthCare.query.get(care_id)
             if not record:
                 return None
@@ -59,24 +57,17 @@ class HealthCareService:
 
             # HealthCare 필드 업데이트
             for key, value in kwargs.items():
-                if hasattr(record, key) and key not in ['medication_id', 'medication_ids']:
+                if hasattr(record, key) and key != 'medication_id':
                     setattr(record, key, value)
 
-            # ✅ 기존 약물 연결 삭제
-            HealthCareMedication.query.filter_by(record_id=record.care_id).delete()
-
-            # ✅ 새 약물 연결 삽입
-            if medication_ids:
-                for mid in medication_ids:
-                    new_link = HealthCareMedication(
-                        record_id=record.care_id,
-                        medication_id=mid,
-                        updated_at=datetime.now(KST)   # ✅ 한국시간 적용
-                    )
-                    db.session.add(new_link)
-
-            # record 자체도 갱신된 시간 반영
-            record.updated_at = datetime.now(KST)
+            # Medication 업데이트
+            medication_id = kwargs.get('medication_id')
+            if medication_id:
+                med = HealthCareMedication.query.get(medication_id)
+                if med:
+                    med.record_id = record.care_id
+                    med.updated_at = datetime.now()
+                    db.session.add(med)
 
             db.session.commit()
             return record
