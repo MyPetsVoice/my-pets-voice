@@ -91,15 +91,19 @@ def save_healthcare(pet_id):
     )
     
     if not record:
-        return jsonify({"message": f"{pet_id}번 반려동물의 건강기록이 이미 존재합니다."}), 400
+        return jsonify({"success": False, "message": "기록이 이미 존재합니다."}), 200
 
-    
-     # 2. Medication 연결 (여러 개 가능)
+    # 2. Medication 연결 (여러 개 가능)
     medication_ids = data.get('medication_ids') or []
     if medication_ids:
         HealthCareService.link_medications(record.care_id, medication_ids)
-        
-    return jsonify(record.to_dict()), 201
+
+    # record 정보와 success 플래그를 함께 반환
+    return jsonify({
+        "success": True,
+        "data": record.to_dict()
+    }), 201
+
 
 # 수정
 @dailycare_api_bp.route('/update/healthcare/<care_id>', methods=['PUT'])

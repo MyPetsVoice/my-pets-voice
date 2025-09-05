@@ -247,20 +247,23 @@ async function saveHealthcare(pet_id) {
       body: JSON.stringify(send_data),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      alert(errorData.message || "기록저장이 실패되었습니다.");
-    } else {
-      console.log("기록저장완료");
-      alert("건강기록이 저장되었습니다.");
-      resetHealthcareForm();
+      // 항상 JSON 응답 받기
+    const result = await response.json();
+
+    if (!result.success) {
+      alert(result.message || "기록저장이 실패되었습니다.");
+      return;
     }
+
+    console.log("기록저장완료:", result.data);
+    alert("건강기록이 저장되었습니다.");
+    resetHealthcareForm();
+
   } catch (error) {
     console.error("저장 실패:", error);
     alert("저장 중 오류가 발생했습니다.");
-  }
 }
-
+}
 // 폼 리셋
 function resetHealthcareForm() {
   document.getElementById("food-input").value = "";

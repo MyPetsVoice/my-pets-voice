@@ -15,6 +15,7 @@ class HealthCareService:
             """HealthCare 기록 생성 (BaseModel.create 활용), 하루에 한 개만 저장"""
 
             today = date.today()
+            print(f'\n\n 오늘 시간은 ? : {today}')
             start_of_day = datetime.combine(today, datetime.min.time())
             end_of_day = datetime.combine(today, datetime.max.time())
 
