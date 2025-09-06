@@ -4,6 +4,7 @@
 metadata:
   title: "개 브루셀라병 예방수칙"
   source: "농림축산검역본부"
+  source_url: "https://www.qia.go.kr/animal/prevent/listJbbkWebAction.do?clear=1"
   document_type: "disease_prevention_guide"
   language: "korean"
   categories: ["개", "브루셀라병", "예방", "감염병", "인수공통감염병"]

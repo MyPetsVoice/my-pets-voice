@@ -3,7 +3,8 @@
 ---
 metadata:
   title: "반려동물 건강관리 가이드"
-  source: "순해보협협회"
+  source: "손해보협협회"
+  source_url: "https://www.knia.or.kr/consumer/pet/pet_healthcare01",
   document_type: "veterinary_guide"
   language: "korean"
   categories: ["반려동물", "건강관리", "예방접종", "질병예방", "품종별관리"]
