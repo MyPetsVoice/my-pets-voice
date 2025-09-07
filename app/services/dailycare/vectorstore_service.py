@@ -199,9 +199,10 @@ class VectorStoreService:
 
 
 
-if __name__ == '__main__':
-    service = VectorStoreService()
-    service.initialize_vector_db()
+# 테스트용 - Flask 앱에서는 create_app()에서 초기화됨
+# if __name__ == '__main__':
+#     service = VectorStoreService()
+#     service.initialize_vector_db()
 
 
 
