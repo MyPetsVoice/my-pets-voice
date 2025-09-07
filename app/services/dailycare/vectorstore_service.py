@@ -59,7 +59,6 @@ class VectorStoreService:
                     collection_name=self.collection_name,
                     embedding_function=self.embedding,
                     persist_directory=str(self.vector_db),
-                    collection_name = self.collection_name
                 )
                 # quick health check
                 try:
@@ -119,6 +118,8 @@ class VectorStoreService:
                         self.store.add_texts(
                             texts=batch_texts,
                             metadatas=batch_metadatas,
+                            collection_name=self.collection_name, 
+                            persist_directory=str(self.vector_db),
                         )
                     # 배치 초기화
                     batch_texts, batch_metadatas = [], []
@@ -143,12 +144,16 @@ class VectorStoreService:
                         embedding=self.embedding,
                         metadatas=batch_metadatas,
                         persist_directory=self.persist_directory,
+                        collection_name=self.collection_name, 
+                        #colloection_name,persi..설정해야 DB찾을 수 있음!
                     )
                 else:
                     logger.info(f"마지막 배치({len(all_documents)-len(batch_texts)}~{len(all_documents)}) 저장")
                     self.store.add_texts(
                         texts=batch_texts,
                         metadatas=batch_metadatas,
+                        persist_directory=str(self.vector_db),        # ✅ 수정
+                        collection_name=self.collection_name, 
                     )
             except Exception as e:
                 logger.error(f"마지막 배치 Embedding 실패: {e}")
