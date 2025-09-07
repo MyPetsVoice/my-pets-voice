@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, session
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from app.services.chat.chat_service import chat_service
+from app.services.chat.tts_service import tts_service
 from app.models import Pet, PetPersona
 from app.services import PetService
 import os
@@ -193,3 +194,110 @@ def get_chat_history(session_key):
     except Exception as e:
         logger.error(f'채팅 히스토리 조회 중 오류: {str(e)}')
         return jsonify({'success': False, 'error': '히스토리 조회 중 오류가 발생했습니다.'})
+
+
+# TTS 관련 API 엔드포인트들
+@chat_api_bp.route('/tts/voices')
+def get_tts_voices():
+    """사용 가능한 TTS 음성 목록 조회"""
+    try:
+        provider = request.args.get('provider')  # 특정 제공업체 필터링
+        result = tts_service.get_available_voices(provider)
+        return jsonify(result)
+    
+    except Exception as e:
+        logger.error(f'TTS 음성 목록 조회 중 오류: {str(e)}')
+        return jsonify({
+            'success': False,
+            'error': 'TTS 음성 목록을 불러올 수 없습니다.',
+            'voices': {}
+        })
+
+@chat_api_bp.route('/tts/pet-settings/<pet_id>', methods=['GET'])
+def get_pet_tts_settings(pet_id):
+    """반려동물의 TTS 설정 조회"""
+    try:
+        result = tts_service.get_pet_tts_settings(pet_id)
+        return jsonify(result)
+    
+    except Exception as e:
+        logger.error(f'TTS 설정 조회 중 오류 (pet_id: {pet_id}): {str(e)}')
+        return jsonify({
+            'success': False,
+            'error': 'TTS 설정을 불러올 수 없습니다.',
+            'settings': None
+        })
+
+@chat_api_bp.route('/tts/pet-settings/<pet_id>', methods=['PUT'])
+def update_pet_tts_settings(pet_id):
+    """반려동물의 TTS 설정 업데이트"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({
+                'success': False,
+                'error': '설정 데이터가 필요합니다.',
+                'settings': None
+            })
+        
+        # 허용되는 설정 필드만 추출
+        allowed_fields = [
+            'provider', 'is_enabled', 'voice_id', 'language_code',
+            'speed', 'pitch', 'volume', 'emotion'
+        ]
+        
+        update_data = {k: v for k, v in data.items() if k in allowed_fields}
+        
+        result = tts_service.update_pet_tts_settings(pet_id, **update_data)
+        return jsonify(result)
+    
+    except Exception as e:
+        logger.error(f'TTS 설정 업데이트 중 오류 (pet_id: {pet_id}): {str(e)}')
+        return jsonify({
+            'success': False,
+            'error': 'TTS 설정을 저장할 수 없습니다.',
+            'settings': None
+        })
+
+@chat_api_bp.route('/tts/generate-for-pet', methods=['POST'])
+def generate_tts_for_pet():
+    """반려동물용 TTS 음성 생성"""
+    try:
+        data = request.get_json()
+        if not data or 'text' not in data or 'pet_id' not in data:
+            return jsonify({
+                'success': False,
+                'error': '텍스트와 반려동물 ID가 필요합니다.',
+                'audio': None
+            })
+        
+        text = data['text'].strip()
+        pet_id = data['pet_id']
+        
+        if not text:
+            return jsonify({
+                'success': False,
+                'error': '텍스트가 비어있습니다.',
+                'audio': None
+            })
+        
+        if len(text) > 4000:
+            return jsonify({
+                'success': False,
+                'error': '텍스트가 너무 깁니다. (최대 4000자)',
+                'audio': None
+            })
+        
+        # TTS 생성
+        result = tts_service.generate_speech_for_pet(pet_id, text)
+        return jsonify(result)
+    
+    except Exception as e:
+        logger.error(f'TTS 생성 중 오류: {str(e)}')
+        return jsonify({
+            'success': False,
+            'error': 'TTS 음성을 생성할 수 없습니다.',
+            'audio': None
+        })
+
+

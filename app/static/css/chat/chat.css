@@ -562,3 +562,71 @@
 .pet-option:hover {
     background: linear-gradient(135deg, #f3f4f6 0%, #f9fafb 100%);
 }
+
+
+/* 반려동물별 TTS 관련 스타일 */
+.tts-play-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.group:hover .tts-play-btn {
+    opacity: 1;
+}
+
+/* TTS 모달의 음성 선택 스타일 */
+#voice-categories input[type="radio"] {
+    accent-color: #3b82f6;
+}
+
+#voice-categories label:hover {
+    background-color: #f8fafc;
+}
+
+/* 슬라이더 커스텀 스타일 */
+#pet-tts-modal input[type="range"] {
+    background: linear-gradient(to right, #3b82f6 0%, #3b82f6 50%, #e5e7eb 50%, #e5e7eb 100%);
+}
+
+#pet-tts-modal input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#pet-tts-modal input[type="range"]::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 토스트 애니메이션 */
+.toast-enter {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.toast-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.toast-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast-exit-active {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s, transform 0.3s;
+}

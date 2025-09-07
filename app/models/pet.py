@@ -35,6 +35,8 @@ class Pet(BaseModel):
     persona = db.relationship('PetPersona', backref='pet', cascade='all, delete-orphan', uselist=False)
     # ChatHistory와의 관계 - Pet 삭제시 채팅 기록도 함께 삭제
     chat_histories = db.relationship('ChatHistory', backref='pet', cascade='all, delete-orphan')
+    # TTSSettings와의 관계 - Pet 삭제시 TTS 설정도 함께 삭제
+    tts_settings = db.relationship('TTSSettings', back_populates='pet', cascade='all, delete-orphan', uselist=False)
     
     def __repr__(self):
         return f'<Pet {self.pet_name}>'

@@ -104,6 +104,13 @@ function setupEventHandlers() {
         console.log('펫의 응답 : ', data.message)
         hideTypingIndicator()
         addMessage('bot', data.message, data.pet_name)
+        
+        // TTS 재생 (비동기로 처리하여 UI 블로킹 방지)
+        if (window.petTTSManager) {
+            setTimeout(() => {
+                window.petTTSManager.playPetTTS(data.message);
+            }, 100); // 메시지 표시 후 약간의 딜레이
+        }
     })
     
     // reset chat
@@ -178,6 +185,12 @@ async function selectPet(petData) {
     const personaInfo = data.persona_info
     
     console.log('selectPet에서 입력된 petData', petData)
+
+    // TTS 매니저에 현재 펫 설정
+    if (window.petTTSManager) {
+        window.petTTSManager.setCurrentPet(petData.pet_id);
+        enableTTSButton();
+    }
     
     // UI 업데이트
     updatePetInfoSection(petData, personaInfo);
@@ -436,4 +449,12 @@ function deleteWelcomeMessage() {
     }
 }
 
-    
+// TTS 버튼 활성화 함수
+function enableTTSButton() {
+    const ttsButton = document.getElementById('tts-settings-btn');
+    if (ttsButton) {
+        ttsButton.disabled = false;
+        ttsButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        ttsButton.title = '펫 TTS 설정';
+    }
+}

@@ -22,6 +22,7 @@ def init_db(app):
     from app.models.dailycare.medicalCare.vaccination import Vaccination
     from app.models.pet import Pet, PetSpecies, PetBreed
     from app.models.pet_persona import PetPersona, PersonaTrait, PersonalityTrait, SpeechStyle
+    from app.models.tts import TTSSettings, TTSVoice
 
     with app.app_context():
         db.create_all()
@@ -53,9 +54,10 @@ from app.models.dailycare.healthCare.todo import TodoList
 from app.models.pet import Pet, PetSpecies, PetBreed
 from app.models.pet_persona import PetPersona, PersonaTrait, PersonalityTrait, SpeechStyle
 from app.models.chat_history import ChatHistory
+from app.models.tts import TTSSettings, TTSVoice
     
     
 
 
-__all__ = ['db', 'init_db', 'BaseModel', 'User', 'Pet', 'PetPersona', 'PersonaTrait', 'PetSpecies', 'PetBreed', 'PersonalityTrait', 'SpeechStyle', 'ChatHistory','HealthCare', 'HealthCareMedication','Allergy','Disease','Medication','Surgery','Vaccination','TodoList', 'Diary', 'DiaryPhoto']
+__all__ = ['db', 'init_db', 'BaseModel', 'User', 'Pet', 'PetPersona', 'PersonaTrait', 'PetSpecies', 'PetBreed', 'PersonalityTrait', 'SpeechStyle', 'ChatHistory','HealthCare', 'HealthCareMedication','Allergy','Disease','Medication','Surgery','Vaccination','TodoList', 'Diary', 'DiaryPhoto', 'TTSSettings', 'TTSVoice']
 
