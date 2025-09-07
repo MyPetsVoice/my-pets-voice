@@ -499,17 +499,19 @@ def deleteTodo(todo_id):
 
 @dailycare_api_bp.route('/care-chatbot' , methods = ['POST'])
 def ask_chatbot():
-    current_user = 1
     """careChatbot Service"""
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Authentication required'}), 401
+    
     data = request.get_json()
     user_input = data.get('message')
     pet_id = data.get('pet_id')
-    user_id = data.get(current_user)
     
     if not user_input:
         return jsonify({'error' : 'message is required'}) , 400
     
-    answer = CareChatbotService.chatbot_with_records(user_input, pet_id, user_id)
+    answer = CareChatbotService.chatbot_with_records(user_input, pet_id, user_id) # user_id는 왜 들어감..?
     result = CareChatbotService.pretty_format(answer)
     return jsonify({
         'user_input' : user_input,

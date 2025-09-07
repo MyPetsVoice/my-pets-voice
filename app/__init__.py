@@ -53,6 +53,17 @@ def create_app(config_name=None):
     from app.routes.chat.chat_api import init_socketio
     init_socketio(socketio, app)
     app.logger.info('채팅 API SocketIO가 초기화되었습니다.')
+    
+    # 벡터 DB 초기화
+    app.logger.info('벡터 DB를 초기화합니다.')
+    try:
+        from app.services.dailycare.vectorstore_service import VectorStoreService
+        vector_service = VectorStoreService()
+        vector_service.initialize_vector_db()
+        app.logger.info('벡터 DB 초기화가 완료되었습니다.')
+    except Exception as e:
+        app.logger.error(f'벡터 DB 초기화 중 오류 발생: {e}')
+        app.logger.warning('벡터 DB 없이 애플리케이션을 계속 실행합니다.')
 
     @app.route('/')
     def index():

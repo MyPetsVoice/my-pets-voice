@@ -104,7 +104,7 @@ def logout():
     """로그아웃 처리"""
     try:
         client_id = current_app.config['KAKAO_REST_API_KEY']
-        logout_redirect_uri = 'http://127.0.0.1:5000'
+        logout_redirect_uri = current_app.config.get('KAKAO_LOGOUT_REDIRECT_URI') or 'http://3.34.185.194'
 
         # 세션 정보 삭제
         user_id = session.get('user_id')

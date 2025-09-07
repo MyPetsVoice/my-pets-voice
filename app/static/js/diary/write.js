@@ -215,8 +215,8 @@ function applyAIContent() {
     const originalContent = document.getElementById("content");
     originalContent.style.backgroundColor = "#f9fafb";
     originalContent.readOnly = true;
-
-    alert("반려동물 관점의 일기가 적용되었습니다!");
+  } else {
+    alert(`AI 변환 실패: ${data.message}`);
   }
 }
 
@@ -226,6 +226,19 @@ async function submitDiary(event) {
 
   if (!selectedPetPersonaId) {
     alert("반려동물을 선택해주세요.");
+    return;
+  }
+
+  // AI 변환이 완료되었는지 확인
+  if (!currentAIContent) {
+    alert("AI 변환을 먼저 진행해주세요. '너의 목소리로' 버튼을 눌러주세요.");
+    return;
+  }
+
+  // content_ai가 있는지 확인
+  const contentAi = document.getElementById("finalContentInput").value;
+  if (!contentAi || contentAi.trim() === "") {
+    alert("AI 변환된 일기 내용이 없습니다. '너의 목소리로' 버튼을 눌러주세요.");
     return;
   }
 
