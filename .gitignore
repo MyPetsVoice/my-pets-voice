@@ -13,10 +13,14 @@ __pycache__/
 *.pyc
 
 # 데이터베이스
+**/chroma_db/
 .db
 instance/
 db생성요청사항.txt
 insert_data.py
+
+# Storage 디렉토리 (벡터DB, 문서, 캐시 등)
+storage/
 
 # 로그파일
 logs/
