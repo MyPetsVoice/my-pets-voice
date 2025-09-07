@@ -131,3 +131,14 @@ class HealthCareService:
             if not record:
                 return None
             return record.delete()
+        
+        # 날짜로 건강기록 조회
+        @staticmethod
+        def get_health_records(pet_id, start_date, end_date):
+            records = HealthCare.query.filter(
+                HealthCare.pet_id == pet_id,
+                HealthCare.created_at >= start_date,
+                HealthCare.created_at <= end_date
+            ).order_by(HealthCare.created_at.asc()).all()
+            
+            return records
