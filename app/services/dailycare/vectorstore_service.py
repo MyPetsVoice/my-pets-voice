@@ -9,6 +9,9 @@ from pathlib import Path
 import os
 import re
 import logging
+import hashlib
+import pickle
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +22,8 @@ class VectorStoreService:
         self.collection_name = Config.COLLECTION_NAME
         self.store = None
         self.embedding = OpenAIEmbeddings(api_key=Config.OPENAI_API_KEY)
+        self.cache_dir = os.path.join(os.path.dirname(self.vector_db), 'embedding_cache')
+        os.makedirs(self.cache_dir, exist_ok=True)
 
 
     def initialize_vector_db(self):
@@ -55,12 +60,24 @@ class VectorStoreService:
         all_documents = self.load_documents()
         logger.info(f"총 {len(all_documents)}개의 문서 청크를 로딩했습니다.")
 
-        # 임베딩 및 벡터 DB 생성
-        logger.info("임베딩을 생성하고 벡터 DB에 저장합니다.")
-        self.store = Chroma.from_documents(all_documents, 
+        # 배치 처리로 임베딩 및 벡터 DB 생성
+        logger.info("배치 처리로 임베딩을 생성하고 벡터 DB에 저장합니다.")
+        batch_size = 2000
+        
+        # 첫 번째 배치로 벡터 DB 초기화
+        first_batch = all_documents[:batch_size]
+        self.store = Chroma.from_documents(first_batch, 
                                            embedding_function=self.embedding, 
                                            collection_name=self.collection_name, 
                                            persist_directory=self.vector_db)
+        logger.info(f"첫 번째 배치 {len(first_batch)}개 문서 처리 완료")
+        
+        # 나머지 배치들 추가
+        for i in range(batch_size, len(all_documents), batch_size):
+            batch = all_documents[i:i + batch_size]
+            self.store.add_documents(batch)
+            logger.info(f"배치 {i//batch_size + 1} 처리 완료: {len(batch)}개 문서")
+            time.sleep(1)  # API 제한 방지
         
         logger.info("벡터 DB 생성이 완료되었습니다.")
         return self.store
@@ -212,3 +229,31 @@ class VectorStoreService:
 
 
   
+    def get_cache_key(self, text: str) -> str:
+        """텍스트에 대한 캐시 키 생성"""
+        return hashlib.md5(text.encode('utf-8')).hexdigest()
+    
+    def save_embedding_cache(self, text: str, embedding: List[float]):
+        """임베딩 결과를 캐시에 저장"""
+        cache_key = self.get_cache_key(text)
+        cache_file = os.path.join(self.cache_dir, f"{cache_key}.pkl")
+        
+        try:
+            with open(cache_file, 'wb') as f:
+                pickle.dump(embedding, f)
+        except Exception as e:
+            logger.warning(f"임베딩 캐시 저장 실패: {e}")
+    
+    def load_embedding_cache(self, text: str) -> List[float]:
+        """캐시에서 임베딩 결과 로드"""
+        cache_key = self.get_cache_key(text)
+        cache_file = os.path.join(self.cache_dir, f"{cache_key}.pkl")
+        
+        if os.path.exists(cache_file):
+            try:
+                with open(cache_file, 'rb') as f:
+                    return pickle.load(f)
+            except Exception as e:
+                logger.warning(f"임베딩 캐시 로드 실패: {e}")
+        
+        return None
