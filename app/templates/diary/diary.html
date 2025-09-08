@@ -7,20 +7,12 @@ content %}
   href="{{ url_for('static', filename='css/diary/index.css') }}"
 />
 
-<div class="min-h-screen bg-gray-50">
-  <div class="container mx-auto px-4 py-8">
-    <!-- 페이지 헤더 -->
-    <div class="mb-8 text-center">
-      <h1 class="text-4xl font-bold text-gray-800 mb-2">
-        <i class="fas fa-book-open text-orange-400 mr-3"></i>
-        나의 일기장
-      </h1>
-      <p class="text-gray-600">반려동물과 함께한 소중한 순간들을 기록해요</p>
-    </div>
+<div class="bg-gray-50 pb-20">
+  <div class="max-w-7xl mx-auto px-4 py-4">
     <div class="flex flex-col lg:flex-row gap-6">
       <!-- 왼쪽: 펫 선택 사이드바 -->
       <div class="lg:w-1/4">
-        <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-24">
+        <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
           <h2 class="text-xl font-bold mb-4 text-gray-800">
             <i class="fas fa-paw text-orange-400 mr-2"></i>
             내 반려동물
@@ -38,7 +30,7 @@ content %}
 
       <!-- 오른쪽: 일기 목록 -->
       <div class="lg:w-3/4">
-        <div class="bg-white rounded-2xl shadow-xl p-6">
+        <div class="bg-white rounded-xl shadow-lg p-6">
           <!-- 검색 및 추가 버튼 영역 -->
           <div
             class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4"
