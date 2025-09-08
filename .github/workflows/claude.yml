@@ -14,18 +14,19 @@ on:
 
 jobs:
   claude-pr-comment:
-    # PR 댓글이고 @claude 멘션이 있을 때만 실행
-    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '@claude') }}
+    # PR 댓글이거나 이슈에서 @claude 멘션이 있을 때 실행
+    if: ${{ contains(github.event.comment.body, '@claude') }}
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ap-northeast-2
 
     steps:
-      # 1️⃣ PR 브랜치 체크아웃
-      - name: Checkout PR branch
+      # 1️⃣ 코드 체크아웃 (PR인 경우 PR 브랜치, 이슈인 경우 기본 브랜치)
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.issue.pull_request.head.ref }}
+          ref: ${{ github.event.issue.pull_request.head.ref || 'main' }}
+          fetch-depth: 0
 
       # 2️⃣ GitHub App token 생성
       - name: Generate GitHub App token
@@ -42,7 +43,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 4️⃣ Claude 코드 수정 액션 실행
+      # 4️⃣ Claude 코드 액션 실행
       - name: Run Claude Code Action
         uses: anthropics/claude-code-action@v1
         env:
@@ -52,5 +53,8 @@ jobs:
           use_bedrock: "true"
           # 올바른 Bedrock Claude 모델 ID 지정
           bedrock_model_id: "anthropic.claude-3-5-sonnet-20241022-v2:0"
-          # PR 댓글 내용 그대로 Claude 프롬프트로 전달
+          # 댓글 내용에서 @claude 부분 제거 후 전달
           claude_args: ${{ github.event.comment.body }}
+          # 컨텍스트 정보 추가
+          issue_number: ${{ github.event.issue.number }}
+          comment_url: ${{ github.event.comment.html_url }}
