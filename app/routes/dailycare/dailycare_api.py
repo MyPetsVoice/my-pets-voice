@@ -11,7 +11,8 @@ from app.models import db
 from app.services.dailycare.care_chatbot_service import CareChatbotService
 
 import logging
-from datetime import datetime
+from datetime import datetime,timedelta
+from sqlalchemy import func
 
 dailycare_api_bp = Blueprint('dailycare_api_bp', __name__)
 
@@ -517,6 +518,76 @@ def ask_chatbot():
         'user_input' : user_input,
         'response' : result
     })
+    
+@dailycare_api_bp.route('/health-chart/<int:pet_id>')
+def get_health_chart_data(pet_id):
+    days = request.args.get('days', 7, type=int)  # 기본 7일
+    
+    # 날짜 계산
+    start_date = datetime.now() - timedelta(days=days)
+    
+    # 건강 기록 조회
+    records = HealthCareService.get_health_records(
+        pet_id, start_date, datetime.now()
+    )
+    
+    # 차트용 데이터 형식으로 변환
+    chart_data = {
+        'dates': [],
+        'weight': [],
+        'food': [],
+        'water': [],
+        'exercise': []
+    }
+    
+    for record in records:
+        date_str = record.created_at.strftime('%Y-%m-%d')
+        chart_data['dates'].append(date_str)
+        
+        # 데이터 추가
+        chart_data['weight'].append(float(record.weight_kg) if record.weight_kg else 0)
+        chart_data['food'].append(record.food if record.food else 0)
+        chart_data['water'].append(float(record.water) if record.water else 0)
+        chart_data['exercise'].append(record.walk_time_minutes if record.walk_time_minutes else 0)
+    
+    return jsonify(chart_data), 200
+
+# 건강 데이터 요약 통계 
+@dailycare_api_bp.route('/health-summary/<int:pet_id>')
+def get_health_summary(pet_id):
+    days = request.args.get('days', 7, type=int)
+    start_date = datetime.now() - timedelta(days=days)
+    
+    records = HealthCareService.get_health_records(
+        pet_id, start_date, datetime.now()
+    )
+    
+    if not records:
+        return jsonify({
+            'total_records': 0,
+            'avg_weight': 0,
+            'avg_food': 0,
+            'avg_water': 0,
+            'avg_exercise': 0
+        }), 200
+    
+    # 평균 계산
+    total_records = len(records)
+    weights = [r.weight_kg for r in records if r.weight_kg]
+    foods = [r.food for r in records if r.food]
+    waters = [r.water for r in records if r.water]
+    exercises = [r.walk_time_minutes for r in records if r.walk_time_minutes]
+    
+    summary = {
+        'total_records': total_records,
+        'avg_weight': round(sum(weights) / len(weights), 2) if weights else 0,
+        'avg_food': round(sum(foods) / len(foods), 1) if foods else 0,
+        'avg_water': round(sum(waters) / len(waters), 1) if waters else 0,
+        'avg_exercise': round(sum(exercises) / len(exercises), 1) if exercises else 0,
+        'period_days': days
+    }
+    
+    return jsonify(summary), 200
 
     
 

@@ -104,3 +104,13 @@ def editTodo():
     todo_id = request.args.get('todo_id')
     record = HealthCareService.get_todo_record_by_id(todo_id)
     return render_template('dailycare/todo_edit.html', todo_id = todo_id, todo = record, user=user_nickname)
+
+# 건강상태 리포트
+@dailycare_views_bp.route('/health-chart')
+def get_health_chart():
+    user = session.get('user')
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+
+    user_nickname = user['kakao_account']['profile']['nickname']
+    return render_template('dailycare/health_chart.html', user=user_nickname)
