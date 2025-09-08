@@ -36,13 +36,15 @@ jobs:
     
     steps:
     - name: Deploy to EC2
-      uses: appleboy/ssh-action@v1.0.0
+      uses: appleboy/ssh-action@v1.1.0
+      continue-on-error: true
+      id: primary-deploy
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        timeout: 120s
-        command_timeout: 15m
+        timeout: 300s
+        command_timeout: 20m
         script: |
           cd ~/my-pets-voice
           echo "📥 Fetching latest code..."
@@ -95,3 +97,37 @@ jobs:
           grep -n "🆕" app/templates/dailycare/dailycare.html || echo "❌ Test marker not found!"
           echo "✅ Deployment completed successfully!"
           echo "🌐 URL: http://$(curl -s http://checkip.amazonaws.com/)"
+
+    # 백업 배포 방법 (primary가 실패할 경우)
+    - name: Fallback Deploy to EC2
+      if: steps.primary-deploy.outcome == 'failure'
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.EC2_SSH_KEY }}
+        name: id_rsa
+        known_hosts: ${{ secrets.EC2_HOST }}
+        
+    - name: Execute deployment commands via fallback
+      if: steps.primary-deploy.outcome == 'failure'
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          cd ~/my-pets-voice
+          echo "📥 Fetching latest code..."
+          git fetch origin
+          echo "🔄 Resetting to latest main branch..."
+          git reset --hard origin/main
+          echo "🧹 Cleaning any untracked files..."
+          git clean -fd
+          echo "🔄 Updating IP configuration..."
+          chmod +x ./update-ip.sh
+          ./update-ip.sh
+          echo "🐳 Rebuilding and restarting Docker containers..."
+          sudo docker compose -f docker-compose.aws.yml down
+          sudo docker compose -f docker-compose.aws.yml build --no-cache
+          echo "🗄️ Running database migrations..."
+          sudo docker compose -f docker-compose.aws.yml run --rm web python app/models/init_db_with_check.py || echo "Database already initialized"
+          sudo docker compose -f docker-compose.aws.yml up -d
+          echo "⏳ Waiting for application to start..."
+          sleep 30
+          echo "✅ Fallback deployment completed!"
+        EOF
