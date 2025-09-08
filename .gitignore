@@ -46,3 +46,5 @@ add_other_breeds.py
 .DS_Store
 .AppleDouble
 .LSOverride
+
+/vector_db/
