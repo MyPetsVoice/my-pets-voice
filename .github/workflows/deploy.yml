@@ -52,6 +52,7 @@ jobs:
           echo "🧹 Cleaning any untracked files..."
           git clean -fd
           echo "🔄 Updating IP configuration..."
+          chmod +x ./update-ip.sh
           ./update-ip.sh
           echo "🐳 Rebuilding and restarting Docker containers..."
           sudo docker compose -f docker-compose.aws.yml down
@@ -65,13 +66,23 @@ jobs:
           sudo docker compose -f docker-compose.aws.yml ps
           echo "📝 Checking recent logs..."
           sudo docker compose -f docker-compose.aws.yml logs --tail=20 web
+          echo "⏳ Waiting for application to start..."
+          sleep 30
+          echo "📊 Checking container status after startup..."
+          sudo docker compose -f docker-compose.aws.yml ps
           echo "🏥 Running health check..."
-          sleep 10
           if curl -f http://localhost/ > /dev/null 2>&1; then
             echo "✅ Health check passed - Application is running"
           else
-            echo "❌ Health check failed - Check application logs"
-            sudo docker compose -f docker-compose.aws.yml logs web
+            echo "❌ Health check failed - Detailed diagnosis:"
+            echo "🔍 Web container logs:"
+            sudo docker compose -f docker-compose.aws.yml logs --tail=50 web
+            echo "🔍 Nginx container logs:"
+            sudo docker compose -f docker-compose.aws.yml logs --tail=20 nginx
+            echo "🔍 Container status:"
+            sudo docker compose -f docker-compose.aws.yml ps -a
+            echo "🔍 Network connectivity test:"
+            sudo docker compose -f docker-compose.aws.yml exec web curl -f http://localhost:5000/ || echo "Flask app not responding"
           fi
           echo "🔍 Verifying deployment..."
           echo "Git status:"

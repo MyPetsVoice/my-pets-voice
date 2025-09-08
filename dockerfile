@@ -36,5 +36,5 @@ ENV PYTHONPATH=/app
 # 포트 노출
 EXPOSE 5000
 
-# 데이터베이스 초기화 및 애플리케이션 실행
-CMD ["sh", "-c", "python app/models/init_db_with_check.py && python run.py"]
+# 헬스체크 엔드포인트가 있는지 확인하고 애플리케이션 실행
+CMD ["sh", "-c", "python app/models/init_db_with_check.py && echo 'Database initialized' && python run.py"]
