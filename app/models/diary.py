@@ -20,7 +20,7 @@ class Diary(BaseModel):
 
     # 관계 설정
     user = db.relationship('User', backref=db.backref('diaries', lazy=True))
-    pet_persona = db.relationship('PetPersona', backref=db.backref('diaries', lazy=True))
+    # pet_persona 관계는 PetPersona 모델에서 정의됨 (cascade 적용)
     photos = db.relationship('DiaryPhoto', backref='diary', lazy=True, cascade='all, delete-orphan')
 
     def to_dict(self):

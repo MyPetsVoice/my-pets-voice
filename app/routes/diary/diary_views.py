@@ -28,4 +28,3 @@ def detail(diary_id):
         return render_template("diary/detail.html", diary_id=diary_id, user=user_nickname)
     
     return redirect(url_for('index'))
-
