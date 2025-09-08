@@ -41,12 +41,19 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        timeout: 60s
-        command_timeout: 10m
+        timeout: 120s
+        command_timeout: 15m
         script: |
           cd ~/my-pets-voice
+          echo "📥 Pulling latest code..."
           git pull origin main
+          echo "🔄 Updating IP configuration..."
           ./update-ip.sh
-          sudo docker compose -f docker-compose.aws.yml restart web
+          echo "🐳 Rebuilding and restarting Docker containers..."
+          sudo docker compose -f docker-compose.aws.yml down
+          sudo docker compose -f docker-compose.aws.yml build --no-cache
+          sudo docker compose -f docker-compose.aws.yml up -d
+          echo "🧹 Cleaning up unused Docker resources..."
+          sudo docker system prune -f
           echo "✅ Deployment completed successfully!"
           echo "🌐 URL: http://$(curl -s http://checkip.amazonaws.com/)"
