@@ -74,15 +74,17 @@ const medicalConfigs = {
 };
 
 // 공용 모달 열기: 각 health-item 클릭 시 모달 열기
-document.querySelectorAll(".health-item.mdc").forEach((item) => {
-  item.addEventListener("click", () => {
-    const current_pet_id = localStorage.getItem('currentPetId')
-    const name = item.dataset.modal; // 모달 종류
-    if (!current_pet_id) {
-      alert("펫을 먼저 선택해주세요.");
-      return;
-    }
-    openModal(name, current_pet_id); // 모달 열기
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll(".health-item-compact.mdc").forEach((item) => {
+    item.addEventListener("click", () => {
+      const current_pet_id = localStorage.getItem('currentPetId')
+      const name = item.dataset.modal; // 모달 종류
+      if (!current_pet_id) {
+        alert("펫을 먼저 선택해주세요.");
+        return;
+      }
+      openModal(name, current_pet_id); // 모달 열기
+    });
   });
 });
 

@@ -1,0 +1,50 @@
+                    <!-- 컴팩트한 의료기록 관리 섹션 -->
+                    <div class="medical-record-section">
+                        <div class="section-card">
+                            <h2 class="section-title">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                의료기록 관리
+                            </h2>
+                            
+                            <div class="compact-health-grid">
+                                <div class="health-item-compact mdc" data-modal="allergy">
+                                    <h4>🤧 알러지 정보 <span>음식, 환경 알러지 등록</span></h4>
+                                </div>
+                                <div class="health-item-compact mdc" data-modal="disease">
+                                    <h4>🏥 질병 이력 <span>과거 질병 및 치료 기록</span></h4>
+                                </div>
+                                <div class="health-item-compact mdc" data-modal="surgery">
+                                    <h4>⚕️ 수술 이력 <span>수술 날짜 및 내용 기록</span></h4>
+                                </div>
+                                <div class="health-item-compact mdc" data-modal="vaccination">
+                                    <h4>💉 예방접종 <span>접종 기록 및 일정 관리</span></h4>
+                                </div>
+                                <div class="health-item-compact mdc" data-modal="medication">
+                                    <h4>💊 복용약물 <span>현재 복용 중인 약물 정보</span></h4>
+                                </div>
+                                <a href="#" onclick="goToMedicalHistory()" class="health-item-compact">
+                                    <h4>🔍 전체 기록 <span>의료기록을 모아 볼 수 있습니다</span></h4>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-6">
+                        <!-- 캘린더 위젯만 남김 -->
+                        <div class="right-panel">
+                            <div class="bg-white rounded-xl shadow-lg p-6">
+                                <div class="calendar-widget">
+                                    <div class="calendar-header">
+                                        <button id="prev-month" class="btn btn-secondary">◀</button>
+                                        <strong id="current-month"></strong>
+                                        <button id="next-month" class="btn btn-secondary">▶</button>
+                                    </div>
+                                    <div class="calendar-grid" id="calendar-grid">
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
