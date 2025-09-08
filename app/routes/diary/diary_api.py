@@ -18,20 +18,63 @@ def allowed_file(filename):
 # 전체 일기 목록 조회 
 @diary_api_bp.route("/list")
 def list_diaries():
-    diaries = DiaryService.get_all_diaries()
+    page = request.args.get('page', 1, type=int)  # 페이지 번호
+    per_page = 5 
+    user_id = session.get('user_id')
+    
+    # 전체 일기 수 조회
+    total_diaries = Diary.query.filter_by(user_id=user_id).count()
+    
+    # 페이징 처리하여 일기 조회
+    diaries = Diary.query.filter_by(user_id=user_id).order_by(Diary.diary_date.desc()).paginate(
+        page=page, 
+        per_page=per_page, 
+        error_out=False
+    )
+    
     return jsonify({
         "success": True,
-        "diaries": [diary.to_dict() for diary in diaries]
+        "diaries": [diary.to_dict() for diary in diaries.items],
+        "pagination": {
+            "current_page": page,
+            "total_pages": diaries.pages,
+            "total_items": total_diaries,
+            "per_page": per_page,
+            "has_prev": diaries.has_prev,
+            "has_next": diaries.has_next
+        }
     })
+
 
 # 펫 페르소나의 일기 목록 조회 
 @diary_api_bp.route("/list/<int:pet_persona_id>")
 def list_pet_diaries(pet_persona_id):
-    diaries = DiaryService.get_by_pet_persona(pet_persona_id)
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+    
+    # 특정 펫의 전체 일기 수 조회
+    total_diaries = Diary.query.filter_by(pet_persona_id=pet_persona_id).count()
+    
+    diaries = Diary.query.filter_by(pet_persona_id=pet_persona_id).order_by(
+        Diary.diary_date.desc()
+    ).paginate(
+        page=page, 
+        per_page=per_page, 
+        error_out=False
+    )
+    
     return jsonify({
         "success": True,
         "pet_persona_id": pet_persona_id,
-        "diaries": [diary.to_dict() for diary in diaries]
+        "diaries": [diary.to_dict() for diary in diaries.items],
+        "pagination": {
+            "current_page": page,
+            "total_pages": diaries.pages,
+            "total_items": total_diaries,
+            "per_page": per_page,
+            "has_prev": diaries.has_prev,
+            "has_next": diaries.has_next
+        }
     })
 
 # 사용자 일기를 AI로 반려동물 관점으로 변환
@@ -85,6 +128,13 @@ def create_diary():
         return jsonify({
             "success": False, 
             "message": "필수 정보를 입력해주세요."
+        })
+    
+    # AI 변환 필수
+    if not content_ai or content_ai.strip() == "":
+        return jsonify({
+            "success": False, 
+            "message": "AI 변환을 먼저 진행해주세요. '너의 목소리로' 버튼을 눌러주세요."
         })
     
     # 날짜 형식 변환
