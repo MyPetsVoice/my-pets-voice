@@ -1,29 +1,33 @@
-name: Claude PR Action
+name: Claude PR Comment Auto Code
 
 permissions:
-  contents: write
-  pull-requests: write
-  issues: write
-  id-token: write
+  contents: write       # 코드 커밋 가능
+  pull-requests: write  # PR 수정 가능
+  issues: write         # 코멘트 업데이트 가능
+  id-token: write       # AWS OIDC 인증
 
 on:
   issue_comment:
     types: [created]
   pull_request_review_comment:
     types: [created]
-  issues:
-    types: [opened, assigned]
 
 jobs:
-  claude-pr:
-    if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'issues' && contains(github.event.issue.body, '@claude'))
+  claude-pr-comment:
+    # PR 댓글이고 @claude 멘션이 있을 때만 실행
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '@claude') }}
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ap-northeast-2
+
     steps:
+      # 1️⃣ PR 브랜치 체크아웃
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.issue.pull_request.head.ref }}
+
+      # 2️⃣ GitHub App token 생성
       - name: Generate GitHub App token
         id: app-token
         uses: actions/create-github-app-token@v2
@@ -31,28 +35,22 @@ jobs:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ steps.app-token.outputs.token }}
-          fetch-depth: 0
-
+      # 3️⃣ AWS Bedrock 인증
       - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ap-northeast-2
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: List available models
-        run: |
-          echo "Checking available models in ap-northeast-2..."
-          aws bedrock list-foundation-models --region ap-northeast-2 --query 'modelSummaries[?contains(modelId, `claude`)].modelId' --output table
-
+      # 4️⃣ Claude 코드 수정 액션 실행
       - name: Run Claude Code Action
         uses: anthropics/claude-code-action@v1
-        with:
-          github_token: ${{ steps.app-token.outputs.token }}
-          use_bedrock: "true"
-          claude_args: '--model arn:aws:bedrock:ap-northeast-2:533267186857:inference-profile/apac.anthropic.claude-3-5-sonnet-20240620-v1:0'
         env:
-          AWS_REGION: ap-northeast-2
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        with:
+          base_branch: main
+          use_bedrock: "true"
+          # 올바른 Bedrock Claude 모델 ID 지정
+          bedrock_model_id: "anthropic.claude-3-5-sonnet-20241022-v2:0"
+          # PR 댓글 내용 그대로 Claude 프롬프트로 전달
+          claude_args: ${{ github.event.comment.body }}

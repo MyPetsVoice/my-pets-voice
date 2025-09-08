@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, date
+from datetime import datetime, timezone, date, timedelta
 from app.models import db
 
 def get_utc_now():
@@ -28,13 +28,13 @@ class BaseModel(db.Model):
         return self
 
     def to_dict(self):
-        result = {}
-        for c in self.__table__.columns:
-            value = getattr(self, c.name)
-            if isinstance(value, datetime):
-                result[c.name] = value.isoformat()
-            elif isinstance(value, date):
-                result[c.name] = value.isoformat()
-            else:
-                result[c.name] = value
-        return result
+            result = {}
+            for c in self.__table__.columns:
+                value = getattr(self, c.name)
+                if isinstance(value, datetime):
+                    result[c.name] = value.isoformat()
+                elif isinstance(value, date):
+                    result[c.name] = value.isoformat()
+                else:
+                    result[c.name] = value
+            return result

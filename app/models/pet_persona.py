@@ -12,8 +12,8 @@ class PetPersona(BaseModel):
     pet_id = db.Column(db.Integer, db.ForeignKey('pets.pet_id'), nullable=False)
 
     user_call = db.Column(db.String(50), nullable=False)
-    style_id = db.Column(db.Integer, db.ForeignKey('speech_styles.style_id'), nullable=False)
-    politeness = db.Column(db.String(50), nullable=False)
+    style_id = db.Column(db.String, db.ForeignKey('speech_styles.style_id'), nullable=False)
+    politeness = db.Column(db.String, nullable=False)
     speech_habit = db.Column(db.Text)
     likes = db.Column(db.Text)
     dislikes = db.Column(db.Text)
@@ -25,8 +25,6 @@ class PetPersona(BaseModel):
     user = db.relationship('User', backref='pet_personas')
     # pet 관계는 Pet 모델에서 정의됨 (cascade 적용)
     speech_style = db.relationship('SpeechStyle', backref=db.backref('persona', uselist=False))
-    # diaries 관계 - PetPersona 삭제시 Diary도 함께 삭제
-    diaries = db.relationship('Diary', backref='pet_persona', cascade='all, delete-orphan')
 
 
     def __repr__(self):

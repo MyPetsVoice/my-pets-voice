@@ -2,10 +2,11 @@
 {% block title %}반려동물의 목소리가 들려 -데일리케어{% endblock %}
 {% block content %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/dailycare/dailcare.css', v=static_version) }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/dailycare/todo.css', v=static_version) }}">
+<link rel="stylesheet" href=".././../static/css/dailycare/dailcare.css">
+<link rel="stylesheet" href="../../static/css/dailycare/todo.css">
 </head>
 <body style=" padding: 0;">
+    <input type="hidden" id="user-id" value="{{ user_id }}">
     <div class="container" style="padding: 30px;">
         <!-- 반려동물 선택 창 (header) -->
         <header class="header">
@@ -107,13 +108,21 @@
                                 <label>🚶 산책 시간</label>
                                 <input type="number" id="walk-input" placeholder="분 단위로 입력">
                             </div>
-                            <!-- 영양제 -->
-                             <div class="form-group">
-                                <label>💊 약/영양제</label>
-                                <select id="medication-select" >
-                                    <option value="">약/영양제를 선택해주세요</option>
-                                </select>
-                        </div>
+                    
+                        <div class="form-group mb-4">
+                            <label class="block text-gray-700 font-medium mb-2">💊 약/영양제</label>
+
+                            <!-- 셀렉트 박스 -->
+                         <select id="medication-select" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-yellow-400">
+    <option value="">약물을 선택하세요</option>
+</select>
+
+                            <!-- 선택된 태그 표시 영역 -->
+                            <div id="selected-tags" 
+                                class="flex flex-wrap gap-2 mt-3">
+                                <!-- JS로 태그 추가됨 -->
+                            </div>
+                            </div>
                         </form>
                         <div class="quick-actions">
                             <button class="btn btn-primary" id="save_healthcare">📝 기록 저장</button>
@@ -165,8 +174,7 @@
     <button id="next-month" class="btn btn-secondary">▶</button>
   </div>
   <div class="calendar-grid" id="calendar-grid">
-    <div>일</div><div>월</div><div>화</div><div>수</div>
-    <div>목</div><div>금</div><div>토</div>
+   
   </div>
 </div>
             </div>
@@ -183,6 +191,7 @@
 
 <script>
 function goToMedicalHistory() {
+    const current_pet_id = localStorage.getItem('currentPetId')
     if (!current_pet_id) {
         alert("펫을 먼저 선택해주세요.");
         return;
@@ -191,14 +200,17 @@ function goToMedicalHistory() {
 }
 </script>
 
+
+
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
 <script src="{{ url_for('static', filename='js/dailycare/care_chatbot.js', v=static_version) }}"></script>
+<script src="{{ url_for('static', filename='js/dailycare/calender.js', v=static_version) }}"></script>
 <script src="{{ url_for('static', filename='js/dailycare/care_base.js', v=static_version) }}"></script>
 <script src="{{ url_for('static', filename='js/dailycare/modal.js', v=static_version) }}"></script>
 <script src="{{ url_for('static', filename='js/dailycare/todo.js', v=static_version) }}"></script>
 <script src="{{ url_for('static', filename='js/dailycare/dailycare.js', v=static_version) }}"></script>
-<script src="{{ url_for('static', filename='js/dailycare/calender.js', v=static_version) }}"></script>
+
       
 
 {% endblock %}

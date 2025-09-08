@@ -68,10 +68,31 @@ async function getAllHealthcareLog(pet_id) {
     console.log(data)
     if(data.length > 0 ){
         data.forEach(i => {
-            const history = document.getElementById('history')
-            const result = document.createElement('div')
-            result.style.marginBottom = "15px";
-            result.innerHTML = `
+          const history = document.getElementById("history");
+          const result = document.createElement("div");
+          result.style.marginBottom = "15px";
+
+          // 1️⃣ UTC 기준 날짜 생성
+          const updatedAtUTC = new Date(i.updated_at);
+
+          // 2️⃣ KST 변환: UTC + 9시간
+          const updatedAtKST = new Date(
+            updatedAtUTC.getTime() + 9 * 60 * 60 * 1000
+          );
+
+          // 3️⃣ 포맷팅
+          const year = updatedAtKST.getFullYear();
+          const month = String(updatedAtKST.getMonth() + 1).padStart(2, "0"); // 0~11 → 1~12
+          const day = String(updatedAtKST.getDate()).padStart(2, "0");
+          const hour = String(updatedAtKST.getHours()).padStart(2, "0");
+          const minute = String(updatedAtKST.getMinutes()).padStart(2, "0");
+          const second = String(updatedAtKST.getSeconds()).padStart(2, "0");
+
+          const koreanTimeString = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+
+          console.log(koreanTimeString);
+
+          result.innerHTML = `
               <div id='health_info' data-care-id="${i.care_id}" class="card-hover bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-200">
                                 <div class="flex items-center mb-4">
                                     <div class="bg-yellow-100 p-3 rounded-full">
@@ -112,19 +133,15 @@ async function getAllHealthcareLog(pet_id) {
                                     </div>
                                     <div class="flex justify-between items-center">
                                         <span class="text-sm text-gray-500">기록 일시</span>
-                                        <span class="text-sm text-gray-600">${i.updated_at}</span>
+                                        <span class="text-sm text-gray-600">${koreanTimeString}</span>
                                     </div>
                                 </div>
                             </div>
                            
-            `; 
-            history.appendChild(result)
-            
-            
+            `;
+          history.appendChild(result);
         });
 
     }
 }
-
-
 

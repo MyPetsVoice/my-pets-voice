@@ -33,10 +33,29 @@
                     <label class="block text-gray-700 font-semibold mb-1">산책 시간(분)</label>
                     <input type="number" id="walk_time_minutes" name="walk_time_minutes" class="w-full border rounded p-2">
                 </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-semibold mb-1">배변 상태</label>
-                    <input type="text" id="excrement_status" name="excrement_status" class="w-full border rounded p-2">
-                </div>
+               <div class="mb-4">
+    <label class="block text-gray-700 font-semibold mb-1">배변 상태</label>
+    <select id="excrement_status" name="excrement_status" class="w-full border rounded p-2">
+        <option value="정상">정상</option>
+        <option value="설사">설사</option>
+        <option value="변비">변비</option>
+        <option value="혈변">혈변</option>
+    </select>
+</div>
+<div class="mb-4">
+  <label class="block text-gray-700 font-semibold mb-1">복용 약물</label>
+  
+  <!-- 약물 선택 -->
+  <select id="medication-select" class="w-full border rounded p-2">
+    <option value="">약물을 선택하세요</option>
+    <!-- JS에서 옵션 동적 추가 -->
+  </select>
+  
+  <!-- 선택된 약물 리스트 -->
+  <div id="selectedMedications" class="mt-2 space-y-2"></div>
+</div>
+
+
 
                 <div class="flex justify-between">
                     <button type="submit" id="submit" class="bg-blue-500 text-white px-6 py-2 rounded">수정</button>

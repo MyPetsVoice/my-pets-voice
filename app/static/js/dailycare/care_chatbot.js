@@ -1,6 +1,5 @@
 function getCurrentPetId() {
-  const hiddenInput = document.getElementById("modal-pet-id");
-  return hiddenInput ? Number(hiddenInput.value) : 1; // 기본값 1
+    return localStorage.getItem('currentPetId')
 }
 
 async function sendMessage() {

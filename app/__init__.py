@@ -28,14 +28,6 @@ def create_app(config_name=None):
     upload_dir = os.path.join(app.root_path, 'static', 'uploads', 'diary')
     os.makedirs(upload_dir, exist_ok=True)
     
-    # 정적 파일 캐시 버스팅
-    import time
-    app.config['STATIC_VERSION'] = str(int(time.time()))
-    
-    @app.context_processor
-    def inject_static_version():
-        return {'static_version': app.config['STATIC_VERSION']}
-    
     # 데이터베이스 초기화
     app.logger.info('데이터베이스를 초기화합니다.')
     init_db(app)
@@ -61,20 +53,22 @@ def create_app(config_name=None):
     from app.routes.chat.chat_api import init_socketio
     init_socketio(socketio, app)
     app.logger.info('채팅 API SocketIO가 초기화되었습니다.')
+    
+    # 벡터 DB 초기화
+    app.logger.info('벡터 DB를 초기화합니다.')
+    try:
+        from app.services.dailycare.vectorstore_service import VectorStoreService
+        vector_service = VectorStoreService()
+        vector_service.initialize_vector_db()
+        app.logger.info('벡터 DB 초기화가 완료되었습니다.')
+    except Exception as e:
+        app.logger.error(f'벡터 DB 초기화 중 오류 발생: {e}')
+        app.logger.warning('벡터 DB 없이 애플리케이션을 계속 실행합니다.')
 
     @app.route('/')
     def index():
         app.logger.debug('루트 경로 접근 - 랜딩페이지')
         return render_template('landing.html')
-    
-    # HTML 응답의 캐시 방지
-    @app.after_request
-    def after_request(response):
-        if response.content_type.startswith('text/html'):
-            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-            response.headers['Pragma'] = 'no-cache'
-            response.headers['Expires'] = '0'
-        return response
 
     app.logger.info('애플리케이션 초기화가 완료되었습니다.')
     return app, socketio

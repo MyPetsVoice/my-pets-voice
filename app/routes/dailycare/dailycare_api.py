@@ -31,11 +31,12 @@ logging.basicConfig(level=logging.INFO)
 @dailycare_api_bp.route("/get-pet/")
 def get_my_pet():
     user_id = session.get('user_id')
+    print(f'######## get-pet : {user_id}')
 
     pets = PetService.get_pets_by_user(user_id)
     
     if not pets:
-        return jsonify({"error": "Pet not found"}), 404
+        return jsonify({"error": "Pet이 존재하지 않습니다."})
 
     if isinstance(pets, list):
         result = [p.to_dict() for p in pets]
@@ -89,31 +90,41 @@ def save_healthcare(pet_id):
         weight_kg=weight_kg,
         walk_time_minutes=walk_time_minutes,
     )
-     # 2. Medication 연결 (여러 개 가능)
+    
+    if not record:
+        return jsonify({"success": False, "message": "기록이 이미 존재합니다."}), 200
+
+    # 2. Medication 연결 (여러 개 가능)
     medication_ids = data.get('medication_ids') or []
     if medication_ids:
         HealthCareService.link_medications(record.care_id, medication_ids)
-        
-    return jsonify(record.to_dict()), 201
 
-@dailycare_api_bp.route('/update/healthcare/<int:care_id>', methods=['PUT'])
+    # record 정보와 success 플래그를 함께 반환
+    return jsonify({
+        "success": True,
+        "data": record.to_dict()
+    }), 201
+
+
+# 수정
+@dailycare_api_bp.route('/update/healthcare/<care_id>', methods=['PUT'])
 def update_healthcare(care_id):
-    data = request.get_json() or {}
-    # 중복 방지: data에 care_id가 있으면 제거
-    data.pop('care_id', None)
+    data = request.json
 
-    updated_record = HealthCareService.update_health_record(care_id, **data)
-    
-    if updated_record is None:
-        return jsonify({"error": "healthcare record not found"}), 404
+    record = HealthCareService.update_health_record(
+        care_id=care_id,
+        food=int(data['food']) if data.get('food') not in (None, "") else None,
+        water=float(data['water']) if data.get('water') not in (None, "") else None,
+        excrement_status=data.get('excrement_status'),
+        weight_kg=float(data['weight_kg']) if data.get('weight_kg') not in (None, "") else None,
+        walk_time_minutes=int(data['walk_time_minutes']) if data.get('walk_time_minutes') not in (None, "") else None,
+        medication_ids=data.get('medication_ids') or []   # ✅ 새로 반영
+    )
 
-    # updated_record가 dict이면 그대로 반환, 아니면 to_dict 호출
-    if isinstance(updated_record, dict):
-        return jsonify(updated_record), 200
-    elif hasattr(updated_record, 'to_dict'):
-        return jsonify(updated_record.to_dict()), 200
-    else:
-        return jsonify({"error": "updated record has invalid type"}), 500
+    if not record:
+        return jsonify({"message": "해당 기록을 찾을 수 없습니다."}), 404
+
+    return jsonify(record.to_dict()), 200
 
 
 
@@ -435,9 +446,10 @@ def delete_medication(medication_id):
     db.session.commit()
     return jsonify({"message": "삭제완료"}), 200
 
-
-@dailycare_api_bp.route('/todo/<user_id>')
-def get_todo(user_id):
+@dailycare_api_bp.route('/todo/')
+def get_todo():
+    user_id = session.get('user_id')
+    print(f'\n\n\n\ngetTodo : {user_id}')
     todos= HealthCareService.get_todo_records_by_user_limit3(user_id)
     todo_list = [t.to_dict() for t in todos]
     return jsonify(todo_list), 200
@@ -488,17 +500,19 @@ def deleteTodo(todo_id):
 
 @dailycare_api_bp.route('/care-chatbot' , methods = ['POST'])
 def ask_chatbot():
-    current_user = 1
     """careChatbot Service"""
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Authentication required'}), 401
+    
     data = request.get_json()
     user_input = data.get('message')
     pet_id = data.get('pet_id')
-    user_id = data.get(current_user)
     
     if not user_input:
         return jsonify({'error' : 'message is required'}) , 400
     
-    answer = CareChatbotService.chatbot_with_records(user_input, pet_id, user_id)
+    answer = CareChatbotService.chatbot_with_records(user_input, pet_id, user_id) # user_id는 왜 들어감..?
     result = CareChatbotService.pretty_format(answer)
     return jsonify({
         'user_input' : user_input,

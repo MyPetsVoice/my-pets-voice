@@ -1,8 +1,9 @@
 .env
 .env.production
+
+.claude/
 nul
-storage
-.claude
+storage/
 
 # 루트 + 하위 폴더 db 파일 무시
 db
@@ -16,10 +17,14 @@ __pycache__/
 *.pyc
 
 # 데이터베이스
+**/chroma_db/
 .db
 instance/
 db생성요청사항.txt
 insert_data.py
+
+# Storage 디렉토리 (벡터DB, 문서, 캐시 등)
+storage/
 
 # 로그파일
 logs/
@@ -29,6 +34,7 @@ app.log
 .vscode
 
 # 개인 파일(태민)
+.claude
 mypage요구사항
 test_pet_models.py
 recreate_pets_table.py
@@ -46,3 +52,5 @@ add_other_breeds.py
 .DS_Store
 .AppleDouble
 .LSOverride
+
+/vector_db/
