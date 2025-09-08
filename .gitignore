@@ -1,5 +1,8 @@
 .env
 .env.production
+nul
+storage
+.claude
 
 # 루트 + 하위 폴더 db 파일 무시
 db
