@@ -445,8 +445,7 @@ function generateInsights(data) {
   }
 
   // 식사량 분석
-  const avgFood =
-    recentData.food.reduce((a, b) => a + b, 0) / recentData.food.length;
+  recentData.food.reduce((a, b) => a + b, 0) / recentData.food.length;
   const foodFirst = recentData.food[0];
   const foodLast = recentData.food[recentData.food.length - 1];
   const foodChange = ((foodLast - foodFirst) / foodFirst) * 100;
@@ -480,7 +479,7 @@ function generateInsights(data) {
   // 수분 섭취 분석
   const avgWater =
     recentData.water.reduce((a, b) => a + b, 0) / recentData.water.length;
-  if (avgWater < 200) {
+  if (avgWater < 180) {
     insights.push({
       icon: "💧",
       title: "수분 섭취 부족",
@@ -491,7 +490,7 @@ function generateInsights(data) {
       borderColor: "#2196f3",
       textColor: "#1976d2",
     });
-  } else if (avgWater > 800) {
+  } else if (avgWater > 400) {
     insights.push({
       icon: "💧",
       title: "충분한 수분 섭취",
@@ -518,7 +517,7 @@ function generateInsights(data) {
       borderColor: "#4caf50",
       textColor: "#2e7d32",
     });
-  } else if (avgExercise < 20) {
+  } else if (avgExercise < 30) {
     insights.push({
       icon: "🚶‍♂️",
       title: "활동량 늘리기",
