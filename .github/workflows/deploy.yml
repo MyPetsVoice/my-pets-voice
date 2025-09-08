@@ -55,5 +55,16 @@ jobs:
           sudo docker compose -f docker-compose.aws.yml up -d
           echo "🧹 Cleaning up unused Docker resources..."
           sudo docker system prune -f
+          echo "📊 Checking container status..."
+          sudo docker compose -f docker-compose.aws.yml ps
+          echo "📝 Checking recent logs..."
+          sudo docker compose -f docker-compose.aws.yml logs --tail=20 web
+          echo "🔍 Verifying deployment..."
+          echo "Git status:"
+          git status
+          echo "Last commit:"
+          git log --oneline -1
+          echo "File timestamps:"
+          ls -la app/templates/dailycare/dailycare.html
           echo "✅ Deployment completed successfully!"
           echo "🌐 URL: http://$(curl -s http://checkip.amazonaws.com/)"
