@@ -45,8 +45,12 @@ jobs:
         command_timeout: 15m
         script: |
           cd ~/my-pets-voice
-          echo "📥 Pulling latest code..."
-          git pull origin main
+          echo "📥 Fetching latest code..."
+          git fetch origin
+          echo "🔄 Resetting to latest main branch..."
+          git reset --hard origin/main
+          echo "🧹 Cleaning any untracked files..."
+          git clean -fd
           echo "🔄 Updating IP configuration..."
           ./update-ip.sh
           echo "🐳 Rebuilding and restarting Docker containers..."
@@ -66,5 +70,7 @@ jobs:
           git log --oneline -1
           echo "File timestamps:"
           ls -la app/templates/dailycare/dailycare.html
+          echo "Checking for our test marker:"
+          grep -n "🆕" app/templates/dailycare/dailycare.html || echo "❌ Test marker not found!"
           echo "✅ Deployment completed successfully!"
           echo "🌐 URL: http://$(curl -s http://checkip.amazonaws.com/)"
