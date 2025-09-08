@@ -14,4 +14,5 @@ langsmith>=0.4.10
 openai==1.99.9
 chromadb>=0.5.23
 SQLAlchemy==2.0.42
+psycopg2-binary==2.9.9
 requests>=2.32.5

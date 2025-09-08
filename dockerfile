@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     libffi-dev \
     libssl-dev \
     postgresql-client \
+    libpq-dev \
     build-essential \
     python3-dev \
     curl \
