@@ -56,6 +56,8 @@ jobs:
           echo "🐳 Rebuilding and restarting Docker containers..."
           sudo docker compose -f docker-compose.aws.yml down
           sudo docker compose -f docker-compose.aws.yml build --no-cache
+          echo "🗄️ Running database migrations..."
+          sudo docker compose -f docker-compose.aws.yml run --rm web python app/models/init_db_with_check.py || echo "Database already initialized"
           sudo docker compose -f docker-compose.aws.yml up -d
           echo "🧹 Cleaning up unused Docker resources..."
           sudo docker system prune -f
@@ -63,6 +65,14 @@ jobs:
           sudo docker compose -f docker-compose.aws.yml ps
           echo "📝 Checking recent logs..."
           sudo docker compose -f docker-compose.aws.yml logs --tail=20 web
+          echo "🏥 Running health check..."
+          sleep 10
+          if curl -f http://localhost/ > /dev/null 2>&1; then
+            echo "✅ Health check passed - Application is running"
+          else
+            echo "❌ Health check failed - Check application logs"
+            sudo docker compose -f docker-compose.aws.yml logs web
+          fi
           echo "🔍 Verifying deployment..."
           echo "Git status:"
           git status

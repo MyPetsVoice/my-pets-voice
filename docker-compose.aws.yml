@@ -1,0 +1,53 @@
+services:
+  web:
+    build: .
+    container_name: mypetsvoice-app
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env.production
+    volumes:
+      - ./app:/app/app
+      - ./run.py:/app/run.py
+      - ./config.py:/app/config.py
+      - ./app/static/uploads:/app/app/static/uploads
+      - ./logs:/app/logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+    networks:
+      - mypetsvoice-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  nginx:
+    image: nginx:alpine
+    container_name: mypetsvoice-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.prod.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+      - ./app/static:/app/app/static:ro
+    depends_on:
+      - web
+    restart: unless-stopped
+    networks:
+      - mypetsvoice-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  mypetsvoice-network:
+    driver: bridge
