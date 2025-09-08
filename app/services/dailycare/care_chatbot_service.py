@@ -9,7 +9,7 @@ from app.services.dailycare.medicalcare_service import MedicalCareService
 from app.services.dailycare.openAI_service import get_gpt_response
 from app.services.dailycare.vectorstore_service import VectorStoreService
 from flask import current_app as app
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 load_dotenv()
 print(VectorStoreService)
 
