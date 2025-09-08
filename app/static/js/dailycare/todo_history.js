@@ -1,10 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const userInfoDiv = document.getElementById("userInfo");
-  const user_id = userInfoDiv.dataset.userId;
-  console.log(user_id);
-
-  allTodoLog(user_id);
-
+  allTodoLog();
   // 필터 버튼 이벤트
   document.querySelectorAll(".filter-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
@@ -16,13 +11,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 let allTodos = []; // 전체 Todo 데이터를 저장
 
-async function allTodoLog(user_id) {
+async function allTodoLog() {
   try {
-    const response = await fetch(`/api/dailycares/todo/all/${user_id}`);
+    const response = await fetch(`/api/dailycares/todo/all/`);
     if (!response.ok) throw new Error("Todo 데이터를 가져오지 못했습니다.");
     allTodos = await response.json();
     console.log(allTodos)
-
     renderTodos(allTodos);
     updateStatistics(allTodos);
   } catch (err) {

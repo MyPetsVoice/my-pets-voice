@@ -14,7 +14,12 @@ class Config:
 
     # SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    
+
+    # 벡터DB 설정
+    VECTOR_DB = os.getenv('VECTOR_DB')
+    COLLECTION_NAME = os.getenv('COLLECTION_NAME')
+    DOCUMENTS_PATH = os.getenv('DOCUMENTS_PATH')
+
     # OpenAI API 설정
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
     
@@ -22,7 +27,6 @@ class Config:
     KAKAO_REST_API_KEY = os.getenv('KAKAO_REST_API_KEY')
     KAKAO_CLIENT_SECRET = os.getenv('KAKAO_CLIENT_SECRET')
     KAKAO_REDIRECT_URI = os.getenv('KAKAO_REDIRECT_URI')
-    KAKAO_LOGOUT_REDIRECT_URI = os.getenv('KAKAO_LOGOUT_REDIRECT_URI')
     KAPI_HOST = os.getenv('KAPI_HOST')
     KAUTH_HOST = os.getenv('KAUTH_HOST')
     
@@ -56,7 +60,7 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    LOG_LEVEL = 'WARNING'
+    LOG_LEVEL = 'DEBUG'
 
 config = {
     'development': DevelopmentConfig,

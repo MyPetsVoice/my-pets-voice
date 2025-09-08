@@ -3,9 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 def init_db(app):
-    # PostgreSQL 데이터베이스 자동 생성 (비활성화 - 이미 존재)
-    # create_database_if_not_exists(app)
-    
     db.init_app(app)
 
     # 모든 모델 import (테이블 생성을 위함)
@@ -36,8 +33,6 @@ def init_db(app):
             check_and_insert_initial_data()
         except ImportError:
             print("초기 데이터 삽입 함수를 찾을 수 없습니다. 수동으로 init_db_with_check.py를 실행해주세요.")
-
-# 데이터베이스 자동 생성 함수 제거 (이미 존재하므로 불필요)
 
 # 모델들을 import하여 다른 모듈에서 사용할 수 있도록 함
 from app.models.base import BaseModel

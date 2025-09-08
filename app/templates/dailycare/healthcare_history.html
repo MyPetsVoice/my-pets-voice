@@ -3,6 +3,7 @@
 
 {% block content %}
 <link rel="stylesheet" href="../../static/css/dailycare/healtcare_history.css">
+<link rel="stylesheet" href="../../static/css/dailycare/careChatbot.css">
 
 <div class="bg-gray-50 min-h-screen">
     <!-- Hero Section -->
@@ -66,37 +67,26 @@
                     
                     <p class="text-purple-100 mb-6">반려동물 전문 AI가 24시간 상담해드려요</p>
                     
-                    <div class="space-y-4 mb-6">
-                        <div class="bg-white bg-opacity-10 rounded-lg p-4">
-                            <div class="flex items-start space-x-3">
-                                <div class="bg-white bg-opacity-20 rounded-full p-2 mt-1">
-                                    <i class="fas fa-robot text-sm"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-medium mb-1">상담 내용</h4>
-                                    <p class="text-sm text-purple-100">코코의 오늘 기록을 보니 모든 수치가 정상 범위에 있어요. 건강 관리를 잘 하고 계시네요!</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-white bg-opacity-10 rounded-lg p-4">
-                            <h4 class="font-medium mb-2">오늘의 건강 팁 💡</h4>
-                            <p class="text-sm text-purple-100">산책 시간을 조금 더 늘려보세요. 푸들은 활발한 견종이라 더 많은 운동이 도움됩니다.</p>
-                        </div>
-                    </div>
+                 
                     
-                    <button class="w-full bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm border border-white border-opacity-30 text-white py-3 rounded-xl font-medium transition-all">
-                        <i class="fas fa-comments mr-2"></i>AI 상담 시작하기
+                    <button class="w-full bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm border border-white border-opacity-30 text-white py-3 rounded-xl font-medium transition-all health-item mdc" data-modal="care_chatbot" style="background: rgba(255,255,255,0.2); color: white; border: none;">
+                        <i class="fas fa-comments mr-2 " ></i>AI 상담 시작하기
                     </button>
                 </div>
             </div>
         </div>
     </main>
 </div>
-
-<script>
-  
-</script>
-
+<!-- 공용 모달 -->
+<div id="common-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="flex justify-between items-center mb-4">
+      <button id="modal-close-btn" class="text-gray-500">&times;</button>
+    </div> 
+    <div id="modalContent" ></div> 
+</div> 
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
 <script src="../../static/js/dailycare/healtcare.js" defer></script>
+<script src="{{ url_for('static', filename='js/dailycare/modal.js', v=static_version) }}"></script>
+<script src="{{ url_for('static', filename='js/dailycare/care_chatbot.js', v=static_version) }}"></script>
 {% endblock %}
