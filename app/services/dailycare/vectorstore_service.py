@@ -62,7 +62,7 @@ class VectorStoreService:
 
         # 배치 처리로 임베딩 및 벡터 DB 생성
         logger.info("배치 처리로 임베딩을 생성하고 벡터 DB에 저장합니다.")
-        batch_size = 2000
+        batch_size = 200
         
         # 첫 번째 배치로 벡터 DB 초기화
         first_batch = all_documents[:batch_size]

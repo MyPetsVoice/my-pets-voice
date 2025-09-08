@@ -1,13 +1,9 @@
 import os
 import base64
 import logging
-import struct
-import mimetypes
 from abc import ABC, abstractmethod
 from typing import Optional, Dict, Any
 import openai
-from google import genai
-from google.genai import types
 from app.models.tts import TTSSettings, TTSVoice
 from app.models.pet import Pet
 
@@ -84,170 +80,13 @@ class OpenAITTSProvider(TTSProvider):
             }
         }
 
-class GeminiTTSProvider(TTSProvider):
-    """Google AI Studio Gemini TTS 제공업체"""
-    
-    def __init__(self):
-        # Gemini API 키 설정
-        api_key = os.getenv('GEMINI_API_KEY')
-        if api_key:
-            try:
-                self.client = genai.Client(api_key=api_key)
-                logger.info("Gemini TTS 클라이언트 초기화 완료")
-            except Exception as e:
-                logger.warning(f"Gemini TTS 클라이언트 초기화 실패: {str(e)}")
-                self.client = None
-        else:
-            logger.warning("GEMINI_API_KEY가 설정되지 않았습니다.")
-            self.client = None
-    
-    def convert_to_wav(self, audio_data: bytes, mime_type: str) -> bytes:
-        """오디오 데이터를 WAV 형식으로 변환"""
-        parameters = self.parse_audio_mime_type(mime_type)
-        bits_per_sample = parameters["bits_per_sample"]
-        sample_rate = parameters["rate"]
-        num_channels = 1
-        data_size = len(audio_data)
-        bytes_per_sample = bits_per_sample // 8
-        block_align = num_channels * bytes_per_sample
-        byte_rate = sample_rate * block_align
-        chunk_size = 36 + data_size
-
-        header = struct.pack(
-            "<4sI4s4sIHHIIHH4sI",
-            b"RIFF",          # ChunkID
-            chunk_size,       # ChunkSize
-            b"WAVE",          # Format
-            b"fmt ",          # Subchunk1ID
-            16,               # Subchunk1Size (16 for PCM)
-            1,                # AudioFormat (1 for PCM)
-            num_channels,     # NumChannels
-            sample_rate,      # SampleRate
-            byte_rate,        # ByteRate
-            block_align,      # BlockAlign
-            bits_per_sample,  # BitsPerSample
-            b"data",          # Subchunk2ID
-            data_size         # Subchunk2Size
-        )
-        return header + audio_data
-
-    def parse_audio_mime_type(self, mime_type: str) -> dict:
-        """오디오 MIME 타입에서 샘플링 레이트와 비트 깊이 추출"""
-        bits_per_sample = 16
-        rate = 24000
-
-        parts = mime_type.split(";")
-        for param in parts:
-            param = param.strip()
-            if param.lower().startswith("rate="):
-                try:
-                    rate_str = param.split("=", 1)[1]
-                    rate = int(rate_str)
-                except (ValueError, IndexError):
-                    pass
-            elif param.startswith("audio/L"):
-                try:
-                    bits_per_sample = int(param.split("L", 1)[1])
-                except (ValueError, IndexError):
-                    pass
-
-        return {"bits_per_sample": bits_per_sample, "rate": rate}
-    
-    def generate_speech(self, text: str, settings: TTSSettings) -> bytes:
-        """Gemini 2.5 Pro Preview TTS API를 사용하여 음성 생성"""
-        if not self.client:
-            raise Exception("Gemini TTS 클라이언트가 초기화되지 않았습니다.")
-        
-        try:
-            # Gemini TTS 파라미터 설정
-            voice_name = settings.voice_id or 'Zephyr'
-            
-            logger.info(f"Gemini TTS 요청 - 음성: {voice_name}, 텍스트 길이: {len(text)}")
-            
-            # Gemini 2.5 Pro Preview TTS 모델 사용
-            model = "gemini-2.5-pro-preview-tts"
-            contents = [
-                types.Content(
-                    role="user",
-                    parts=[
-                        types.Part.from_text(text=text),
-                    ],
-                ),
-            ]
-            
-            generate_content_config = types.GenerateContentConfig(
-                temperature=1,
-                response_modalities=["audio"],
-                speech_config=types.SpeechConfig(
-                    voice_config=types.VoiceConfig(
-                        prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                            voice_name=voice_name
-                        )
-                    )
-                ),
-            )
-            
-            # 스트림으로 음성 데이터 수집
-            audio_chunks = []
-            for chunk in self.client.models.generate_content_stream(
-                model=model,
-                contents=contents,
-                config=generate_content_config,
-            ):
-                if (
-                    chunk.candidates is None
-                    or chunk.candidates[0].content is None
-                    or chunk.candidates[0].content.parts is None
-                ):
-                    continue
-                    
-                if (chunk.candidates[0].content.parts[0].inline_data and 
-                    chunk.candidates[0].content.parts[0].inline_data.data):
-                    inline_data = chunk.candidates[0].content.parts[0].inline_data
-                    data_buffer = inline_data.data
-                    
-                    # MIME 타입에 따라 WAV 변환
-                    file_extension = mimetypes.guess_extension(inline_data.mime_type)
-                    if file_extension is None:
-                        file_extension = ".wav"
-                        data_buffer = self.convert_to_wav(inline_data.data, inline_data.mime_type)
-                    
-                    audio_chunks.append(data_buffer)
-            
-            if not audio_chunks:
-                raise Exception("Gemini TTS에서 오디오 데이터를 받지 못했습니다.")
-            
-            # 모든 청크를 합치기
-            audio_data = b''.join(audio_chunks)
-            logger.info(f"Gemini TTS 성공 - 오디오 크기: {len(audio_data)} bytes")
-            return audio_data
-            
-        except Exception as e:
-            logger.error(f"Gemini TTS 생성 실패: {str(e)}")
-            raise Exception(f"Gemini TTS 오류: {str(e)}")
-    
-    def get_available_voices(self) -> Dict[str, Any]:
-        """Gemini TTS 사용 가능한 음성 목록 (Gemini 2.5 Pro Preview TTS)"""
-        return {
-            'international': {
-                'Zephyr': '영어 남성 (Zephyr) - 기본',
-                'Echo': '영어 여성 (Echo)',
-                'Nova': '영어 여성 (Nova)',
-                'Sage': '영어 남성 (Sage)',
-                'Harmony': '영어 여성 (Harmony)',
-                'Whisper': '영어 중성 (Whisper)',
-                'Breeze': '영어 여성 (Breeze)',
-                'Storm': '영어 남성 (Storm)'
-            }
-        }
 
 class TTSService:
     """TTS 서비스 메인 클래스"""
     
     def __init__(self):
         self.providers = {
-            'openai': OpenAITTSProvider(),
-            'gemini': GeminiTTSProvider()
+            'openai': OpenAITTSProvider()
         }
         
         # 기본 제공업체 설정
@@ -268,13 +107,8 @@ class TTSService:
             if voice_id in category_voices:
                 return voice_id
         
-        # 호환되지 않는 음성인 경우 제공업체별 기본값 반환
-        if provider == 'openai':
-            return 'nova'
-        elif provider == 'gemini':
-            return 'Zephyr'
-        else:
-            return 'nova'
+        # 호환되지 않는 음성인 경우 OpenAI 기본값 반환
+        return 'nova'
 
     def generate_speech_for_pet(self, pet_id: str, text: str) -> Dict[str, Any]:
         """반려동물용 음성 생성"""

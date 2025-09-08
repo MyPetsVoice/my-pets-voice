@@ -11,11 +11,11 @@ class TTSSettings(BaseModel):
     pet_id = Column(String(36), ForeignKey('pets.pet_id'), nullable=False, unique=True)
     
     # TTS 제공업체 설정
-    provider = Column(String(20), default='openai')  # 'openai' 또는 'gemini'
+    provider = Column(String(20), default='openai')  # openai만 지원
     is_enabled = Column(Boolean, default=True)
     
     # 음성 설정
-    voice_id = Column(String(50), default='nova')  # OpenAI: nova, alloy, echo 등 / Gemini: Zephyr, Echo 등
+    voice_id = Column(String(50), default='nova')  # OpenAI: nova, alloy, echo 등
     language_code = Column(String(10), default='ko')  # 언어 코드
     
     # 음성 파라미터
@@ -62,8 +62,8 @@ class TTSSettings(BaseModel):
         if existing:
             return existing
         
-        # 제공업체별 기본 설정
-        default_voice = 'nova' if provider == 'openai' else 'Zephyr'
+        # OpenAI 기본 설정
+        default_voice = 'nova'
         
         settings = cls(
             pet_id=pet_id,
@@ -97,7 +97,7 @@ class TTSVoice(BaseModel):
     __tablename__ = 'tts_voices'
     
     id = Column(Integer, primary_key=True)
-    provider = Column(String(20), nullable=False)  # 'openai' 또는 'gemini'
+    provider = Column(String(20), nullable=False)  # openai만 지원
     voice_id = Column(String(50), nullable=False)
     voice_name = Column(String(100), nullable=False)
     language_code = Column(String(10), nullable=False)

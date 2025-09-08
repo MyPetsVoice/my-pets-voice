@@ -53,6 +53,7 @@ class PetTTSManager {
     }
     
     createTTSModal() {
+        console.log('TTS 모달 생성 중...');
         const modalHTML = `
             <div id="pet-tts-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
                 <div class="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
@@ -79,9 +80,8 @@ class PetTTSManager {
                         <!-- TTS 제공업체 선택 -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">TTS 제공업체</label>
-                            <select id="pet-tts-provider" class="w-full p-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                            <select id="pet-tts-provider" class="w-full p-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200" disabled>
                                 <option value="openai">OpenAI TTS</option>
-                                <option value="gemini">Gemini TTS</option>
                             </select>
                         </div>
                         
@@ -156,10 +156,12 @@ class PetTTSManager {
         `;
         
         document.body.insertAdjacentHTML('beforeend', modalHTML);
+        console.log('TTS 모달 DOM에 추가됨');
         this.bindModalEvents();
     }
     
     bindModalEvents() {
+        console.log('TTS 모달 이벤트 바인딩 시작');
         // 모달 닫기
         document.getElementById('close-pet-tts-modal').addEventListener('click', () => {
             this.hideTTSModal();
@@ -178,14 +180,6 @@ class PetTTSManager {
             this.updateTTSButton();
         });
         
-        // TTS 제공업체 변경
-        document.getElementById('pet-tts-provider').addEventListener('change', (e) => {
-            this.currentSettings.provider = e.target.value;
-            // 제공업체 변경 시 음성 목록 다시 로드
-            this.loadAvailableVoices(e.target.value);
-            // 제공업체별 UI 업데이트
-            this.updateProviderSpecificUI(e.target.value);
-        });
         
         // 슬라이더 이벤트들
         document.getElementById('pet-speed-range').addEventListener('input', (e) => {
@@ -303,21 +297,14 @@ class PetTTSManager {
     }
     
     updateProviderSpecificUI(provider) {
+        // OpenAI만 지원하므로 모든 설정 표시
         const pitchContainer = document.getElementById('pet-pitch-range').closest('div');
         const volumeContainer = document.getElementById('pet-volume-range').closest('div');
         const emotionContainer = document.getElementById('pet-emotion-select').closest('div');
         
-        if (provider === 'gemini') {
-            // Gemini는 pitch, volume, emotion 지원하지 않음
-            if (pitchContainer) pitchContainer.style.display = 'none';
-            if (volumeContainer) volumeContainer.style.display = 'none';
-            if (emotionContainer) emotionContainer.style.display = 'none';
-        } else {
-            // OpenAI는 모든 설정 지원
-            if (pitchContainer) pitchContainer.style.display = 'block';
-            if (volumeContainer) volumeContainer.style.display = 'block';
-            if (emotionContainer) emotionContainer.style.display = 'block';
-        }
+        if (pitchContainer) pitchContainer.style.display = 'block';
+        if (volumeContainer) volumeContainer.style.display = 'block';
+        if (emotionContainer) emotionContainer.style.display = 'block';
     }
     
     updateModalContent() {
@@ -360,8 +347,15 @@ class PetTTSManager {
    }
    
    showTTSModal() {
-       document.getElementById('pet-tts-modal').classList.remove('hidden');
-       document.getElementById('pet-tts-modal').classList.add('flex');
+       console.log('TTS 모달 표시 시도');
+       const modal = document.getElementById('pet-tts-modal');
+       if (modal) {
+           modal.classList.remove('hidden');
+           modal.classList.add('flex');
+           console.log('TTS 모달 표시됨');
+       } else {
+           console.error('TTS 모달을 찾을 수 없음');
+       }
    }
    
    hideTTSModal() {
@@ -419,10 +413,16 @@ class PetTTSManager {
    }
    
    async playPetTTS(text) {
-       if (!this.currentPetId || this.isPlaying) return;
+       console.log('playPetTTS 호출됨 - currentPetId:', this.currentPetId, 'isPlaying:', this.isPlaying);
+       
+       if (!this.currentPetId || this.isPlaying) {
+           console.log('TTS 중단 - Pet ID 없음 또는 재생중');
+           return;
+       }
        
        // TTS가 비활성화된 경우 바로 종료
        if (!this.currentSettings.is_enabled) {
+           console.log('TTS 비활성화됨');
            return;
        }
        

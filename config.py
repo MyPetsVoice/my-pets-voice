@@ -24,8 +24,7 @@ class Config:
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
     
     # TTS 관련 설정
-    DEFAULT_TTS_PROVIDER = os.getenv('DEFAULT_TTS_PROVIDER', 'openai')  # 'openai' 또는 'gemini'
-    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')  # Gemini API 키 (Google AI Studio)
+    DEFAULT_TTS_PROVIDER = os.getenv('DEFAULT_TTS_PROVIDER', 'openai')  # openai만 지원
     TTS_MAX_TEXT_LENGTH = int(os.getenv('TTS_MAX_TEXT_LENGTH', '4000'))  # TTS 최대 텍스트 길이
     
     # 카카오 로그인 설정
