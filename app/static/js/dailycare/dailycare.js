@@ -1,5 +1,4 @@
 const pet_selector = document.getElementById("pet-selector");
-const pet_detail = document.getElementById("pet-detail");
 let current_pet_id = null;
 
 // 전체 펫 조회
@@ -15,7 +14,41 @@ async function getAllPetsById() {
       const card = document.createElement("div");
       card.className = "pet-card";
       card.dataset.petId = pet.pet_id;
-      card.innerHTML = `<strong>${pet.pet_name}</strong><small>${pet.species_name}</small>`;
+      
+      // 동물 아이콘 결정
+      let animalIcon = '🐾'; // 기본 아이콘
+      if (pet.species_name) {
+        if (pet.species_name.includes('강아지') || pet.species_name.includes('개')) {
+          animalIcon = '🐶';
+        } else if (pet.species_name.includes('고양이') || pet.species_name.includes('cat')) {
+          animalIcon = '🐱';
+        } else if (pet.species_name.includes('토끼')) {
+          animalIcon = '🐰';
+        } else if (pet.species_name.includes('새') || pet.species_name.includes('조류')) {
+          animalIcon = '🐦';
+        } else if (pet.species_name.includes('햄스터')) {
+          animalIcon = '🐹';
+        }
+      }
+      
+      card.innerHTML = `
+        <div class="pet-card-content">
+          <span class="pet-icon">${animalIcon}</span>
+          <div class="pet-info">
+            <span class="pet-name">${pet.pet_name}</span>
+            <span class="pet-species">${pet.species_name}</span>
+          </div>
+        </div>
+      `;
+      
+      // 툴팁 정보 설정
+      card.title = `이름: ${pet.pet_name}
+종: ${pet.species_name}
+품종: ${pet.breed_name || '알 수 없음'}
+나이: ${pet.pet_age || '알 수 없음'}
+성별: ${pet.pet_gender || '알 수 없음'}
+중성화 여부: ${pet.is_neutered ? 'Yes' : 'No'}`;
+      
       pet_selector.appendChild(card);
 
       // 클릭 이벤트 (개별 pet 정보)
@@ -29,37 +62,13 @@ async function getAllPetsById() {
         // 현재 선택된 pet_id 숫자로 변환
         current_pet_id = Number(this.dataset.petId);
 
-        
-
         // 🔹 localStorage 에 저장
         localStorage.setItem("currentPetId", current_pet_id);
 
         window.dispatchEvent(new Event("petChanged"));
 
-
         if(current_pet_id){
-            const response = await fetch(
-            `/api/dailycares/get-pet/${current_pet_id}`
-          );
-          if (!response.ok) {
-            pet_detail.innerHTML = "<p>Pet 정보를 불러올 수 없습니다.</p>";
-            return;
-          }
-          const petData = await response.json();
-          console.log("선택된 pet 데이터:", petData);
           getMedications(current_pet_id);
-
-          pet_detail.innerHTML = `
-            <h3>${petData.pet_name} (${petData.species_name})</h3>
-            <p>종: ${petData.breed_name}</p>
-            <p>나이: ${petData.pet_age}</p>
-            <p>성별: ${petData.pet_gender}</p>
-            <p>중성화 여부: ${petData.is_neutered ? "Yes" : "No"}</p>
-          `;
-        } else {
-          
-          pet_detail.innerHTML =
-            "<p>Pet 정보를 불러오는 중 오류가 발생했습니다.</p>";
         }
       });
     });

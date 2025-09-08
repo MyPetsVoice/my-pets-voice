@@ -4,72 +4,72 @@
 
 <link rel="stylesheet" href=".././../static/css/dailycare/dailcare.css">
 <link rel="stylesheet" href="../../static/css/dailycare/todo.css">
-</head>
-<body style=" padding: 0;">
-    <input type="hidden" id="user-id" value="{{ user_id }}">
-    <div class="container" style="padding: 30px;">
-        <!-- 반려동물 선택 창 (header) -->
-        <header class="header">
-            <h1>🐾 데일리케어</h1>
-            <p>우리 반려동물의 건강을 함께 관리해요</p>
-          
-            <div class="pet-selector" id="pet-selector">
-                 
-            </div>
-             <div id="pet-detail"></div>
-        </header>
-        
-        
-        <div class="main-content">
-            <div class="left-panel">
-                <!-- 의료기록 관리 섹션 -->
-                <div class="section-card">
-                    <h2 class="section-title">
-                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        의료기록 관리
-                    </h2>
-                    
-                    <div class="health-grid">
-                        
-                        <div class="health-item mdc" data-modal="allergy" >
-                            <h4>🤧 알러지 정보</h4>
-                            <p>음식, 환경 알러지 등록</p>
+
+<input type="hidden" id="user-id" value="{{ user_id }}">
+<div class="bg-gray-50 pb-20">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="dailycare-main-container">
+                
+                <!-- 사이드바 - 캘린더와 건강리포트 -->
+                <div class="dailycare-sidebar">
+                    <!-- 캘린더 위젯 -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-xl font-bold mb-4 text-gray-800">
+                            <i class="fas fa-calendar text-orange-400 mr-2"></i>
+                            캘린더
+                        </h2>
+                        <div class="calendar-widget">
+                            <div class="calendar-header">
+                                <button id="prev-month" class="btn btn-secondary">◀</button>
+                                <strong id="current-month"></strong>
+                                <button id="next-month" class="btn btn-secondary">▶</button>
+                            </div>
+                            <div class="calendar-grid" id="calendar-grid">
+                            
+                            </div>
                         </div>
-                        <div class="health-item mdc" data-modal="disease" >
-                            <h4>🏥 질병 이력</h4>
-                            <p>과거 질병 및 치료 기록</p>
-                        </div>
-                        <div class="health-item mdc"  data-modal="surgery" >
-                            <h4>⚕️ 수술 이력</h4>
-                            <p>수술 날짜 및 내용 기록</p>
-                        </div>
-                      
-                        <div class="health-item mdc" data-modal="vaccination">
-                            <h4>💉 예방접종</h4>
-                            <p>접종 기록 및 일정 관리</p>
-                        </div>
-                        <div class="health-item mdc" data-modal="medication" >
-                            <h4>💊 복용약물</h4>
-                            <p>현재 복용 중인 약물 정보</p>
-                        </div>
-                        <!--  의료기록 모아보기 -->
-                          <a href="#" onclick="goToMedicalHistory()" class="health-item">
-                            <h4>🔍 전체 기록</h4>
-                            <p>의료기록을 모아 볼 수 있습니다.</p>
-                        </a>
+                    </div>
+
+                    <!-- 건강 리포트 위젯 -->
+                    <div class="health-report-widget">
+                        <h3>📊 이번주 건강 리포트</h3>
+                        <div class="health-score">85점</div>
+                        <p style="text-align: center; opacity: 0.9;">전체적으로 건강한 상태예요!</p>
+                        <a class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white; border: none; width: 100%;" href="/dailycare/analysis">📈 전체 리포트 보기</a>
                     </div>
                 </div>
                 
-                <!-- 건강기록 관리 섹션 -->
+                <!-- 메인 콘텐츠 영역 -->
+                <div class="dailycare-content">
+                    <!-- 헤더 스타일의 반려동물 선택 영역 -->
+                    <div class="pet-selection-header mb-6">
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h1 class="text-2xl font-bold text-gray-800">
+                                    <i class="fas fa-paw text-orange-500 mr-2"></i>
+                                    오늘의 케어 기록
+                                    <!-- <span class="text-sm text-gray-600">반려동물을 선택하여 건강기록을 관리하세요</span> -->
+                                </h1>
+                            </div>
+                            
+                            <!-- 반려동물 선택 카드들 -->
+                            <div id="pet-selector" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                <!-- 펫 카드들이 여기에 동적으로 추가됩니다 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 케어 기록 폼 영역 -->
+                    <div class="care-record-section mb-6">
                 <div class="section-card">
-                    <h2 class="section-title">
-                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                        </svg>
-                        오늘의 케어 기록
-                    </h2>
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="section-title mb-0">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            건강 기록 입력
+                        </h2>
+                    </div>
                     
                     <div class="nav-tabs">
                         <button class="nav-tab active" onclick="switchTab(event,'daily')">건강 기록</button>
@@ -132,53 +132,60 @@
                     
                     
                     <div id="schedule-tab" class="tab-content">
-                        <div class="form-group">
-                        </div>
-                        <div class="quick-actions" >
+                        <div class="todo-content">
                             <div id="todo_div"></div>
-                            <button class="btn btn-primary" id="create_todo" data-user-id="{{ user }}">➕ 일정 추가</button>
-                            <a href="/dailycare/todo" class="btn btn-secondary">📋 전체 일정</a>
+                            <div class="todo-actions">
+                                <button class="btn btn-primary" id="create_todo" data-user-id="{{ user }}">➕ 일정 추가</button>
+                                <a href="/dailycare/todo" class="btn btn-secondary">📋 전체 일정</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 컴팩트한 의료기록 관리 섹션 -->
+                <div class="medical-record-section mb-6">
+                    <div class="section-card">
+                        <h2 class="section-title">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            의료기록 관리
+                        </h2>
+                        
+                        <div class="compact-health-grid">
+                            <div class="health-item-compact mdc" data-modal="allergy">
+                                <h4>🤧 알러지 정보 <span>음식, 환경 알러지 등록</span></h4>
+                            </div>
+                            <div class="health-item-compact mdc" data-modal="disease">
+                                <h4>🏥 질병 이력 <span>과거 질병 및 치료 기록</span></h4>
+                            </div>
+                            <div class="health-item-compact mdc" data-modal="surgery">
+                                <h4>⚕️ 수술 이력 <span>수술 날짜 및 내용 기록</span></h4>
+                            </div>
+                            <div class="health-item-compact mdc" data-modal="vaccination">
+                                <h4>💉 예방접종 <span>접종 기록 및 일정 관리</span></h4>
+                            </div>
+                            <div class="health-item-compact mdc" data-modal="medication">
+                                <h4>💊 복용약물 <span>현재 복용 중인 약물 정보</span></h4>
+                            </div>
+                            <a href="#" onclick="goToMedicalHistory()" class="health-item-compact">
+                                <h4>🔍 전체 기록 <span>의료기록을 모아 볼 수 있습니다</span></h4>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="right-panel">
-                <!-- AI 건강상담 위젯 -->
-                <div class="ai-chat-widget ">
-                    <h3>🤖 AI 건강상담</h3>
-                    <p>반려동물 전문 AI가 24시간 상담해드려요</p>
-                    <button class="btn btn-secondary health-item mdc"  data-modal="care_chatbot" style="background: rgba(255,255,255,0.2); color: white; border: none;">
-                        💬 상담 시작
-                    </button>
-                    
+                    </div>
                 </div>
-
-
-
-                
-                <!-- 건강 리포트 위젯 -->
-                <div class="health-report-widget">
-                    <h3>📊 이번주 건강 리포트</h3>
-                    <div class="health-score">85점</div>
-                    <p style="text-align: center; opacity: 0.9;">전체적으로 건강한 상태예요!</p>
-                    <a class = 'btn btn-secondary ' style="background: rgba(255,255,255,0.2); color: white; border: none; width: 100%;" href="/dailycare/analysis"> 📈 전체 리포트 보기</a></button>
-                    
-                </div>
-                
-<div class="calendar-widget">
-  
-  <div class="calendar-header">
-    <button id="prev-month" class="btn btn-secondary">◀</button>
-    <strong id="current-month"></strong>
-    <button id="next-month" class="btn btn-secondary">▶</button>
-  </div>
-  <div class="calendar-grid" id="calendar-grid">
-   
-  </div>
-</div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- 플로팅 AI 상담 버튼 -->
+    <div class="floating-chat-btn" onclick="openAIChat()">
+        <i class="fas fa-robot"></i>
+        <span class="tooltip">AI 건강상담</span>
     </div>
     
 <!-- 공용 모달 -->
@@ -197,6 +204,41 @@ function goToMedicalHistory() {
         return;
     }
     window.location.href = `/dailycare/medication-history/${current_pet_id}`;
+}
+
+function openAIChat() {
+    const current_pet_id = localStorage.getItem('currentPetId');
+    if (!current_pet_id) {
+        alert("먼저 반려동물을 선택해주세요.");
+        return;
+    }
+    // AI 상담 모달 열기 - modal.js의 openModal 함수 사용
+    if (typeof openModal === 'function') {
+        openModal('care_chatbot', current_pet_id);
+    } else {
+        // Fallback: 직접 모달 열기
+        fetch(`/api/dailycares/modal/care_chatbot?pet_id=${current_pet_id}`)
+            .then((res) => {
+                if (!res.ok) throw new Error("네트워크 오류");
+                return res.text();
+            })
+            .then((html) => {
+                const modal = document.getElementById("common-modal");
+                const content = modal.querySelector("#modalContent");
+                content.innerHTML = html;
+                modal.classList.remove("hidden");
+                
+                // 닫기 버튼 이벤트
+                const closeBtn = document.getElementById("modal-close-btn");
+                if (closeBtn) {
+                    closeBtn.onclick = () => modal.classList.add("hidden");
+                }
+            })
+            .catch((err) => {
+                console.error("AI 상담 모달 불러오기 실패:", err);
+                alert("AI 상담을 불러오지 못했습니다.");
+            });
+    }
 }
 </script>
 

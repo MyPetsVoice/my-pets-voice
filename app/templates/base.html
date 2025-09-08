@@ -45,17 +45,29 @@
                 }
             }
         </script>
+
+        <style>
+            .nav-active {
+                background: linear-gradient(135deg, #ff6b6b, #ffa500) !important;
+            }
+            .nav-hover:hover {
+                background: linear-gradient(135deg, #ff6b6b, #ffa500) !important;
+            }
+        </style>
+
+
         <script src="{{ url_for('static', filename='js/base.js', v=static_version) }}" defer></script>
+
     </head>
-    <body class="font-korean text-gray-800 bg-gray-50 min-h-screen">
+    <body class="font-korean text-gray-800 min-h-screen bg-white">
         <!-- 네비게이션 -->
-        <nav class="bg-gray-50  sticky top-0 z-50">
+        <nav class="bg-white shadow-sm sticky top-0 z-50">
             <div class="max-w-7xl mx-auto px-5 flex justify-between items-center h-20">
                 <a href="/" class="flex items-center text-secondary-500 hover:text-secondary-600 transition-colors">
                     <div class="flex items-center text-2xl font-bold">
                         <!-- <i class="fas fa-paw mr-2 text-3xl"></i> -->
                         <img src="{{ url_for('static', filename='img/my_pet_voice.PNG', v=static_version) }}" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
-                        <span>MyPet's Voice</span>
+                        <span>My Pet's Voice</span>
                     </div>
                 </a>
                 
@@ -64,10 +76,10 @@
                 </button>
                 
                 <div class="hidden md:flex space-x-4" id="nav-menu">
-                    <a href="{{ url_for('chat.chat_views.chat')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">반려동물과 대화하기</a>
-                    <a href="{{ url_for('diary.diary_views.diary')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">너의 일기장</a>
-                    <a href="{{ url_for('dailycare.dailycare_views.get_dailycare')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">데일리 케어</a>
-                    <a href="{{ url_for('mypage.mypage_views.mypage')}}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-primary-500 hover:text-white transition-all duration-300 font-medium">마이페이지</a>
+                    <a href="{{ url_for('chat.chat_views.chat')}}" class="px-3 py-2 rounded-lg {% if request.endpoint == 'chat.chat_views.chat' %}text-white{% else %}text-gray-700 hover:text-white{% endif %} transition-all duration-300 font-medium {% if request.endpoint == 'chat.chat_views.chat' %}nav-active{% else %}nav-hover{% endif %}">반려동물과 대화하기</a>
+                    <a href="{{ url_for('diary.diary_views.diary')}}" class="px-3 py-2 rounded-lg {% if request.endpoint == 'diary.diary_views.diary' %}text-white{% else %}text-gray-700 hover:text-white{% endif %} transition-all duration-300 font-medium {% if request.endpoint == 'diary.diary_views.diary' %}nav-active{% else %}nav-hover{% endif %}">너의 일기장</a>
+                    <a href="{{ url_for('dailycare.dailycare_views.get_dailycare')}}" class="px-3 py-2 rounded-lg {% if request.endpoint == 'dailycare.dailycare_views.get_dailycare' %}text-white{% else %}text-gray-700 hover:text-white{% endif %} transition-all duration-300 font-medium {% if request.endpoint == 'dailycare.dailycare_views.get_dailycare' %}nav-active{% else %}nav-hover{% endif %}">데일리 케어</a>
+                    <a href="{{ url_for('mypage.mypage_views.mypage')}}" class="px-3 py-2 rounded-lg {% if request.endpoint == 'mypage.mypage_views.mypage' %}text-white{% else %}text-gray-700 hover:text-white{% endif %} transition-all duration-300 font-medium {% if request.endpoint == 'mypage.mypage_views.mypage' %}nav-active{% else %}nav-hover{% endif %}">마이페이지</a>
                 </div>
                 
                 <!-- 날씨 api 가져와서 렌더링 -->
@@ -90,10 +102,10 @@
         </nav>
 
         <!-- 메인 컨테이너 -->
-
-        {% block content %}
-        {% endblock %}
-
+        <div class="min-h-screen">
+            {% block content %}
+            {% endblock %}
+        </div>
 
         <!-- 푸터 -->
         <footer class="bg-gray-800 text-white mt-8">
@@ -103,8 +115,8 @@
                         <div class="flex items-center text-2xl font-bold text-secondary-400 mb-4">
                             <!-- <i class="fas fa-paw mr-2 text-3xl"></i> -->
                             <img src="{{ url_for('static', filename='img/my_pet_voice.PNG', v=static_version) }}" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
-                            <span>MyPet's Voice</span>
-                        </div>
+                            <span>My Pet's Voice</span>
+                       </div>
                         <p class="text-gray-300 leading-relaxed mb-6">
                             반려동물과의 특별한 소통을 위한 AI 플랫폼
                         </p>
