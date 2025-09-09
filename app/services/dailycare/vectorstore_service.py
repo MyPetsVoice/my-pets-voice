@@ -14,10 +14,8 @@ from typing import List, Dict, Any, Optional
 from langchain_text_splitters import MarkdownHeaderTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 import tiktoken
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
 
 from config import Config
 

@@ -123,7 +123,7 @@ class HealthCareService:
             """pet_id별 TodoList 기록 조회"""
             
             result=TodoList.query.filter_by(user_id=user_id).order_by(TodoList.created_at.desc()).limit(3).all()
-            print('\n\n\ result : ', result, ' userId : ', user_id)
+            print('\n\n result : ', result, ' userId : ', user_id)
             return result
         
         @staticmethod

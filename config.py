@@ -16,9 +16,9 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # 벡터DB 설정
-    VECTOR_DB = os.getenv('VECTOR_DB')
-    COLLECTION_NAME = os.getenv('COLLECTION_NAME')
-    DOCUMENTS_PATH = os.getenv('DOCUMENTS_PATH')
+    VECTOR_DB = os.getenv('VECTOR_DB', './vector_db')
+    COLLECTION_NAME = os.getenv('COLLECTION_NAME', 'mypetsvoice_docs')
+    DOCUMENTS_PATH = os.getenv('DOCUMENTS_PATH', './data')
 
     # OpenAI API 설정
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')

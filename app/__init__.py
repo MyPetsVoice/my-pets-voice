@@ -70,5 +70,17 @@ def create_app(config_name=None):
         app.logger.debug('루트 경로 접근 - 랜딩페이지')
         return render_template('landing.html')
 
+    @app.route('/health')
+    def health_check():
+        """헬스체크 엔드포인트"""
+        try:
+            # 데이터베이스 연결 확인
+            from app.models import db
+            db.session.execute('SELECT 1')
+            return {'status': 'healthy', 'database': 'connected'}, 200
+        except Exception as e:
+            app.logger.error(f'헬스체크 실패: {e}')
+            return {'status': 'unhealthy', 'error': str(e)}, 503
+
     app.logger.info('애플리케이션 초기화가 완료되었습니다.')
     return app, socketio

@@ -109,8 +109,8 @@ def init_socketio(app_socketio, app):
 
 
                     if not response_data['success']:
-                        logger.error(f'AI 응답 생성 실패: {response_data.get('error', '알 수 없는 오류')}')
-                        bot_message = response_data.get('response', '죄송해요, 지금은 대답하기 어려워요...')
+                        logger.error(f'AI 응답 생성 실패: {response_data.get("error", "알 수 없는 오류")}')
+                        bot_message = response_data.get("response", "죄송해요, 지금은 대답하기 어려워요...")
                     else:
                         bot_message = response_data['response']
                         logger.debug(f'AI 응답 : {bot_message}')

@@ -66,7 +66,7 @@
                 <a href="/" class="flex items-center text-secondary-500 hover:text-secondary-600 transition-colors">
                     <div class="flex items-center text-2xl font-bold">
                         <!-- <i class="fas fa-paw mr-2 text-3xl"></i> -->
-                        <img src="{{ url_for('static', filename='img/my_pet_voice.PNG', v=static_version) }}" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
+                        <img src="{{ url_for('static', filename='img/my_pet_voice.PNG', v=static_version) }}" style="width: 75px; margin-left: 0; padding: 0;" alt="">
                         <span>My Pet's Voice</span>
                     </div>
                 </a>
@@ -90,12 +90,14 @@
                     <span>{{ user }}님</span>
                     <a href="{{ url_for('auth.auth_api.logout')}}">로그아웃</a>
                 {% else %}
-                    <a href="{{ url_for('auth.auth_api.kakao_login')}}">
-                        <img src="{{ url_for('static', filename='img/auth/kakao_login_medium.png', v=static_version) }}">
+                    <a href="{{ url_for('auth.auth_api.kakao_login')}}" class="inline-block transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+                        <img src="{{ url_for('static', filename='img/auth/kakao_login_medium.png', v=static_version) }}" 
+                             alt="카카오 로그인" 
+                             class="h-10 w-auto object-contain rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
                     </a>
-                    <button class="inline-flex items-center px-4 py-2 bg-secondary-500 text-white rounded-lg hover:bg-secondary-600 transition-all duration-300 hover:-translate-y-0.5 shadow-md text-sm font-medium">
+                    <!-- <button class="inline-flex items-center px-4 py-2 bg-secondary-500 text-white rounded-lg hover:bg-secondary-600 transition-all duration-300 hover:-translate-y-0.5 shadow-md text-sm font-medium">
                         <i class="fas fa-sign-in-alt mr-2"></i> 로그인
-                    </button>
+                    </button> -->
                 {% endif %}
                 </div>
             </div>
@@ -114,7 +116,7 @@
                     <div class="md:col-span-2 lg:col-span-1">
                         <div class="flex items-center text-2xl font-bold text-secondary-400 mb-4">
                             <!-- <i class="fas fa-paw mr-2 text-3xl"></i> -->
-                            <img src="{{ url_for('static', filename='img/my_pet_voice.PNG', v=static_version) }}" style="width: 90px; height: 75px; margin-left: 0; padding: 0;" alt="">
+                            <img src="{{ url_for('static', filename='img/my_pet_voice.PNG', v=static_version) }}" style="width: 75px; margin-left: 0; padding: 0;" alt="">
                             <span>My Pet's Voice</span>
                        </div>
                         <p class="text-gray-300 leading-relaxed mb-6">
