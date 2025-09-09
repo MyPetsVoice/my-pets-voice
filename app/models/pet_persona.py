@@ -9,7 +9,7 @@ class PetPersona(BaseModel):
 
     pet_persona_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-    pet_id = db.Column(db.Integer, db.ForeignKey('pets.pet_id'), nullable=False)
+    pet_id = db.Column(db.Integer, db.ForeignKey('pets.pet_id', ondelete='CASCADE'), nullable=False)
 
     user_call = db.Column(db.String(50), nullable=False)
     style_id = db.Column(db.String, db.ForeignKey('speech_styles.style_id'), nullable=False)
@@ -96,7 +96,7 @@ class PersonaTrait(BaseModel):
     __tablename__ = 'persona_traits'
 
     persona_trait_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    pet_persona_id = db.Column(db.Integer, db.ForeignKey('pet_personas.pet_persona_id'), nullable=False)
+    pet_persona_id = db.Column(db.Integer, db.ForeignKey('pet_personas.pet_persona_id', ondelete='CASCADE'), nullable=False)
     trait_id = db.Column(db.Integer, db.ForeignKey('personality_traits.trait_id'), nullable=False)
 
     persona = db.relationship('PetPersona', backref=db.backref('persona_traits', cascade='all, delete-orphan'))
