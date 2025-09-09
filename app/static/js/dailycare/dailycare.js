@@ -321,40 +321,44 @@ async function getTodo() {
       };
 
       todoCard.innerHTML = `
-        <div class="card-hover bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-200 todo-card">
+        <div class="card-hover bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-200 ">
           <!-- Header -->
           <div class="flex items-center mb-4 todo-card" id='todo-card' onclick="clickCard(${
             e.todo_id
           })" >
-            <div class="bg-yellow-100 p-3 rounded-full">
-              <span class="text-2xl">📝</span>
+            <div class="bg-yellow-100 p-3 rounded-full todo-card">
+              <span class="text-2xl todo-card">📝</span>
             </div>
             <div class="ml-3">
-              <h3 class="font-semibold text-gray-800">${e.title}</h3>
+              <h3 class="font-semibold text-gray-800 todo-card">${e.title}</h3>
             </div>
           </div>
           
           <!-- Record Details -->
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3 todo-card">
             <div class="text-center">
-              <div class="text-2xl font-bold text-gray-800">${e.priority}</div>
-              <div class="text-sm text-gray-600">우선순위</div>
+              <div class="text-2xl font-bold text-gray-800 todo-card">${
+                e.priority
+              }</div>
+              <div class="text-sm text-gray-600 todo-card">우선순위</div>
             </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-gray-800">${e.status}</div>
+            <div class="text-center todo-card">
+              <div class="text-2xl font-bold text-gray-800 todo-card">${
+                e.status
+              }</div>
               <div class="text-sm text-gray-600">상태</div>
             </div>
             <div class="text-center">
-              <div class="text-2xl font-bold text-gray-800">${e.created_at.slice(
+              <div class="text-2xl font-bold text-gray-800 todo-card">${e.created_at.slice(
                 0,
                 10
               )}</div>
-              <div class="text-sm text-gray-600">등록일</div>
+              <div class="text-sm text-gray-600 todo-card">등록일</div>
             </div>
           </div>
           
           <!-- Footer -->
-          <div class="pt-4 border-t border-yellow-200">
+          <div class="pt-4 border-t border-yellow-200 ">
             <div class="flex justify-between items-center mb-2">
               <span class="text-sm text-gray-500">할일 상태</span>
               <span class="todo-status cursor-pointer hover:opacity-80 transition-opacity px-3 py-1 rounded-full text-sm font-medium border-2 ${getStatusStyle(
