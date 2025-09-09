@@ -82,51 +82,50 @@
                     <a href="{{ url_for('mypage.mypage_views.mypage')}}" class="px-3 py-2 rounded-lg {% if request.endpoint == 'mypage.mypage_views.mypage' %}text-white{% else %}text-gray-700 hover:text-white{% endif %} transition-all duration-300 font-medium {% if request.endpoint == 'mypage.mypage_views.mypage' %}nav-active{% else %}nav-hover{% endif %}">마이페이지</a>
                 </div>
                 
-                <!-- 날씨 api 가져와서 렌더링 -->
-                 <div id="weather" class="mb-4" style="margin-top: 15px;"></div>
-                
-                
-                {% if user %}
-                    <!-- 사용자 정보 드롭다운 -->
-                    <div class="relative" id="user-menu">
-                        <button onclick="toggleUserMenu()" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-gradient-to-r from-primary-50 to-secondary-50 hover:from-primary-100 hover:to-secondary-100 border border-primary-200 transition-all duration-300 hover:shadow-md">
-                            <div class="w-8 h-8 bg-gradient-to-r from-primary-400 to-secondary-400 rounded-full flex items-center justify-center">
-                                <i class="fas fa-user text-white text-sm"></i>
-                            </div>
-                            <span class="font-medium text-gray-700">{{ user }}님</span>
-                            <i class="fas fa-chevron-down text-gray-500 text-sm transition-transform" id="user-menu-arrow"></i>
-                        </button>
-                        
-                        <!-- 드롭다운 메뉴 -->
-                        <div id="user-dropdown" class="hidden absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                            <div class="py-2">
-                                <div class="px-4 py-2 border-b border-gray-100">
-                                    <p class="text-sm font-medium text-gray-800">{{ user }}님</p>
-                                    <p class="text-xs text-gray-500">환영합니다!</p>
+                <!-- 데스크톱용 날씨와 사용자 메뉴 -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <!-- 날씨 api 가져와서 렌더링 -->
+                    <div id="weather" class="mb-4" style="margin-top: 15px;"></div>
+                    
+                    {% if user %}
+                        <!-- 사용자 정보 드롭다운 -->
+                        <div class="relative" id="user-menu">
+                            <button onclick="toggleUserMenu()" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-gradient-to-r from-primary-50 to-secondary-50 hover:from-primary-100 hover:to-secondary-100 border border-primary-200 transition-all duration-300 hover:shadow-md">
+                                <div class="w-8 h-8 bg-gradient-to-r from-primary-400 to-secondary-400 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-white text-sm"></i>
                                 </div>
-                                <a href="{{ url_for('mypage.mypage_views.mypage')}}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                                    <i class="fas fa-user-circle text-primary-500 mr-3"></i>
-                                    마이페이지
-                                </a>
-                                <div class="border-t border-gray-100 mt-1 pt-1">
-                                    <a href="{{ url_for('auth.auth_api.logout')}}" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                                        <i class="fas fa-sign-out-alt mr-3"></i>
-                                        로그아웃
+                                <span class="font-medium text-gray-700">{{ user }}님</span>
+                                <i class="fas fa-chevron-down text-gray-500 text-sm transition-transform" id="user-menu-arrow"></i>
+                            </button>
+                            
+                            <!-- 드롭다운 메뉴 -->
+                            <div id="user-dropdown" class="hidden absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                <div class="py-2">
+                                    <div class="px-4 py-2 border-b border-gray-100">
+                                        <p class="text-sm font-medium text-gray-800">{{ user }}님</p>
+                                        <p class="text-xs text-gray-500">환영합니다!</p>
+                                    </div>
+                                    <a href="{{ url_for('mypage.mypage_views.mypage')}}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-user-circle text-primary-500 mr-3"></i>
+                                        마이페이지
                                     </a>
+                                    <div class="border-t border-gray-100 mt-1 pt-1">
+                                        <a href="{{ url_for('auth.auth_api.logout')}}" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                            <i class="fas fa-sign-out-alt mr-3"></i>
+                                            로그아웃
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                {% else %}
-                    <a href="{{ url_for('auth.auth_api.kakao_login')}}" class="inline-block transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
-                        <img src="{{ url_for('static', filename='img/auth/kakao_login_medium.png', v=static_version) }}" 
-                             alt="카카오 로그인" 
-                             class="h-10 w-auto object-contain rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                    </a>
-                    <!-- <button class="inline-flex items-center px-4 py-2 bg-secondary-500 text-white rounded-lg hover:bg-secondary-600 transition-all duration-300 hover:-translate-y-0.5 shadow-md text-sm font-medium">
-                        <i class="fas fa-sign-in-alt mr-2"></i> 로그인
-                    </button> -->
-                {% endif %}
+                    {% else %}
+                        <a href="{{ url_for('auth.auth_api.kakao_login')}}" class="inline-block transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+                            <img src="{{ url_for('static', filename='img/auth/kakao_login_medium.png', v=static_version) }}" 
+                                 alt="카카오 로그인" 
+                                 class="h-10 w-auto object-contain rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                        </a>
+                    {% endif %}
+                </div>
                 </div>
             </div>
         </nav>
