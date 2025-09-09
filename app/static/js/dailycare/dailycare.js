@@ -14,23 +14,32 @@ async function getAllPetsById() {
       const card = document.createElement("div");
       card.className = "pet-card";
       card.dataset.petId = pet.pet_id;
-      
+
       // 동물 아이콘 결정
-      let animalIcon = '🐾'; // 기본 아이콘
+      let animalIcon = "🐾"; // 기본 아이콘
       if (pet.species_name) {
-        if (pet.species_name.includes('강아지') || pet.species_name.includes('개')) {
-          animalIcon = '🐶';
-        } else if (pet.species_name.includes('고양이') || pet.species_name.includes('cat')) {
-          animalIcon = '🐱';
-        } else if (pet.species_name.includes('토끼')) {
-          animalIcon = '🐰';
-        } else if (pet.species_name.includes('새') || pet.species_name.includes('조류')) {
-          animalIcon = '🐦';
-        } else if (pet.species_name.includes('햄스터')) {
-          animalIcon = '🐹';
+        if (
+          pet.species_name.includes("강아지") ||
+          pet.species_name.includes("개")
+        ) {
+          animalIcon = "🐶";
+        } else if (
+          pet.species_name.includes("고양이") ||
+          pet.species_name.includes("cat")
+        ) {
+          animalIcon = "🐱";
+        } else if (pet.species_name.includes("토끼")) {
+          animalIcon = "🐰";
+        } else if (
+          pet.species_name.includes("새") ||
+          pet.species_name.includes("조류")
+        ) {
+          animalIcon = "🐦";
+        } else if (pet.species_name.includes("햄스터")) {
+          animalIcon = "🐹";
         }
       }
-      
+
       card.innerHTML = `
         <div class="pet-card-content">
           <span class="pet-icon">${animalIcon}</span>
@@ -40,15 +49,15 @@ async function getAllPetsById() {
           </div>
         </div>
       `;
-      
+
       // 툴팁 정보 설정
       card.title = `이름: ${pet.pet_name}
 종: ${pet.species_name}
-품종: ${pet.breed_name || '알 수 없음'}
-나이: ${pet.pet_age || '알 수 없음'}
-성별: ${pet.pet_gender || '알 수 없음'}
-중성화 여부: ${pet.is_neutered ? 'Yes' : 'No'}`;
-      
+품종: ${pet.breed_name || "알 수 없음"}
+나이: ${pet.pet_age || "알 수 없음"}
+성별: ${pet.pet_gender || "알 수 없음"}
+중성화 여부: ${pet.is_neutered ? "Yes" : "No"}`;
+
       pet_selector.appendChild(card);
 
       // 클릭 이벤트 (개별 pet 정보)
@@ -67,7 +76,7 @@ async function getAllPetsById() {
 
         window.dispatchEvent(new Event("petChanged"));
 
-        if(current_pet_id){
+        if (current_pet_id) {
           getMedications(current_pet_id);
         }
       });
@@ -256,7 +265,7 @@ async function saveHealthcare(pet_id) {
       body: JSON.stringify(send_data),
     });
 
-      // 항상 JSON 응답 받기
+    // 항상 JSON 응답 받기
     const result = await response.json();
 
     if (!result.success) {
@@ -266,15 +275,16 @@ async function saveHealthcare(pet_id) {
 
     console.log("기록저장완료:", result.data);
     alert("건강기록이 저장되었습니다.");
-    window.dispatchEvent(new CustomEvent('healthcareSaved',{
-      detail:{pet_id : pet_id}
-    }))
+    window.dispatchEvent(
+      new CustomEvent("healthcareSaved", {
+        detail: { pet_id: pet_id },
+      })
+    );
     resetHealthcareForm();
-
   } catch (error) {
     console.error("저장 실패:", error);
     alert("저장 중 오류가 발생했습니다.");
-}
+  }
 }
 // 폼 리셋
 function resetHealthcareForm() {
@@ -399,6 +409,253 @@ async function getTodo() {
     console.error("Todo 조회 실패:", err);
   }
 }
+
+// 리포트 기록 js 추가
+function setWhiteBackground() {
+  const healthWidget = document.querySelector(".health-report-widget");
+  if (healthWidget) {
+    healthWidget.style.background = "white";
+    healthWidget.style.color = "#333";
+    healthWidget.style.boxShadow = "0 8px 25px rgba(0, 0, 0, 0.15)";
+
+    // 제목 색상 변경
+    const title = healthWidget.querySelector("h3");
+    if (title) {
+      title.style.color = "#333";
+    }
+
+    // 버튼 스타일 변경
+    const button = healthWidget.querySelector(".btn");
+    if (button) {
+      button.style.background = "linear-gradient(135deg, #667eea, #764ba2)";
+      button.style.color = "white";
+    }
+  }
+}
+
+// 건강 요약 업데이트 함수 (흰색 배경 버전)
+async function updateHealthWidget() {
+  try {
+    // 배경을 흰색으로 변경
+    setWhiteBackground();
+
+    const currentPetId = localStorage.getItem("currentPetId");
+    if (!currentPetId) {
+      updateWidgetContent("반려동물을 선택해주세요");
+      return;
+    }
+
+    // 로딩 상태 표시
+    updateWidgetContent("건강 데이터를 불러오는 중...");
+
+    // 7일 데이터 가져오기
+    const response = await fetch(
+      `/api/dailycares/health-chart/${currentPetId}?days=7`
+    );
+
+    if (!response.ok) {
+      throw new Error("데이터 요청 실패");
+    }
+
+    const chartData = await response.json();
+
+    if (chartData.dates.length === 0) {
+      updateWidgetContent("최근 건강 기록이 없습니다");
+      return;
+    }
+
+    // 요약 데이터 생성
+    const summary = generateHealthSummary(chartData);
+
+    // 위젯 내용 업데이트
+    updateWidgetContent(summary);
+  } catch (error) {
+    console.error("건강 요약 업데이트 실패:", error);
+    updateWidgetContent("데이터를 불러올 수 없습니다");
+  }
+}
+
+// 위젯 내용 업데이트 함수 (흰색 배경용)
+function updateWidgetContent(content) {
+  const healthScore = document.querySelector(".health-score");
+  const healthText = document.querySelector(".health-report-widget p");
+
+  if (typeof content === "string") {
+    // 에러나 로딩 메시지인 경우
+    if (healthScore) {
+      healthScore.textContent = content;
+      healthScore.style.color = "#666";
+    }
+    if (healthText) healthText.textContent = "";
+  } else {
+    // 요약 데이터인 경우
+    if (healthScore) {
+      healthScore.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.8rem;">
+          <div style="background: #fff5f5; padding: 8px; border-radius: 6px; border-left: 3px solid #ff6b6b; border: 1px solid #ffe3e3;">
+            <div style="font-size: 0.7rem; color: #666; margin-bottom: 3px; font-weight: 600;">몸무게</div>
+            <div style="font-weight: 700; margin-bottom: 2px; color: #333;">${content.weight.trend}</div>
+            <div style="font-size: 0.65rem; color: #888;">${content.weight.average}</div>
+          </div>
+          <div style="background: #f0fdfc; padding: 8px; border-radius: 6px; border-left: 3px solid #4ecdc4; border: 1px solid #ccfbf1;">
+            <div style="font-size: 0.7rem; color: #666; margin-bottom: 3px; font-weight: 600;">식사량</div>
+            <div style="font-weight: 700; margin-bottom: 2px; color: #333;">${content.food.trend}</div>
+            <div style="font-size: 0.65rem; color: #888;">${content.food.average}</div>
+          </div>
+          <div style="background: #f0f9ff; padding: 8px; border-radius: 6px; border-left: 3px solid #45aaf2; border: 1px solid #dbeafe;">
+            <div style="font-size: 0.7rem; color: #666; margin-bottom: 3px; font-weight: 600;">수분섭취</div>
+            <div style="font-weight: 700; margin-bottom: 2px; color: #333;">${content.water.trend}</div>
+            <div style="font-size: 0.65rem; color: #888;">${content.water.average}</div>
+          </div>
+          <div style="background: #faf5ff; padding: 8px; border-radius: 6px; border-left: 3px solid #a55eea; border: 1px solid #e9d5ff;">
+            <div style="font-size: 0.7rem; color: #666; margin-bottom: 3px; font-weight: 600;">활동량</div>
+            <div style="font-weight: 700; margin-bottom: 2px; color: #333;">${content.exercise.trend}</div>
+            <div style="font-size: 0.65rem; color: #888;">${content.exercise.average}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (healthText) {
+      healthText.textContent = "최근 7일간의 건강 데이터 요약입니다";
+      healthText.style.color = "#666";
+    }
+  }
+}
+
+// 건강 요약 데이터 생성
+function generateHealthSummary(chartData) {
+  const recentData = {
+    weight: chartData.weight.slice(-7),
+    food: chartData.food.slice(-7),
+    water: chartData.water.slice(-7),
+    exercise: chartData.exercise.slice(-7),
+  };
+
+  return {
+    weight: analyzeWeightTrend(recentData.weight),
+    food: analyzeFoodTrend(recentData.food),
+    water: analyzeWaterTrend(recentData.water),
+    exercise: analyzeExerciseTrend(recentData.exercise),
+  };
+}
+
+// 트렌드 분석 함수들 (기존 analysis.js에서 가져옴)
+function analyzeWeightTrend(weights) {
+  if (weights.length < 2) return { trend: "데이터 부족", average: "" };
+
+  const first = weights[0];
+  const last = weights[weights.length - 1];
+  const change = last - first;
+  const avg = (weights.reduce((a, b) => a + b, 0) / weights.length).toFixed(1);
+
+  let trendText = "";
+  if (Math.abs(change) < 0.1) {
+    trendText = "안정적 유지";
+  } else if (change > 0) {
+    trendText = `${change.toFixed(1)}kg 증가`;
+  } else {
+    trendText = `${Math.abs(change).toFixed(1)}kg 감소`;
+  }
+
+  return {
+    trend: trendText,
+    average: `평균 ${avg}kg`,
+  };
+}
+
+function analyzeFoodTrend(foods) {
+  if (foods.length < 2) return { trend: "데이터 부족", average: "" };
+
+  const avg = (foods.reduce((a, b) => a + b, 0) / foods.length).toFixed(0);
+  const first = foods[0];
+  const last = foods[foods.length - 1];
+  const overallChange = ((last - first) / first) * 100;
+
+  let trendText = "";
+  if (Math.abs(overallChange) < 15) {
+    trendText = "일정한 섭취";
+  } else if (overallChange > 0) {
+    trendText = `섭취량 증가 (+${overallChange.toFixed(0)}%)`;
+  } else {
+    trendText = `섭취량 감소 (${Math.abs(overallChange).toFixed(0)}%)`;
+  }
+
+  return {
+    trend: trendText,
+    average: `평균 ${avg}g`,
+  };
+}
+
+function analyzeWaterTrend(waters) {
+  if (waters.length < 2) return { trend: "데이터 부족", average: "" };
+
+  const avg = (waters.reduce((a, b) => a + b, 0) / waters.length).toFixed(0);
+  const first = waters[0];
+  const last = waters[waters.length - 1];
+  const overallChange = ((last - first) / first) * 100;
+
+  let trendText = "";
+  if (Math.abs(overallChange) < 20) {
+    trendText = "일정한 수준";
+  } else if (overallChange > 0) {
+    trendText = `섭취량 증가 (+${overallChange.toFixed(0)}%)`;
+  } else {
+    trendText = `섭취량 감소 (${Math.abs(overallChange).toFixed(0)}%)`;
+  }
+
+  return {
+    trend: trendText,
+    average: `평균 ${avg}ml`,
+  };
+}
+
+function analyzeExerciseTrend(exercises) {
+  if (exercises.length < 2) return { trend: "데이터 부족", average: "" };
+
+  const avg = (exercises.reduce((a, b) => a + b, 0) / exercises.length).toFixed(
+    0
+  );
+  const first = exercises[0];
+  const last = exercises[exercises.length - 1];
+  const change = last - first;
+
+  let trendText = "";
+  if (Math.abs(change) < 10) {
+    trendText = "일정한 활동량";
+  } else if (change > 0) {
+    trendText = `활동량 증가 (+${change.toFixed(0)}분)`;
+  } else {
+    trendText = `활동량 감소 (${Math.abs(change).toFixed(0)}분)`;
+  }
+
+  return {
+    trend: trendText,
+    average: `평균 ${avg}분`,
+  };
+}
+
+// 이벤트 리스너 추가
+window.addEventListener("petChanged", function () {
+  updateHealthWidget();
+});
+
+window.addEventListener("healthcareSaved", function (event) {
+  // 건강 기록 저장 후 1초 뒤 업데이트
+  setTimeout(() => {
+    updateHealthWidget();
+  }, 1000);
+});
+
+// 페이지 로드시 실행 (기존 DOMContentLoaded에 추가)
+document.addEventListener("DOMContentLoaded", function () {
+  // 기존 코드들...
+
+  // 건강 요약 위젯 업데이트
+  setTimeout(() => {
+    updateHealthWidget();
+  }, 500); // 다른 초기화가 완료된 후 실행
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   getTodo();
