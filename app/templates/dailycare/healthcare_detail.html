@@ -34,19 +34,19 @@
                         <!-- Record Details -->
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                             <div class="text-center">
-                                <div class="text-2xl font-bold text-gray-800">{{ record.weight_kg }}kg</div>
+                                <div class="text-2xl font-bold text-gray-800">{{ record.weight_kg if record.weight_kg is not none else '정보없음 ' }}kg</div>
                                 <div class="text-sm text-gray-600">체중</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-2xl font-bold text-gray-800">{{ record.water }}ml</div>
+                                <div class="text-2xl font-bold text-gray-800">{{ record.water if record.water is not none else '정보없음 ' }}ml</div>
                                 <div class="text-sm text-gray-600">수분 섭취</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-2xl font-bold text-gray-800">{{ record.food }}g</div>
+                                <div class="text-2xl font-bold text-gray-800">{{ record.food if record.food is not none else '정보없음 ' }}g</div>
                                 <div class="text-sm text-gray-600">사료량</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-2xl font-bold text-gray-800">{{ record.walk_time_minutes }}분</div>
+                                <div class="text-2xl font-bold text-gray-800">{{ record.walk_time_minutes if record.walk_time_minutes is not none else '정보없음 ' }}분</div>
                                 <div class="text-sm text-gray-600">산책 시간</div>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-sm text-gray-500">배변 상태</span>
                                 <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                                    <i class="fas fa-check-circle mr-1"></i>{{ record.excrement_status }}
+                                    <i class="fas fa-check-circle mr-1"></i>{{ record.excrement_status if record.excrement_status is not none else '정보없음 ' }}
                                 </span>
                             </div>
                         {% if medication and medication|length > 0 %}
