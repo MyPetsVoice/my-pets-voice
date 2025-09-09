@@ -31,6 +31,12 @@ class Config:
     KAPI_HOST = os.getenv('KAPI_HOST')
     KAUTH_HOST = os.getenv('KAUTH_HOST')
     
+    # LangSmith 설정
+    LANGCHAIN_API_KEY = os.getenv('LANGCHAIN_API_KEY')
+    LANGSMITH_PROJECT = os.getenv('LANGSMITH_PROJECT')
+    LANGSMITH_ENDPOINT = os.getenv('LANGSMITH_ENDPOINT', 'https://api.smith.langchain.com')
+    LANGSMITH_TRACING = os.getenv('LANGSMITH_TRACING', 'true').lower() == 'true'
+    
     # 로깅 모듈 설정
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
     LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

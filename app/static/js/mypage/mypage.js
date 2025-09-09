@@ -22,10 +22,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const addPetForm = document.getElementById('add-pet-form')
     let addPersonaForm = null;
 
+    document.addEventListener('click', (e) => {
+        if (e.target.id === 'add-pet-btn-empty'){
+            showAddPetModal();
+        }
+    })
+
     // 반려동물 등록 모달 열기 및 동물 종류 데이터 가져오기
     addPetBtn.addEventListener('click', async () => {
         showAddPetModal();
     });
+
     
     // 반려동물 등록 모달 닫기
     [closePetModal, cancelPetForm].forEach(btn => {
