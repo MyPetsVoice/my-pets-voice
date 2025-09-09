@@ -1,117 +1,34 @@
 // // 현재 선택된 반려동물
 let currentChatPet = null;
 
-// // 알림 상태 관리
-// let notificationData = [
-//     {
-//         id: 1,
-//         type: 'like',
-//         title: '새로운 좋아요',
-//         message: '누군가가 당신의 게시물을 좋아합니다',
-//         time: '5분 전',
-//         read: false,
-//         icon: 'fas fa-heart',
-//         iconColor: 'bg-primary-500'
-//     },
-//     {
-//         id: 2,
-//         type: 'comment',
-//         title: '새로운 댓글',
-//         message: '멍멍이가 너무 귀여워요!',
-//         time: '1시간 전',
-//         read: false,
-//         icon: 'fas fa-comment',
-//         iconColor: 'bg-secondary-500'
-//     },
-//     {
-//         id: 3,
-//         type: 'follow',
-//         title: '새로운 팔로워',
-//         message: '김철수님이 당신을 팔로우했습니다',
-//         time: '2시간 전',
-//         read: true,
-//         icon: 'fas fa-user-plus',
-//         iconColor: 'bg-green-500'
-//     }
-// ];
-
-// // 알림 드롭다운 토글
-// function toggleNotifications() {
-//     const dropdown = document.getElementById('notification-dropdown');
-//     dropdown.classList.toggle('hidden');
-    
-//     // 다른 곳 클릭 시 드롭다운 닫기
-//     if (!dropdown.classList.contains('hidden')) {
-//         document.addEventListener('click', closeNotificationOnOutsideClick);
-//     } else {
-//         document.removeEventListener('click', closeNotificationOnOutsideClick);
-//     }
-// }
-
-// // 외부 클릭 시 알림 드롭다운 닫기
-// function closeNotificationOnOutsideClick(event) {
-//     const dropdown = document.getElementById('notification-dropdown');
-//     const button = document.getElementById('notification-btn');
-    
-//     if (!dropdown.contains(event.target) && !button.contains(event.target)) {
-//         dropdown.classList.add('hidden');
-//         document.removeEventListener('click', closeNotificationOnOutsideClick);
-//     }
-// }
-
-// // 읽지 않은 알림 개수 업데이트
-// // function updateNotificationBadge() {
-// //     const badge = document.getElementById('notification-badge');
-// //     const unreadCount = notificationData.filter(notification => !notification.read).length;
-    
-// //     if (unreadCount > 0) {
-// //         badge.textContent = unreadCount;
-// //         badge.style.display = 'flex';
-// //     } else {
-// //         badge.style.display = 'none';
-// //     }
-// // }
-
-// // 모든 알림 읽음 처리
-// function markAllAsRead() {
-//     notificationData.forEach(notification => {
-//         notification.read = true;
-//     });
-//     updateNotificationBadge();
-//     renderNotifications();
-// }
-
-// // 알림 렌더링
-// function renderNotifications() {
-//     const container = document.querySelector('#notification-dropdown .max-h-96');
-//     container.innerHTML = '';
-    
-//     notificationData.forEach(notification => {
-//         const notificationElement = document.createElement('div');
-//         notificationElement.className = 'notification-item p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer';
-//         notificationElement.innerHTML = `
-//             <div class="flex items-start space-x-3">
-//                 <div class="flex-shrink-0">
-//                     <div class="w-8 h-8 ${notification.iconColor} rounded-full flex items-center justify-center">
-//                         <i class="${notification.icon} text-white text-sm"></i>
-//                     </div>
-//                 </div>
-//                 <div class="flex-1 min-w-0">
-//                     <p class="text-sm font-medium text-gray-900">${notification.title}</p>
-//                     <p class="text-sm text-gray-500">${notification.message}</p>
-//                     <p class="text-xs text-gray-400 mt-1">${notification.time}</p>
-//                 </div>
-//                 ${!notification.read ? '<div class="w-2 h-2 bg-blue-500 rounded-full"></div>' : ''}
-//             </div>
-//         `;
-//         container.appendChild(notificationElement);
-//     });
-// }
-
 // 사용자 메뉴 토글
 function toggleUserMenu() {
+    const dropdown = document.getElementById('user-dropdown');
+    const arrow = document.getElementById('user-menu-arrow');
+    
+    dropdown.classList.toggle('hidden');
+    arrow.classList.toggle('rotate-180');
+    
+    // 드롭다운이 열릴 때 외부 클릭 리스너 추가
+    if (!dropdown.classList.contains('hidden')) {
+        setTimeout(() => {
+            document.addEventListener('click', closeUserMenuOnOutsideClick);
+        }, 100);
+    } else {
+        document.removeEventListener('click', closeUserMenuOnOutsideClick);
+    }
+}
+
+// 외부 클릭 시 사용자 메뉴 닫기
+function closeUserMenuOnOutsideClick(event) {
+    const dropdown = document.getElementById('user-dropdown');
     const userMenu = document.getElementById('user-menu');
-    userMenu.classList.toggle('active');
+    
+    if (!userMenu.contains(event.target)) {
+        dropdown.classList.add('hidden');
+        document.getElementById('user-menu-arrow').classList.remove('rotate-180');
+        document.removeEventListener('click', closeUserMenuOnOutsideClick);
+    }
 }
 
 // 모바일 메뉴 토글
@@ -119,18 +36,25 @@ function toggleMobileMenu() {
     const navMenu = document.getElementById('nav-menu');
     const isHidden = navMenu.classList.contains('hidden');
     
+    // 메뉴가 열릴 때 모바일용 콘텐츠 추가
+    if (isHidden) {
+        addMobileMenuContent();
+    }
+    
     navMenu.classList.toggle('hidden');
     navMenu.classList.toggle('flex');
     navMenu.classList.toggle('flex-col');
     navMenu.classList.toggle('absolute');
     navMenu.classList.toggle('top-full');
-    navMenu.classList.toggle('left-0');
     navMenu.classList.toggle('right-0');
+    navMenu.classList.toggle('w-56'); // 가로 너비 제한 (14rem = 224px)
     navMenu.classList.toggle('bg-white');
     navMenu.classList.toggle('shadow-lg');
     navMenu.classList.toggle('rounded-b-xl');
-    navMenu.classList.toggle('p-5');
+    navMenu.classList.toggle('p-4');
     navMenu.classList.toggle('z-50');
+    navMenu.classList.toggle('space-x-0'); // 가로 간격 제거
+    navMenu.classList.toggle('space-y-2'); // 세로 간격 추가
     
     // 메뉴가 열릴 때 외부 클릭 리스너 추가
     if (isHidden) {
@@ -142,12 +66,93 @@ function toggleMobileMenu() {
     }
 }
 
+// 모바일 메뉴에 페이지 링크 추가
+function addMobileMenuContent() {
+    const navMenu = document.getElementById('nav-menu');
+    const existingMobileContent = navMenu.querySelector('.mobile-menu-links');
+    
+    // 이미 추가된 콘텐츠가 있으면 제거
+    if (existingMobileContent) {
+        existingMobileContent.remove();
+    }
+    
+    // 현재 페이지 경로 확인
+    const currentPath = window.location.pathname;
+    
+    // 모바일 메뉴 링크들 생성
+    const mobileLinks = document.createElement('div');
+    mobileLinks.className = 'mobile-menu-links space-y-2';
+    
+    // 페이지 링크들
+    const links = [
+        { href: '/chat', text: '반려동물과 대화하기', endpoint: 'chat' },
+        { href: '/diary', text: '너의 일기장', endpoint: 'diary' },
+        { href: '/dailycare', text: '데일리 케어', endpoint: 'dailycare' },
+        { href: '/mypage', text: '마이페이지', endpoint: 'mypage' }
+    ];
+    
+    links.forEach(link => {
+        const linkElement = document.createElement('a');
+        linkElement.href = link.href;
+        linkElement.textContent = link.text;
+        
+        // 현재 페이지인지 확인
+        const isActive = currentPath.includes(link.endpoint);
+        linkElement.className = `block px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
+            isActive 
+                ? 'text-white bg-gradient-to-r from-orange-400 to-red-400' 
+                : 'text-gray-700 hover:text-white hover:bg-gradient-to-r hover:from-orange-400 hover:to-red-400'
+        }`;
+        
+        mobileLinks.appendChild(linkElement);
+    });
+    
+    navMenu.appendChild(mobileLinks);
+}
+
+// 모바일 사용자 메뉴 토글 (네비게이션 바용)
+function toggleMobileUserMenuNav() {
+    const dropdown = document.getElementById('mobile-user-dropdown-nav');
+    const arrow = document.getElementById('mobile-user-menu-nav-arrow');
+    
+    if (dropdown && arrow) {
+        dropdown.classList.toggle('hidden');
+        arrow.classList.toggle('rotate-180');
+        
+        // 드롭다운이 열릴 때 외부 클릭 리스너 추가
+        if (!dropdown.classList.contains('hidden')) {
+            setTimeout(() => {
+                document.addEventListener('click', closeMobileUserMenuNavOnOutsideClick);
+            }, 100);
+        } else {
+            document.removeEventListener('click', closeMobileUserMenuNavOnOutsideClick);
+        }
+    }
+}
+
+// 외부 클릭 시 모바일 네비 사용자 메뉴 닫기
+function closeMobileUserMenuNavOnOutsideClick(event) {
+    const dropdown = document.getElementById('mobile-user-dropdown-nav');
+    const userMenu = document.getElementById('mobile-user-menu-nav');
+    
+    if (userMenu && !userMenu.contains(event.target)) {
+        dropdown.classList.add('hidden');
+        document.getElementById('mobile-user-menu-nav-arrow').classList.remove('rotate-180');
+        document.removeEventListener('click', closeMobileUserMenuNavOnOutsideClick);
+    }
+}
+
+// 모바일 사용자 메뉴 토글 (드롭다운 메뉴용 - 제거됨)
+function toggleMobileUserMenu() {
+    // 이 함수는 더 이상 필요하지 않음
+}
+
 // 모바일 메뉴 닫기
 function closeMobileMenu() {
     const navMenu = document.getElementById('nav-menu');
     if (!navMenu.classList.contains('hidden')) {
         navMenu.classList.add('hidden');
-        navMenu.classList.remove('flex', 'flex-col', 'absolute', 'top-full', 'left-0', 'right-0', 'bg-white', 'shadow-lg', 'rounded-b-xl', 'p-5', 'z-50');
+        navMenu.classList.remove('flex', 'flex-col', 'absolute', 'top-full', 'right-0', 'w-56', 'bg-white', 'shadow-lg', 'rounded-b-xl', 'p-4', 'z-50', 'space-x-0', 'space-y-2');
         document.removeEventListener('click', closeMobileMenuOnOutsideClick);
     }
 }
@@ -161,15 +166,3 @@ function closeMobileMenuOnOutsideClick(event) {
         closeMobileMenu();
     }
 }
-
-// // 페이지 로드 시 초기화
-// document.addEventListener('DOMContentLoaded', function() {
-//     updateNotificationBadge();
-//     renderNotifications();
-    
-//     // "모두 읽음" 버튼 이벤트 리스너 추가
-//     const markAllReadBtn = document.querySelector('#notification-dropdown .border-b button');
-//     if (markAllReadBtn) {
-//         markAllReadBtn.addEventListener('click', markAllAsRead);
-//     }
-// });

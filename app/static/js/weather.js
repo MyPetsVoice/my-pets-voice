@@ -36,23 +36,25 @@ class WeatherWidget {
 
   // 위젯 HTML 구조 생성 (가로 배치)
   render() {
+    const isMobile = this.container.id === 'mobile-weather';
+    
     this.container.innerHTML = `
-            <div class="weather-widget bg-gradient-to-r from-orange-400 to-yellow-400 rounded-lg p-3 text-white shadow-lg">
-                <div class="flex items-center justify-between space-x-4">
-                    <!-- 왼쪽: 지역 선택 드롭다운 -->
-                    <div class="flex-shrink-0">
-                        <select id="locationSelect" class="bg-orange-500 bg-opacity-70 text-white text-sm rounded px-2 py-1 border-0 focus:outline-none focus:bg-orange-600 min-w-16">
+            <div class="weather-widget">
+                <div class="flex items-center ${isMobile ? 'space-x-1' : 'space-x-3'}">
+                    <!-- 지역 선택 드롭다운 (모바일에서는 숨김) -->
+                    <div class="flex-shrink-0 ${isMobile ? 'hidden' : ''}">
+                        <select id="locationSelect" class="bg-gray-100 text-gray-700 text-sm rounded px-2 py-1 border border-gray-200 focus:outline-none focus:border-primary-300 focus:bg-white min-w-16">
                             <option value="${this.location}">${this.location}</option>
                         </select>
                     </div>
                     
-                    <!-- 오른쪽: 날씨 정보 -->
-                    <div class="flex items-center space-x-3">
+                    <!-- 날씨 정보 -->
+                    <div class="flex items-center ${isMobile ? 'space-x-1' : 'space-x-2'}">
+                        <div id="weatherIcon" class="${isMobile ? 'text-sm' : 'text-2xl'}">⏳</div>
                         <div class="text-center">
-                            <div id="currentTemp" class="text-xl font-bold">--°</div>
-                            <div id="weatherText" class="text-sm opacity-90 whitespace-nowrap">로딩중...</div>
+                            <div id="currentTemp" class="${isMobile ? 'text-sm font-medium text-gray-600' : 'text-lg font-medium text-gray-700'}">--°</div>
+                            ${isMobile ? '' : '<div id="weatherText" class="text-xs text-gray-500 whitespace-nowrap">로딩중...</div>'}
                         </div>
-                        <div id="weatherIcon" class="text-3xl">⏳</div>
                     </div>
                 </div>
             </div>

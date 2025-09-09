@@ -1,12 +1,13 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session, Response
 from flask_socketio import SocketIO, emit, join_room, leave_room
-from app.services.chat.chat_service import chat_service
+from app.services.chat import chat_service, _tts_service
 from app.models import Pet, PetPersona
 from app.services import PetService
 import os
 import json
 import threading
 import time
+import asyncio # 비동기 프로그래밍을 지원하는 모듈
 import logging
 
 logger = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ def init_socketio(app_socketio, app):
     @socketio.on('join_chat')
     def join_chat(data):
         logger.debug(f'클라이언트로부터 받은 pet 정보 : {data}')
-        
+        # 이때 tts 정보도 받을까?
 
         # 세션에 펫 정보 있는지 확인
         if 'pet_info' not in session:
@@ -181,6 +182,40 @@ def get_persona_info(pet_id):
     except Exception as e:
         logger.error(f'페르소나 정보 조회 중 오류: {str(e)}')
         return jsonify({'success': False, 'error': '페르소나 정보 조회 중 오류가 발생했습니다.'})
+
+@chat_api_bp.route('/chat/tts', methods=['POST'])
+def generate_tts():
+    data = request.get_json()
+    
+    if data is None:
+        return jsonify({'message': 'tts 설정 정보가 없습니다.'})
+    
+    text = data.get('text')
+    voice = data.get('voice', 'alloy')
+
+    def generate():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+        try:
+            async def collect_chunks():
+                chunks= []
+                async for chunk in _tts_service.generate_speech_stream(voice, text):
+                    chunks.append(chunk)
+                return b''.join(chunks)
+            
+            # 비동기 제너레이터의 모든 데이터를 수집
+            audio_data = loop.run_until_complete(collect_chunks())
+
+            # 청크 단위로 yield(동기 제너레이터)
+            chunk_size = 1024
+            for i in range(0, len(audio_data), chunk_size):
+                yield audio_data[i:i + chunk_size]
+        
+        finally:
+            loop.close
+
+    return Response(generate(), mimetype='audio/mpeg')
 
 
 @chat_api_bp.route('/get_chat_history/<session_key>')

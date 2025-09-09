@@ -5,13 +5,11 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 from app.models import Pet, PetPersona
-from dotenv import load_dotenv
 from datetime import datetime
 import logging
 import os
 from config import Config
 
-load_dotenv()
 logger = logging.getLogger(__name__)
 
 # LangSmith 설정
@@ -27,7 +25,8 @@ class ChatService:
         self.llm = ChatOpenAI(
             model='gpt-4o-mini',
             max_tokens=256,
-            temperature=0.8
+            temperature=0.8,
+            api_key=Config.OPENAI_API_KEY
         )
         
         # LCEL에서는 ChatMessageHistory 사용
