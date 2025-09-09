@@ -6,33 +6,34 @@ dailycare_views_bp = Blueprint('dailycare_views', __name__)
 # 데일리케어페이지
 @dailycare_views_bp.route('/', methods=['GET'])
 def get_dailycare():
-    user = session.get('user')
-    user_nickname = user['kakao_account']['profile']['nickname']
     if 'user_id' not in session:
         return redirect(url_for('index'))
-
+    
+    user = session.get('user')
+    user_nickname = user['kakao_account']['profile']['nickname']
 
     return render_template('dailycare/dailycare.html', user=user_nickname)
 
 # 건강분석 페이지
 @dailycare_views_bp.route('/analysis')
 def get_analysis():
-    user = session.get('user')
-    user_nickname = user['kakao_account']['profile']['nickname']
     if 'user_id' not in session:
         return redirect(url_for('index'))
+    
+    user = session.get('user')
+    user_nickname = user['kakao_account']['profile']['nickname']
 
     return render_template('dailycare/analysis_pet.html', user=user_nickname)
 
 # 의료기록 모아보기 ('전체기록')
 @dailycare_views_bp.route('/medication-history/<int:pet_id>')
 def get_medication_history(pet_id):
-    user = session.get('user')
-    user_nickname = user['kakao_account']['profile']['nickname']
     if 'user_id' not in session:
             return redirect(url_for('index'))
-
+    
+    user = session.get('user')
     user_nickname = user['kakao_account']['profile']['nickname']
+
     return render_template('dailycare/medication_history.html', pet_id=pet_id, user=user_nickname)
 
 from datetime import datetime, timedelta, timezone
@@ -68,11 +69,11 @@ def get_healthcare_history():
 
 @dailycare_views_bp.route('/update/health-care')
 def getUpdateHealthcare():
-    user = session.get('user')
-    user_nickname = user['kakao_account']['profile']['nickname']
     if 'user_id' not in session:
         return redirect(url_for('index'))
 
+    user = session.get('user')
+    user_nickname = user['kakao_account']['profile']['nickname']
     care_id = request.args.get('care_id')
     return render_template('dailycare/healthcare_edit.html', care_id = care_id, user=user_nickname)
 
@@ -80,10 +81,11 @@ def getUpdateHealthcare():
 # Todo 전체 리스트
 @dailycare_views_bp.route('/todo')
 def get_todo():
-    user = session.get('user')
-    user_nickname = user['kakao_account']['profile']['nickname']
     if 'user_id' not in session:
         return redirect(url_for('index'))
+    
+    user = session.get('user')
+    user_nickname = user['kakao_account']['profile']['nickname']
 
     todo_id = request.args.get('todo_id')
     print(todo_id)
@@ -96,10 +98,11 @@ def get_todo():
     
 @dailycare_views_bp.route('/update/todo')
 def editTodo():
-    user = session.get('user')
-    user_nickname = user['kakao_account']['profile']['nickname']
     if 'user_id' not in session:
         return redirect(url_for('index'))
+    
+    user = session.get('user')
+    user_nickname = user['kakao_account']['profile']['nickname']
 
     todo_id = request.args.get('todo_id')
     record = HealthCareService.get_todo_record_by_id(todo_id)
@@ -108,9 +111,9 @@ def editTodo():
 # 건강상태 리포트
 @dailycare_views_bp.route('/health-chart')
 def get_health_chart():
-    user = session.get('user')
     if 'user_id' not in session:
         return redirect(url_for('index'))
 
+    user = session.get('user')
     user_nickname = user['kakao_account']['profile']['nickname']
     return render_template('dailycare/health_chart.html', user=user_nickname)
