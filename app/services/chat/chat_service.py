@@ -9,16 +9,18 @@ from dotenv import load_dotenv
 from datetime import datetime
 import logging
 import os
+from config import Config
 
 load_dotenv()
 logger = logging.getLogger(__name__)
 
 # LangSmith 설정
-os.environ["LANGCHAIN_TRACING_V2"] = "true"
-if os.getenv("LANGCHAIN_API_KEY"):
-    os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
-if os.getenv("LANGSMITH_PROJECT"):
-    os.environ["LANGCHAIN_PROJECT"] = os.getenv("LANGSMITH_PROJECT")
+if Config.LANGCHAIN_API_KEY:
+    os.environ["LANGCHAIN_TRACING_V2"] = "true" if Config.LANGSMITH_TRACING else "false"
+    os.environ["LANGCHAIN_API_KEY"] = Config.LANGCHAIN_API_KEY
+    if Config.LANGSMITH_PROJECT:
+        os.environ["LANGCHAIN_PROJECT"] = Config.LANGSMITH_PROJECT
+    os.environ["LANGCHAIN_ENDPOINT"] = Config.LANGSMITH_ENDPOINT
 
 class ChatService:
     def __init__(self):
