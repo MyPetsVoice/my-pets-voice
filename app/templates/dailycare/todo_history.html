@@ -2,48 +2,60 @@
 {% block title %}반려동물의 목소리가 들려 - TODO{% endblock %}
 {% block content %}
 <link rel="stylesheet" href="../../static/css/dailycare/todo_history.css">
-<div >
-  <div id="userInfo" data-user-id="{{ user }}"></div>
-  <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
-    <!-- 헤더 -->
-    <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-8 text-center text-white">
-      <h1 class="text-3xl font-bold drop-shadow-md mb-2">TODO List</h1>
-      <p class="opacity-90 text-lg">일정을 기록하고 관리하세요.</p>
+<div class="board-container" >
+  <div class="mx-auto px-4">
+    <div class="bg-white  overflow-hidden" >
+      
+      <!-- 헤더 -->
+    <div class="bg-white p-4 text-center border-b">
+    <i class="fas fa-book-open text-2xl mb-1 text-orange-500"></i>
+    <h1 class="text-xl font-semibold text-gray-800">나의 TODO </h1>
+    <p class="text-sm text-gray-500 mt-1">오늘의 할 일을 기록하고 관리하세요</p>
     </div>
 
-    <!-- 필터 버튼 -->
-    <div class="flex flex-wrap gap-3 p-6 border-b border-gray-200">
-      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 " onclick="filterTodos('all')" data-filter="all" >전체</button>
-      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 " onclick="filterTodos('미완료')" data-filter="미완료">대기중</button>
-      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 " onclick="filterTodos('완료')" data-filter="완료">완료</button>
-      <button class="filter-btn px-4 py-2 rounded-full font-medium border border-gray-300 text-gray-700 " onclick="filterTodos('높음')" data-filter="높음">높은 우선순위</button>
-    </div>
+      <!-- 필터 버튼 -->
+      <div class="px-6 py-4 border-b bg-gray-50 flex flex-wrap gap-3 justify-center">
+        <button class="filter-btn px-5 py-2 rounded-full border text-gray-700 bg-white shadow-sm hover:bg-orange-50" onclick="filterTodos('all')" data-filter="all">
+          <i class="fas fa-list mr-2"></i>전체
+        </button>
+        <button class="filter-btn px-5 py-2 rounded-full border text-gray-700 bg-white shadow-sm hover:bg-orange-50" onclick="filterTodos('미완료')" data-filter="미완료">
+          <i class="fas fa-clock mr-2"></i>대기중
+        </button>
+        <button class="filter-btn px-5 py-2 rounded-full border text-gray-700 bg-white shadow-sm hover:bg-orange-50" onclick="filterTodos('완료')" data-filter="완료">
+          <i class="fas fa-check-circle mr-2"></i>완료
+        </button>
+        <button class="filter-btn px-5 py-2 rounded-full border text-gray-700 bg-white shadow-sm hover:bg-orange-50" onclick="filterTodos('높음')" data-filter="높음">
+          <i class="fas fa-exclamation-triangle mr-2"></i>높은 우선순위
+        </button>
+      </div>
 
-    <!-- 일정 목록 -->
-    <div class="p-6">
-      <div id="todoList" class="space-y-4"></div>
-    </div>
+      <!-- 일정 목록 -->
+      <div class="p-6" id="todoList">
+        <!-- 할 일 카드가 여기에 렌더링됨 -->
+      </div>
 
-    <!-- 통계 영역 -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-gray-50 p-6 border-t border-gray-200 text-center">
-      <div class="bg-white rounded-lg shadow p-4">
-        <div class="text-2xl font-bold text-orange-500 mb-1" id="totalCount">0</div>
-        <div class="text-sm text-gray-600">전체 일정</div>
-      </div>
-      <div class="bg-white rounded-lg shadow p-4">
-        <div class="text-2xl font-bold text-orange-500 mb-1" id="pendingCount">0</div>
-        <div class="text-sm text-gray-600">대기 중</div>
-      </div>
-      <div class="bg-white rounded-lg shadow p-4">
-        <div class="text-2xl font-bold text-orange-500 mb-1" id="completedCount">0</div>
-        <div class="text-sm text-gray-600">완료</div>
-      </div>
-      <div class="bg-white rounded-lg shadow p-4">
-        <div class="text-2xl font-bold text-orange-500 mb-1" id="highPriorityCount">0</div>
-        <div class="text-sm text-gray-600">높은 우선순위</div>
+      <!-- 통계 -->
+      <div class="bg-gray-50 px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-orange-500" id="totalCount">0</div>
+          <div class="text-sm text-gray-600">전체</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-blue-500" id="pendingCount">0</div>
+          <div class="text-sm text-gray-600">대기중</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-green-500" id="completedCount">0</div>
+          <div class="text-sm text-gray-600">완료</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-red-500" id="highPriorityCount">0</div>
+          <div class="text-sm text-gray-600">우선순위 높음</div>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
 <script src="../../static/js/dailycare/todo_history.js"></script>
 {% endblock %}
