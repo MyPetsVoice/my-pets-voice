@@ -52,7 +52,7 @@ jobs:
           base_branch: main
           use_bedrock: "true"
           # 올바른 Bedrock Claude 모델 ID 지정
-          bedrock_model_id: "anthropic.claude-3-5-sonnet-20241022-v2:0"
+          bedrock_model_id: "anthropic.claude-3-5-sonnet-20241022-v1:0"
           # 댓글 내용에서 @claude 부분 제거 후 전달
           claude_args: ${{ github.event.comment.body }}
           # 컨텍스트 정보 추가
