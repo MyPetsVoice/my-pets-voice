@@ -25,6 +25,8 @@ class PetPersona(BaseModel):
     user = db.relationship('User', backref='pet_personas')
     # pet 관계는 Pet 모델에서 정의됨 (cascade 적용)
     speech_style = db.relationship('SpeechStyle', backref=db.backref('persona', uselist=False))
+    # Diary와의 관계 - PetPersona 삭제시 Diary도 함께 삭제
+    diaries = db.relationship('Diary', backref='pet_persona', cascade='all, delete-orphan')
 
 
     def __repr__(self):

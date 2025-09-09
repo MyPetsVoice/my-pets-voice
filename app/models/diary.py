@@ -8,7 +8,7 @@ class Diary(BaseModel):
     diary_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     
     # 페르소나 직접 참조로 변경
-    pet_persona_id = db.Column(db.Integer, db.ForeignKey('pet_personas.pet_persona_id'), nullable=False)
+    pet_persona_id = db.Column(db.Integer, db.ForeignKey('pet_personas.pet_persona_id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
 
     diary_date = db.Column(db.Date, nullable=False, default=datetime.today)
@@ -49,7 +49,7 @@ class DiaryPhoto(BaseModel):
     __tablename__ = 'diary_photo'
     
     photo_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    diary_id = db.Column(db.Integer, db.ForeignKey('diary.diary_id'), nullable=False)
+    diary_id = db.Column(db.Integer, db.ForeignKey('diary.diary_id', ondelete='CASCADE'), nullable=False)
     
     photo_url = db.Column(db.String(500), nullable=False)
     original_filename = db.Column(db.String(255))
