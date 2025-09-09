@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // UI 초기화
     initializeDropDown();
     initializeChat();
+    initializePetInfoToggle();
 
     console.log('전체 펫 목록:', allPets)
     
@@ -434,6 +435,21 @@ function deleteWelcomeMessage() {
     const welcomeMsg = document.getElementById('welcome-msg')
     if (welcomeMsg) {
         chatMessages.innerHTML = ``
+    }
+}
+
+// 반려동물 정보 토글 기능 초기화
+function initializePetInfoToggle() {
+    const toggleBtn = document.getElementById('pet-info-toggle');
+    const arrow = document.getElementById('pet-info-arrow');
+    const content = document.getElementById('pet-info-content');
+    
+    if (toggleBtn && arrow && content) {
+        toggleBtn.addEventListener('click', function() {
+            // 드롭다운 토글
+            content.classList.toggle('show');
+            arrow.classList.toggle('rotate-180');
+        });
     }
 }
 
