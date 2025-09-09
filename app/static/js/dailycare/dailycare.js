@@ -483,8 +483,21 @@ function updateWidgetContent(content) {
   if (typeof content === "string") {
     // 에러나 로딩 메시지인 경우
     if (healthScore) {
-      healthScore.textContent = content;
-      healthScore.style.color = "#666";
+      healthScore.innerHTML = `
+      <div style="
+        text-align: center; 
+        padding: 20px; 
+        color: #666; 
+        font-size: 0.9rem; 
+        font-weight: 500;
+        line-height: 1.4;
+        background: rgba(0,0,0,0.02);
+        border-radius: 8px;
+        border: 1px solid rgba(0,0,0,0.05);
+      ">
+        ${content}
+      </div>
+    `;
     }
     if (healthText) healthText.textContent = "";
   } else {
