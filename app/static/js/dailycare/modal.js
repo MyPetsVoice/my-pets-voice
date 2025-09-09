@@ -125,7 +125,7 @@ function openModal(name, pet_id) {
 // 모달 닫기 함수
 function closeModal() {
   document.getElementById("common-modal").classList.add("hidden");
-  location.reload();
+  // location.reload();
 }
 
 async function saveMedication(pet_id) {
