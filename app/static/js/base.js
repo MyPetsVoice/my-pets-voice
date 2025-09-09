@@ -46,13 +46,15 @@ function toggleMobileMenu() {
     navMenu.classList.toggle('flex-col');
     navMenu.classList.toggle('absolute');
     navMenu.classList.toggle('top-full');
-    navMenu.classList.toggle('left-0');
     navMenu.classList.toggle('right-0');
+    navMenu.classList.toggle('w-56'); // 가로 너비 제한 (14rem = 224px)
     navMenu.classList.toggle('bg-white');
     navMenu.classList.toggle('shadow-lg');
     navMenu.classList.toggle('rounded-b-xl');
-    navMenu.classList.toggle('p-5');
+    navMenu.classList.toggle('p-4');
     navMenu.classList.toggle('z-50');
+    navMenu.classList.toggle('space-x-0'); // 가로 간격 제거
+    navMenu.classList.toggle('space-y-2'); // 세로 간격 추가
     
     // 메뉴가 열릴 때 외부 클릭 리스너 추가
     if (isHidden) {
@@ -64,67 +66,85 @@ function toggleMobileMenu() {
     }
 }
 
-// 모바일 메뉴에 날씨와 사용자 정보 추가
+// 모바일 메뉴에 페이지 링크 추가
 function addMobileMenuContent() {
     const navMenu = document.getElementById('nav-menu');
-    const existingMobileContent = navMenu.querySelector('.mobile-extra-content');
+    const existingMobileContent = navMenu.querySelector('.mobile-menu-links');
     
     // 이미 추가된 콘텐츠가 있으면 제거
     if (existingMobileContent) {
         existingMobileContent.remove();
     }
     
-    // 사용자 정보와 날씨를 모바일 메뉴에 추가
-    const mobileContent = document.createElement('div');
-    mobileContent.className = 'mobile-extra-content border-t pt-4 mt-4';
+    // 현재 페이지 경로 확인
+    const currentPath = window.location.pathname;
     
-    // 사용자 정보 또는 로그인 버튼
-    const userSection = document.querySelector('#user-menu, a[href*="kakao_login"]');
-    if (userSection) {
-        const userInfo = userSection.cloneNode(true);
-        // 모바일용 스타일 조정
-        if (userInfo.id === 'user-menu') {
-            userInfo.id = 'mobile-user-menu';
-            const button = userInfo.querySelector('button');
-            if (button) {
-                button.className = 'w-full flex items-center space-x-2 px-3 py-2 rounded-lg bg-gradient-to-r from-primary-50 to-secondary-50 border border-primary-200';
-                button.setAttribute('onclick', 'toggleMobileUserMenu()');
-            }
-            // 드롭다운을 바로 보여주는 스타일로 변경
-            const dropdown = userInfo.querySelector('#user-dropdown');
-            if (dropdown) {
-                dropdown.id = 'mobile-user-dropdown';
-                dropdown.className = 'hidden mt-2 w-full bg-gray-50 border border-gray-200 rounded-lg';
-            }
-        }
-        mobileContent.appendChild(userInfo);
-    }
+    // 모바일 메뉴 링크들 생성
+    const mobileLinks = document.createElement('div');
+    mobileLinks.className = 'mobile-menu-links space-y-2';
     
-    // 날씨 정보
-    const weatherWidget = document.getElementById('weather');
-    if (weatherWidget) {
-        const weatherClone = weatherWidget.cloneNode(true);
-        weatherClone.id = 'mobile-weather';
-        weatherClone.className = 'mt-3';
-        mobileContent.appendChild(weatherClone);
+    // 페이지 링크들
+    const links = [
+        { href: '/chat', text: '반려동물과 대화하기', endpoint: 'chat' },
+        { href: '/diary', text: '너의 일기장', endpoint: 'diary' },
+        { href: '/dailycare', text: '데일리 케어', endpoint: 'dailycare' },
+        { href: '/mypage', text: '마이페이지', endpoint: 'mypage' }
+    ];
+    
+    links.forEach(link => {
+        const linkElement = document.createElement('a');
+        linkElement.href = link.href;
+        linkElement.textContent = link.text;
         
-        // 모바일 날씨 위젯 초기화
-        setTimeout(() => {
-            if (window.initWeatherWidget) {
-                initWeatherWidget('mobile-weather', '서울');
-            }
-        }, 100);
-    }
+        // 현재 페이지인지 확인
+        const isActive = currentPath.includes(link.endpoint);
+        linkElement.className = `block px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
+            isActive 
+                ? 'text-white bg-gradient-to-r from-orange-400 to-red-400' 
+                : 'text-gray-700 hover:text-white hover:bg-gradient-to-r hover:from-orange-400 hover:to-red-400'
+        }`;
+        
+        mobileLinks.appendChild(linkElement);
+    });
     
-    navMenu.appendChild(mobileContent);
+    navMenu.appendChild(mobileLinks);
 }
 
-// 모바일 사용자 메뉴 토글
-function toggleMobileUserMenu() {
-    const dropdown = document.getElementById('mobile-user-dropdown');
-    if (dropdown) {
+// 모바일 사용자 메뉴 토글 (네비게이션 바용)
+function toggleMobileUserMenuNav() {
+    const dropdown = document.getElementById('mobile-user-dropdown-nav');
+    const arrow = document.getElementById('mobile-user-menu-nav-arrow');
+    
+    if (dropdown && arrow) {
         dropdown.classList.toggle('hidden');
+        arrow.classList.toggle('rotate-180');
+        
+        // 드롭다운이 열릴 때 외부 클릭 리스너 추가
+        if (!dropdown.classList.contains('hidden')) {
+            setTimeout(() => {
+                document.addEventListener('click', closeMobileUserMenuNavOnOutsideClick);
+            }, 100);
+        } else {
+            document.removeEventListener('click', closeMobileUserMenuNavOnOutsideClick);
+        }
     }
+}
+
+// 외부 클릭 시 모바일 네비 사용자 메뉴 닫기
+function closeMobileUserMenuNavOnOutsideClick(event) {
+    const dropdown = document.getElementById('mobile-user-dropdown-nav');
+    const userMenu = document.getElementById('mobile-user-menu-nav');
+    
+    if (userMenu && !userMenu.contains(event.target)) {
+        dropdown.classList.add('hidden');
+        document.getElementById('mobile-user-menu-nav-arrow').classList.remove('rotate-180');
+        document.removeEventListener('click', closeMobileUserMenuNavOnOutsideClick);
+    }
+}
+
+// 모바일 사용자 메뉴 토글 (드롭다운 메뉴용 - 제거됨)
+function toggleMobileUserMenu() {
+    // 이 함수는 더 이상 필요하지 않음
 }
 
 // 모바일 메뉴 닫기
@@ -132,7 +152,7 @@ function closeMobileMenu() {
     const navMenu = document.getElementById('nav-menu');
     if (!navMenu.classList.contains('hidden')) {
         navMenu.classList.add('hidden');
-        navMenu.classList.remove('flex', 'flex-col', 'absolute', 'top-full', 'left-0', 'right-0', 'bg-white', 'shadow-lg', 'rounded-b-xl', 'p-5', 'z-50');
+        navMenu.classList.remove('flex', 'flex-col', 'absolute', 'top-full', 'right-0', 'w-56', 'bg-white', 'shadow-lg', 'rounded-b-xl', 'p-4', 'z-50', 'space-x-0', 'space-y-2');
         document.removeEventListener('click', closeMobileMenuOnOutsideClick);
     }
 }
