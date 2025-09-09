@@ -5,7 +5,21 @@
 <!-- 건강 상태 분석 페이지 -->
 <div id="analysis-page" class="analysis-page">
   <div class="analysis-header">
-    <h2>📊 건강 상태 분석 리포트</h2>
+    <div class="header-content">
+      <h2>📊 건강 상태 분석 리포트</h2>
+
+      <!-- 헤더 안의 선택기들 -->
+      <div class="header-controls">
+        <select id="petSelect" class="header-select">
+          <option value="">반려동물을 선택하세요</option>
+        </select>
+        <select id="periodSelect" class="header-select">
+          <option value="7" selected>최근 7일</option>
+          <option value="14">최근 14일</option>
+          <option value="30">최근 30일</option>
+        </select>
+      </div>
+    </div>
   </div>
 
   <!-- 펫 선택 영역 -->

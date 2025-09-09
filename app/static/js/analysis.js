@@ -32,6 +32,48 @@ async function loadPetList() {
   }
 }
 
+// 모든 차트 섹션 숨기기
+function hideAllChartSections() {
+  // 요약 카드 숨기기 (첫 번째 chart-card)
+  const summaryCard = document.querySelector(".chart-card");
+  if (summaryCard) {
+    summaryCard.style.display = "none";
+  }
+
+  // 트렌드 분석 카드 숨기기 (마지막 chart-card)
+  const allCards = document.querySelectorAll(".chart-card");
+  const lastCard = allCards[allCards.length - 1];
+  if (lastCard) {
+    lastCard.style.display = "none";
+  }
+
+  document.getElementById("chartSection1").style.display = "none";
+  document.getElementById("chartSection2").style.display = "none";
+  document.getElementById("chartSection3").style.display = "none";
+  document.getElementById("chartSection4").style.display = "none";
+  document.getElementById("medicationCard").style.display = "none";
+  document.getElementById("noMedicationCard").style.display = "none";
+
+  // 기존 차트들 제거
+  Object.values(charts).forEach((chart) => chart.destroy());
+  charts = {};
+
+  // 트렌드 분석 초기화
+  document.getElementById("trendAnalysis").innerHTML = "";
+}
+
+// 요약 블록 초기화
+function resetSummaryBlocks() {
+  document.getElementById("weightSummary").textContent = "분석 중...";
+  document.getElementById("weightAvg").textContent = "평균 계산 중...";
+  document.getElementById("foodSummary").textContent = "분석 중...";
+  document.getElementById("foodAvg").textContent = "평균 계산 중...";
+  document.getElementById("waterSummary").textContent = "분석 중...";
+  document.getElementById("waterAvg").textContent = "평균 계산 중...";
+  document.getElementById("exerciseSummary").textContent = "분석 중...";
+  document.getElementById("exerciseAvg").textContent = "평균 계산 중...";
+}
+
 // 차트 데이터 불러오기
 async function loadChartData() {
   const petId = document.getElementById("petSelect").value;
@@ -39,6 +81,8 @@ async function loadChartData() {
 
   if (!petId) {
     showError("반려동물을 선택해주세요.");
+    hideAllChartSections();
+    resetSummaryBlocks();
     return;
   }
 
@@ -61,6 +105,9 @@ async function loadChartData() {
 
     if (chartData.dates.length === 0) {
       showError("선택한 기간에 건강 기록이 없습니다.");
+      hideAllChartSections();
+      resetSummaryBlocks();
+      showLoading(false);
       return;
     }
 
@@ -70,6 +117,20 @@ async function loadChartData() {
     checkMedicationStatus(petId);
 
     showLoading(false);
+
+    // 요약 카드 다시 표시
+    const summaryCard = document.querySelector(".chart-card");
+    if (summaryCard) {
+      summaryCard.style.display = "block";
+    }
+
+    // 트렌드 분석 카드 다시 표시
+    const allCards = document.querySelectorAll(".chart-card");
+    const lastCard = allCards[allCards.length - 1];
+    if (lastCard) {
+      lastCard.style.display = "block";
+    }
+
     // 개별 차트 섹션들 표시
     document.getElementById("chartSection1").style.display = "block";
     document.getElementById("chartSection2").style.display = "block";
@@ -77,6 +138,8 @@ async function loadChartData() {
     document.getElementById("chartSection4").style.display = "block";
   } catch (error) {
     showError("데이터를 불러오는데 실패했습니다: " + error.message);
+    hideAllChartSections();
+    resetSummaryBlocks();
     showLoading(false);
   }
 }
