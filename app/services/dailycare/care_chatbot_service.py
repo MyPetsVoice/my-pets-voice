@@ -87,10 +87,83 @@ class CareChatbotService:
             print(f"문서 수 확인 중 오류: {e}")
         return 0
 
+    @staticmethod 
+    def _create_enhanced_query(query: str, pet_records: dict = None) -> str:
+        """
+        반려동물 정보를 포함한 향상된 검색 쿼리 생성
+        """
+        if not pet_records:
+            return query
+            
+        pet_info = pet_records.get("pet", {})
+        
+        # 반려동물 기본 정보 추출
+        pet_context_parts = []
+        
+        # 동물 종류와 품종
+        if pet_info.get('species_name'):
+            pet_context_parts.append(pet_info['species_name'])
+        if pet_info.get('breed_name'):
+            pet_context_parts.append(pet_info['breed_name'])
+            
+        # 나이와 성별
+        if pet_info.get('pet_age'):
+            pet_context_parts.append(f"{pet_info['pet_age']}살")
+        if pet_info.get('pet_gender'):
+            pet_context_parts.append(pet_info['pet_gender'])
+            
+        # 중성화 여부
+        if pet_info.get('is_neutered') is not None:
+            pet_context_parts.append("중성화됨" if pet_info['is_neutered'] else "중성화안됨")
+            
+        # 최근 건강 정보 추가
+        health_records = pet_records.get("health", [])
+        if health_records:
+            latest_health = health_records[0] # 가장 최근 기록
+            if hasattr(latest_health, 'weight_kg') and latest_health.weight_kg:
+                pet_context_parts.append(f"{latest_health.weight_kg}kg")
+        
+        # 알러지 정보
+        allergies = pet_records.get("allergy", [])
+        if allergies:
+            allergy_names = []
+            for allergy in allergies[:2]:  # 최대 2개까지
+                if hasattr(allergy, 'allergen') and allergy.allergen:
+                    allergy_names.append(allergy.allergen)
+            if allergy_names:
+                pet_context_parts.append(f"알러지: {', '.join(allergy_names)}")
+        
+        # 질병 정보  
+        diseases = pet_records.get("disease", [])
+        if diseases:
+            disease_names = []
+            for disease in diseases[:2]:  # 최대 2개까지
+                if hasattr(disease, 'disease_name') and disease.disease_name:
+                    disease_names.append(disease.disease_name)
+            if disease_names:
+                pet_context_parts.append(f"질병력: {', '.join(disease_names)}")
+        
+        # 복용 중인 약물
+        medications = pet_records.get("medication", [])
+        if medications:
+            med_names = []
+            for med in medications[:2]:  # 최대 2개까지
+                if hasattr(med, 'medication_name') and med.medication_name:
+                    med_names.append(med.medication_name)
+            if med_names:
+                pet_context_parts.append(f"복용약물: {', '.join(med_names)}")
+        
+        # 향상된 쿼리 생성
+        if pet_context_parts:
+            pet_context = " ".join(pet_context_parts)
+            enhanced_query = f"{query} {pet_context}"
+        else:
+            enhanced_query = query
+            
+        return enhanced_query
 
-   
     @staticmethod
-    def search_knowledge_base(query: str, k: int = 5, search_type: str = "hybrid") -> str:
+    def search_knowledge_base(query: str, pet_records: dict = None, k: int = 5, search_type: str = "hybrid") -> str:
         """
         지식 베이스에서 관련 문서 검색
         search_type: "vector", "keyword", "hybrid"
@@ -99,6 +172,11 @@ class CareChatbotService:
             if not query or not query.strip():
                 print("검색어가 비어있습니다.")
                 return ""
+
+            # 반려동물 정보를 포함한 향상된 쿼리 생성
+            enhanced_query = CareChatbotService._create_enhanced_query(query, pet_records)
+            print(f"원본 쿼리: {query}")
+            print(f"향상된 쿼리: {enhanced_query}")
 
             vector_store = CareChatbotService.get_vector_store()
             if not vector_store:
@@ -114,21 +192,21 @@ class CareChatbotService:
                 print(f"실행할 검색 타입: {search_type}")
                 
                 if search_type == "vector":
-                    search_results = vector_store.store.similarity_search(query, k=k)
+                    search_results = vector_store.store.similarity_search(enhanced_query, k=k)
                     print(f"벡터 검색 완료")
                 elif search_type == "keyword":
-                    keyword_results = vector_store.keyword_search(query, k=k)
+                    keyword_results = vector_store.keyword_search(enhanced_query, k=k)
                     search_results = [doc for doc, _ in keyword_results]
                     print(f"키워드 검색 완료")
                     # 키워드 검색 점수 출력
                     for i, (doc, score) in enumerate(keyword_results[:5]):
                         print(f"키워드 점수 {i+1}: {score:.2f} - {doc.page_content[:100]}...")
                 elif search_type == "hybrid":
-                    search_results = vector_store.hybrid_search(query, k=k)
+                    search_results = vector_store.hybrid_search(enhanced_query, k=k)
                     print(f"하이브리드 검색 완료")
                 else:
                     print(f"지원하지 않는 검색 타입: {search_type}")
-                    search_results = vector_store.store.similarity_search(query, k=k)
+                    search_results = vector_store.store.similarity_search(enhanced_query, k=k)
                     
                 print(f"최종 검색 결과 수: {len(search_results) if search_results else 0}")
                 
@@ -285,7 +363,7 @@ class CareChatbotService:
                 print(f"검색할 문서 수: 10")
                 
                 knowledge_context = CareChatbotService.search_knowledge_base(
-                    user_input, k=10, search_type=search_type
+                    user_input, pet_records=records, k=10, search_type=search_type
                 )
                 
                 print(f"\n=== 검색 결과 ===")
