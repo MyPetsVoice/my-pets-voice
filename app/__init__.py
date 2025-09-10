@@ -70,6 +70,7 @@ def create_app(config_name=None):
         app.logger.debug('루트 경로 접근 - 랜딩페이지')
         return render_template('landing.html')
 
+
     @app.route('/health')
     def health_check():
         """헬스체크 엔드포인트"""

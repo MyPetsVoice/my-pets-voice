@@ -3,6 +3,7 @@ from app.services.pet import PetService
 from app.services.persona import PersonaService
 from app.services.chat import ChatService
 from app.services.weather import WeatherService
+from app.services.common import FileUploadService, file_uploader
 from app.services.dailycare import (
     HealthCareService,
     MedicalCareService,
@@ -19,5 +20,7 @@ __all__ = [
     'HealthCareService',
     'MedicalCareService',
     'CareChatbotService',
-    'OpenAIService'
+    'OpenAIService',
+    'FileUploadService',
+    'file_uploader'
 ]
