@@ -732,9 +732,15 @@ function createPetCard(pet) {
     if (pet.profile_image_url && pet.profile_image_url.trim() !== '') {
         const img = document.createElement('img');
         img.src = pet.profile_image_url;
-        img.alt = `${pet.pet_name} 프로필`;
+        img.alt = "";
         img.className = "w-full h-full rounded-full object-cover";
-        img.loading = "lazy"; // 지연 로딩
+        img.loading = "lazy";
+        
+        // 이미지 로드 실패 시 발바닥 아이콘으로 대체
+        img.onerror = function() {
+            avatarDiv.innerHTML = '<i class="fa-solid fa-paw fa-2xl" style="color: #FFD43B"></i>';
+        };
+        
         avatarDiv.appendChild(img);
     } else {
         avatarDiv.innerHTML = '<i class="fa-solid fa-paw fa-2xl" style="color: #FFD43B"></i>';
