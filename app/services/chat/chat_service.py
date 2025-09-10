@@ -25,7 +25,7 @@ class ChatService:
         self.llm = ChatOpenAI(
             model='gpt-4o-mini',
             max_tokens=256,
-            temperature=0.8,
+            temperature=0.7,
             api_key=Config.OPENAI_API_KEY
         )
         

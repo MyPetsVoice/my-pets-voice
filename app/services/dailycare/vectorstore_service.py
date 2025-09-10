@@ -9,13 +9,15 @@ from flask import current_app as app
 
 import shutil
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 
 from langchain_text_splitters import MarkdownHeaderTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 import tiktoken
+from collections import Counter
+import numpy as np
 
 from config import Config
 
@@ -44,6 +46,15 @@ class VectorStoreService:
         Load existing Chroma store if present and healthy; otherwise create a new one.
         """
         logger.info("벡터 스토어 초기화 시작...")
+        logger.info(f"문서 경로: {self.documents_path}")
+        logger.info(f"벡터 DB 경로: {self.vector_db}")
+        
+        # 문서 경로 검증
+        if not self.documents_path.exists():
+            logger.error(f"문서 경로가 존재하지 않습니다: {self.documents_path}")
+            logger.info("벡터 DB를 생성하지 않고 None을 반환합니다.")
+            return None
+        
         try:
             # ensure vector_db exists
             if not self.vector_db.exists():
@@ -386,6 +397,175 @@ class VectorStoreService:
                 except Exception:
                     safe[k] = str(v)
         return safe
+
+    # -------------------------
+    # Keyword Search Methods
+    # -------------------------
+    def keyword_search(self, query: str, k: int = 5) -> List[Tuple[Document, float]]:
+        """키워드 기반 검색 (TF-IDF 스코어링)"""
+        if not self.store:
+            logger.warning("Vector store가 초기화되지 않았습니다.")
+            return []
+        
+        try:
+            # 모든 문서 가져오기
+            all_docs = self._get_all_documents()
+            if not all_docs:
+                return []
+            
+            # 키워드 전처리
+            query_keywords = self._preprocess_keywords(query)
+            if not query_keywords:
+                return []
+            
+            # TF-IDF 계산
+            scored_docs = []
+            for doc in all_docs:
+                score = self._calculate_keyword_score(doc.page_content, query_keywords)
+                if score > 0:
+                    scored_docs.append((doc, score))
+            
+            # 점수순 정렬 후 상위 k개 반환
+            scored_docs.sort(key=lambda x: x[1], reverse=True)
+            return scored_docs[:k]
+            
+        except Exception as e:
+            logger.error(f"키워드 검색 중 오류 발생: {e}")
+            return []
+
+    def _get_all_documents(self) -> List[Document]:
+        """벡터 스토어에서 모든 문서 가져오기"""
+        try:
+            # Chroma에서 모든 문서 ID 가져오기
+            collection = self.store._collection
+            all_data = collection.get()
+            
+            documents = []
+            if all_data and 'documents' in all_data and 'metadatas' in all_data:
+                for i, (content, metadata) in enumerate(zip(all_data['documents'], all_data['metadatas'])):
+                    doc = Document(page_content=content, metadata=metadata or {})
+                    documents.append(doc)
+            
+            return documents
+            
+        except Exception as e:
+            logger.error(f"모든 문서 가져오기 실패: {e}")
+            return []
+
+    def _preprocess_keywords(self, query: str) -> List[str]:
+        """키워드 전처리 (한국어/영어 지원)"""
+        # 소문자 변환 및 특수문자 제거
+        query = re.sub(r'[^\w\s가-힣]', ' ', query.lower())
+        
+        # 단어 분리 및 불용어 제거
+        stop_words = {'은', '는', '이', '가', '을', '를', '에', '의', '와', '과', '도', '로', '으로', 
+                     'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with'}
+        
+        keywords = [word.strip() for word in query.split() if len(word.strip()) > 1 and word.strip() not in stop_words]
+        return keywords
+
+    def _calculate_keyword_score(self, content: str, keywords: List[str]) -> float:
+        """TF-IDF 기반 키워드 스코어 계산"""
+        if not content or not keywords:
+            return 0.0
+        
+        content_lower = content.lower()
+        score = 0.0
+        
+        for keyword in keywords:
+            # 단순 TF 계산 (빈도)
+            tf = content_lower.count(keyword.lower())
+            if tf > 0:
+                # 키워드 길이에 따른 가중치 (긴 키워드에 더 높은 점수)
+                weight = len(keyword) / 10.0 + 1.0
+                score += tf * weight
+        
+        return score
+
+    # -------------------------
+    # Hybrid Search Methods
+    # -------------------------
+    def hybrid_search(self, query: str, k: int = 5, vector_weight: float = 0.7, keyword_weight: float = 0.3) -> List[Document]:
+        """하이브리드 검색 (벡터 + 키워드)"""
+        try:
+            # 벡터 검색 결과
+            vector_results = []
+            if self.store:
+                try:
+                    vector_docs = self.store.similarity_search_with_score(query, k=k*2)
+                    # 점수 정규화 (유사도를 0-1 범위로)
+                    if vector_docs:
+                        max_score = max(score for _, score in vector_docs)
+                        min_score = min(score for _, score in vector_docs)
+                        score_range = max_score - min_score if max_score > min_score else 1
+                        
+                        for doc, score in vector_docs:
+                            # 거리를 유사도로 변환 (거리가 작을수록 유사도가 높음)
+                            normalized_score = 1 - ((score - min_score) / score_range)
+                            vector_results.append((doc, normalized_score))
+                except Exception as e:
+                    logger.warning(f"벡터 검색 실패: {e}")
+            
+            # 키워드 검색 결과
+            keyword_results = self.keyword_search(query, k=k*2)
+            
+            # 키워드 검색 점수 정규화
+            if keyword_results:
+                max_kw_score = max(score for _, score in keyword_results)
+                min_kw_score = min(score for _, score in keyword_results)
+                kw_score_range = max_kw_score - min_kw_score if max_kw_score > min_kw_score else 1
+                
+                normalized_kw_results = []
+                for doc, score in keyword_results:
+                    normalized_score = (score - min_kw_score) / kw_score_range if kw_score_range > 0 else 0
+                    normalized_kw_results.append((doc, normalized_score))
+                keyword_results = normalized_kw_results
+            
+            # 문서별 점수 통합
+            doc_scores = {}
+            
+            # 벡터 검색 점수 추가
+            for doc, score in vector_results:
+                doc_key = self._get_doc_key(doc)
+                doc_scores[doc_key] = doc_scores.get(doc_key, {'doc': doc, 'vector_score': 0, 'keyword_score': 0})
+                doc_scores[doc_key]['vector_score'] = score
+            
+            # 키워드 검색 점수 추가
+            for doc, score in keyword_results:
+                doc_key = self._get_doc_key(doc)
+                if doc_key not in doc_scores:
+                    doc_scores[doc_key] = {'doc': doc, 'vector_score': 0, 'keyword_score': 0}
+                doc_scores[doc_key]['keyword_score'] = score
+            
+            # 최종 점수 계산 및 정렬
+            final_results = []
+            for doc_key, data in doc_scores.items():
+                final_score = (data['vector_score'] * vector_weight + 
+                             data['keyword_score'] * keyword_weight)
+                final_results.append((data['doc'], final_score))
+            
+            # 점수순 정렬
+            final_results.sort(key=lambda x: x[1], reverse=True)
+            
+            # 상위 k개 문서만 반환
+            return [doc for doc, _ in final_results[:k]]
+            
+        except Exception as e:
+            logger.error(f"하이브리드 검색 중 오류 발생: {e}")
+            # 실패 시 벡터 검색만 사용
+            try:
+                if self.store:
+                    return self.store.similarity_search(query, k=k)
+            except:
+                pass
+            return []
+
+    def _get_doc_key(self, doc: Document) -> str:
+        """문서의 고유 키 생성"""
+        content_hash = hashlib.md5(doc.page_content.encode('utf-8')).hexdigest()
+        metadata_str = json.dumps(doc.metadata, sort_keys=True) if doc.metadata else ""
+        metadata_hash = hashlib.md5(metadata_str.encode('utf-8')).hexdigest()
+        return f"{content_hash}_{metadata_hash}"
 
     # -------------------------
     # Embedding cache helpers
