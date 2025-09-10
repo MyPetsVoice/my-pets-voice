@@ -43,11 +43,10 @@ KST = timezone(timedelta(hours=9))
 # 건강기록 모아보기 ('기록보기')
 @dailycare_views_bp.route('/health-history')
 def get_healthcare_history():
-
-    user = session.get('user')
     if 'user_id' not in session:
         return redirect(url_for('index'))
 
+    user = session.get('user')
     user_nickname = user['kakao_account']['profile']['nickname']
 
     care_id = request.args.get('care_id')  # URL에서 ?care_id=값 가져오기
@@ -62,7 +61,7 @@ def get_healthcare_history():
         record.updated_at = record.updated_at.astimezone(KST).strftime("%Y-%m-%d %H:%M:%S")
 
         return render_template(
-            'dailycare/healthcare_detail.html', record=record, medication=medication
+            'dailycare/healthcare_detail.html', record=record, medication=medication, user=user_nickname
         )
     else:
         return render_template('dailycare/healthcare_history.html', user=user_nickname)

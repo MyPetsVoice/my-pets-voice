@@ -41,23 +41,6 @@
                 
                 <!-- 메인 콘텐츠 영역 -->
                 <div class="dailycare-content">
-                    <!-- 헤더 스타일의 반려동물 선택 영역 -->
-                    <div class="pet-selection-header mb-6">
-                        <div class="bg-white rounded-xl shadow-lg p-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <h1 class="text-2xl font-bold text-gray-800">
-                                    <i class="fas fa-paw text-orange-500 mr-2"></i>
-                                    오늘의 케어 기록 🆕
-                                    <!-- <span class="text-sm text-gray-600">반려동물을 선택하여 건강기록을 관리하세요</span> -->
-                                </h1>
-                            </div>
-                            
-                            <!-- 반려동물 선택 카드들 -->
-                            <div id="pet-selector" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                <!-- 펫 카드들이 여기에 동적으로 추가됩니다 -->
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- 케어 기록 폼 영역 -->
                     <div class="care-record-section mb-6">
@@ -67,8 +50,31 @@
                             <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            건강 기록 입력
+                            오늘의 케어 기록
                         </h2>
+                        
+                        <!-- 펫카드 스타일 드롭다운 -->
+                        <div class="relative">
+                            <button id="pet-selector-btn" class="pet-card-dropdown bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-orange-300 rounded-xl p-4 hover:from-orange-100 hover:to-yellow-100 hover:border-orange-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all duration-200 min-w-48 shadow-sm">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-2xl" id="selected-pet-icon">🐾</span>
+                                        <div class="text-left">
+                                            <div class="font-semibold text-gray-800" id="selected-pet-name">동물을 선택하세요</div>
+                                            <div class="text-sm text-gray-500" id="selected-pet-species"></div>
+                                        </div>
+                                    </div>
+                                    <svg class="w-4 h-4 text-gray-400 transition-transform" id="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </button>
+                            
+                            <!-- 드롭다운 메뉴 -->
+                            <div id="pet-dropdown-menu" class="hidden absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-64 overflow-y-auto">
+                                <!-- JavaScript에서 동적으로 펫 옵션들이 추가됩니다 -->
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="nav-tabs">

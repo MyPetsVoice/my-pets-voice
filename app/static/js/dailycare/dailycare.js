@@ -1,5 +1,57 @@
-const pet_selector = document.getElementById("pet-selector");
+const pet_selector_btn = document.getElementById("pet-selector-btn");
+const pet_dropdown_menu = document.getElementById("pet-dropdown-menu");
+const dropdown_arrow = document.getElementById("dropdown-arrow");
+const selected_pet_icon = document.getElementById("selected-pet-icon");
+const selected_pet_name = document.getElementById("selected-pet-name");
+const selected_pet_species = document.getElementById("selected-pet-species");
 let current_pet_id = null;
+let pets_data = [];
+
+// 펫카드 드롭다운 기능
+function initPetDropdown() {
+  // 드롭다운 토글
+  pet_selector_btn.addEventListener("click", function() {
+    const isHidden = pet_dropdown_menu.classList.contains("hidden");
+    if (isHidden) {
+      pet_dropdown_menu.classList.remove("hidden");
+      dropdown_arrow.style.transform = "rotate(180deg)";
+    } else {
+      pet_dropdown_menu.classList.add("hidden");
+      dropdown_arrow.style.transform = "rotate(0deg)";
+    }
+  });
+
+  // 외부 클릭 시 드롭다운 닫기
+  document.addEventListener("click", function(e) {
+    if (!pet_selector_btn.contains(e.target) && !pet_dropdown_menu.contains(e.target)) {
+      pet_dropdown_menu.classList.add("hidden");
+      dropdown_arrow.style.transform = "rotate(0deg)";
+    }
+  });
+}
+
+// 펫 선택 함수
+function selectPet(pet) {
+  // 선택된 펫 정보 업데이트
+  selected_pet_icon.textContent = pet.icon;
+  selected_pet_name.textContent = pet.pet_name;
+  selected_pet_species.textContent = pet.species_name;
+  
+  // current_pet_id 설정
+  current_pet_id = Number(pet.pet_id);
+  localStorage.setItem("currentPetId", current_pet_id);
+  
+  // 드롭다운 닫기
+  pet_dropdown_menu.classList.add("hidden");
+  dropdown_arrow.style.transform = "rotate(0deg)";
+  
+  // 이벤트 발송
+  window.dispatchEvent(new Event("petChanged"));
+  
+  if (current_pet_id) {
+    getMedications(current_pet_id);
+  }
+}
 
 // 전체 펫 조회
 async function getAllPetsById() {
@@ -8,13 +60,13 @@ async function getAllPetsById() {
     if (!response.ok) throw new Error("Failed to fetch pet list");
     const pets = await response.json();
     console.log("회원의 petList입니다. ", pets);
+    
+    pets_data = pets;
 
-    // pet-card 생성 (전체 pet)
+    // 드롭다운 메뉴에 펫 옵션들 추가
+    pet_dropdown_menu.innerHTML = "";
+    
     pets.forEach((pet) => {
-      const card = document.createElement("div");
-      card.className = "pet-card";
-      card.dataset.petId = pet.pet_id;
-
       // 동물 아이콘 결정
       let animalIcon = "🐾"; // 기본 아이콘
       if (pet.species_name) {
@@ -40,56 +92,56 @@ async function getAllPetsById() {
         }
       }
 
-      card.innerHTML = `
-        <div class="pet-card-content">
-          <span class="pet-icon">${animalIcon}</span>
-          <div class="pet-info">
-            <span class="pet-name">${pet.pet_name}</span>
-            <span class="pet-species">${pet.species_name}</span>
+      // 펫 옵션 생성
+      const petOption = document.createElement("div");
+      petOption.className = "pet-option p-3 hover:bg-gray-50 cursor-pointer transition-colors";
+      petOption.innerHTML = `
+        <div class="flex items-center space-x-3">
+          <span class="text-2xl">${animalIcon}</span>
+          <div>
+            <div class="font-semibold text-gray-800">${pet.pet_name}</div>
+            <div class="text-sm text-gray-500">${pet.species_name}</div>
           </div>
         </div>
       `;
 
-      // 툴팁 정보 설정
-      card.title = `이름: ${pet.pet_name}
-종: ${pet.species_name}
-품종: ${pet.breed_name || "알 수 없음"}
-나이: ${pet.pet_age || "알 수 없음"}
-성별: ${pet.pet_gender || "알 수 없음"}
-중성화 여부: ${pet.is_neutered ? "Yes" : "No"}`;
-
-      pet_selector.appendChild(card);
-
-      // 클릭 이벤트 (개별 pet 정보)
-      card.addEventListener("click", async function () {
-        // active 표시
-        pet_selector
-          .querySelectorAll(".pet-card")
-          .forEach((c) => c.classList.remove("active"));
-        this.classList.add("active");
-
-        // 현재 선택된 pet_id 숫자로 변환
-        current_pet_id = Number(this.dataset.petId);
-
-        // 🔹 localStorage 에 저장
-        localStorage.setItem("currentPetId", current_pet_id);
-
-        window.dispatchEvent(new Event("petChanged"));
-
-        if (current_pet_id) {
-          getMedications(current_pet_id);
-        }
+      // 클릭 이벤트
+      petOption.addEventListener("click", function() {
+        selectPet({
+          ...pet,
+          icon: animalIcon
+        });
       });
+
+      pet_dropdown_menu.appendChild(petOption);
     });
+
+    // 드롭다운 초기화
+    initPetDropdown();
 
     // 🔹 페이지 로드 후, 이전에 선택한 pet 자동 선택
     const storedPetId = localStorage.getItem("currentPetId");
     if (storedPetId) {
-      const card = pet_selector.querySelector(
-        `.pet-card[data-pet-id="${storedPetId}"]`
-      );
-      if (card) {
-        card.click(); // 클릭 이벤트 강제로 실행해서 데이터 불러오기
+      const storedPet = pets.find(p => p.pet_id == storedPetId);
+      if (storedPet) {
+        let animalIcon = "🐾";
+        if (storedPet.species_name) {
+          if (storedPet.species_name.includes("강아지") || storedPet.species_name.includes("개")) {
+            animalIcon = "🐶";
+          } else if (storedPet.species_name.includes("고양이") || storedPet.species_name.includes("cat")) {
+            animalIcon = "🐱";
+          } else if (storedPet.species_name.includes("토끼")) {
+            animalIcon = "🐰";
+          } else if (storedPet.species_name.includes("새") || storedPet.species_name.includes("조류")) {
+            animalIcon = "🐦";
+          } else if (storedPet.species_name.includes("햄스터")) {
+            animalIcon = "🐹";
+          }
+        }
+        selectPet({
+          ...storedPet,
+          icon: animalIcon
+        });
       }
     }
 
@@ -104,7 +156,8 @@ async function getAllPetsById() {
       window.location.href = `/dailycare/health-history`;
     });
   } catch (error) {
-    pet_selector.innerHTML = "<p>Pet 리스트를 불러올 수 없습니다.</p>";
+    console.error("Pet 리스트를 불러올 수 없습니다:", error);
+    selected_pet_name.textContent = "펫 정보를 불러올 수 없습니다";
   }
 }
 
@@ -311,70 +364,48 @@ async function getTodo() {
     todos.forEach((e) => {
       const todoCard = document.createElement("div");
 
-      // 상태에 따른 스타일 클래스 결정
+      // 우선순위에 따른 배지 스타일 결정
+      const getPriorityStyle = (priority) => {
+        switch(priority) {
+          case "높음": return "bg-red-100 text-red-700 border border-red-300";
+          case "보통": return "bg-yellow-100 text-yellow-700 border border-yellow-300";
+          case "낮음": return "bg-green-100 text-green-700 border border-green-300";
+          default: return "bg-gray-100 text-gray-700 border border-gray-300";
+        }
+      };
+
+      // 상태에 따른 배지 스타일 결정
       const getStatusStyle = (status) => {
         if (status === "완료") {
-          return "bg-gray-100 text-gray-600 border-gray-300";
+          return "bg-green-100 text-green-700 border border-green-300";
         } else {
-          return "bg-blue-100 text-blue-800 border-blue-300";
+          return "bg-blue-100 text-blue-700 border border-blue-300";
         }
       };
 
       todoCard.innerHTML = `
-        <div class="card-hover bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-200 ">
-          <!-- Header -->
-          <div class="flex items-center mb-4 todo-card" id='todo-card' onclick="clickCard(${
-            e.todo_id
-          })" >
-            <div class="bg-yellow-100 p-3 rounded-full todo-card">
-              <span class="text-2xl todo-card">📝</span>
-            </div>
-            <div class="ml-3">
-              <h3 class="font-semibold text-gray-800 todo-card">${e.title}</h3>
-            </div>
-          </div>
-          
-          <!-- Record Details -->
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3 todo-card">
-            <div class="text-center">
-              <div class="text-2xl font-bold text-gray-800 todo-card">${
-                e.priority
-              }</div>
-              <div class="text-sm text-gray-600 todo-card">우선순위</div>
-            </div>
-            <div class="text-center todo-card">
-              <div class="text-2xl font-bold text-gray-800 todo-card">${
-                e.status
-              }</div>
-              <div class="text-sm text-gray-600">상태</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-gray-800 todo-card">${e.created_at.slice(
-                0,
-                10
-              )}</div>
-              <div class="text-sm text-gray-600 todo-card">등록일</div>
-            </div>
-          </div>
-          
-          <!-- Footer -->
-          <div class="pt-4 border-t border-yellow-200 ">
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-sm text-gray-500">할일 상태</span>
-              <span class="todo-status cursor-pointer hover:opacity-80 transition-opacity px-3 py-1 rounded-full text-sm font-medium border-2 ${getStatusStyle(
-                e.status
-              )}" 
+        <div class="card-hover bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border border-orange-200 shadow-sm hover:shadow-md transition-shadow">
+          <!-- 헤더: 우선순위, 상태, 등록일 -->
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-orange-100">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-1 rounded-full text-xs font-medium ${getPriorityStyle(e.priority)}">
+                ${e.priority}
+              </span>
+              <span class="todo-status cursor-pointer hover:opacity-80 transition-opacity px-2 py-1 rounded-full text-xs font-medium ${getStatusStyle(e.status)}" 
                     data-id="${e.todo_id}">
-                <i class="fas fa-${
-                  e.status === "완료" ? "check-circle" : "clock"
-                } mr-1"></i>${e.status}
+                <i class="fas fa-${e.status === "완료" ? "check-circle" : "clock"} mr-1"></i>${e.status}
               </span>
             </div>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-500">description</span>
-              <span class="text-sm text-gray-500">${
-                e.description || "상세내용이 존재하지 않습니다."
-              }</span>
+            <div class="text-sm text-gray-500 font-medium">
+              ${e.created_at.slice(0, 10)}
+            </div>
+          </div>
+          
+          <!-- 메인 콘텐츠: 케어 제목과 세부 내용 중점 표시 -->
+          <div class="todo-card cursor-pointer" onclick="clickCard(${e.todo_id})">
+            <div class="mb-3">
+              <h3 class="text-lg font-bold text-gray-800 mb-2 leading-tight">${e.title}</h3>
+              <p class="text-gray-600 leading-relaxed">${e.description || "상세내용이 등록되지 않았습니다."}</p>
             </div>
           </div>
         </div>
@@ -578,6 +609,7 @@ function updateWidgetContent(content) {
     if (healthText) {
       healthText.textContent = "최근 7일간의 건강 데이터 요약입니다";
       healthText.style.color = "#666";
+      healthText.style.marginBottom = "16px";
     }
   }
 }
