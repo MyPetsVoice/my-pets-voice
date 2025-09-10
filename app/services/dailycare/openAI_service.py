@@ -1,12 +1,12 @@
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
+from config import Config
 
-load_dotenv()
 # 매번 인스턴스 생성하지 않게 하기!
 class OpenAIService:
     def __init__(self):
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.client = OpenAI(api_key=Config.OPENAI_API_KEY)
     
     def get_gpt_response(self, prompt: str) -> str:
         try:

@@ -10,8 +10,18 @@ from app.services.dailycare.openAI_service import get_gpt_response
 from app.services.dailycare.vectorstore_service import VectorStoreService
 from flask import current_app as app
 from langchain_core.documents import Document
-load_dotenv()
-print(VectorStoreService)
+from config import Config
+import os
+
+
+# LangSmith 설정
+if Config.LANGCHAIN_API_KEY:
+    os.environ["LANGCHAIN_TRACING_V2"] = "true" if Config.LANGSMITH_TRACING else "false"
+    os.environ["LANGCHAIN_API_KEY"] = Config.LANGCHAIN_API_KEY
+    if Config.LANGSMITH_PROJECT:
+        os.environ["LANGCHAIN_PROJECT"] = Config.LANGSMITH_PROJECT
+    os.environ["LANGCHAIN_ENDPOINT"] = Config.LANGSMITH_ENDPOINT
+
 
 class CareChatbotService:
     # 벡터 스토어 인스턴스를 클래스 변수로 관리 (싱글톤)
@@ -79,105 +89,6 @@ class CareChatbotService:
 
 
    
-    # def search_knowledge_base(query: str, k: int = 5) -> str:
-    #     """벡터 스토어에서 관련 문서 검색"""
-    #     try:
-    #         # 입력 검증
-    #         if not query or not query.strip():
-    #             print("검색어가 비어있습니다.")
-    #             return ""
-            
-    #         vector_store = CareChatbotService.get_vector_store()
-    #         if not vector_store:
-    #             print("벡터 스토어 서비스를 가져올 수 없습니다.")
-    #             return ""
-            
-    #         # store 속성 존재 여부 확인
-    #         if not hasattr(vector_store, 'store') or vector_store.store is None:
-    #             print("벡터 스토어가 초기화되지 않았습니다.")
-    #             return ""
-
-    #         # similarity_search 실행 및 안전한 처리
-    #         search_results = None
-    #         try:
-    #             search_results = vector_store.store.similarity_search(query, k=k)
-    #         except Exception as search_error:
-    #             print(f"검색 실행 중 오류 발생: {search_error}")
-    #             return ""
-            
-    #         # 검색 결과 검증
-    #         if not search_results:
-    #             print("검색 결과가 없습니다.")
-    #             return ""
-            
-    #         if not isinstance(search_results, list):
-    #             print(f"예상치 못한 검색 결과 타입: {type(search_results)}")
-    #             return ""
-
-    #         knowledge_context = []
-            
-    #         for i, doc in enumerate(search_results):
-    #             try:
-    #                 # Document 객체 검증
-    #                 if not doc:
-    #                     print(f"인덱스 {i}의 문서가 None입니다.")
-    #                     continue
-                    
-    #                 if not isinstance(doc, Document):
-    #                     print(f"인덱스 {i}의 객체가 Document가 아닙니다: {type(doc)}")
-    #                     continue
-
-    #                 # page_content 안전하게 추출
-    #                 content = ""
-    #                 if hasattr(doc, 'page_content') and doc.page_content:
-    #                     content = str(doc.page_content).strip()
-                    
-    #                 if not content:
-    #                     print(f"인덱스 {i}의 문서 내용이 비어있습니다.")
-    #                     continue
-
-    #                 print(f'content {i+1}: {content[:100]}...')  # 처음 100자만 출력
-
-    #                 # metadata 안전하게 추출
-    #                 metadata = {}
-    #                 if hasattr(doc, 'metadata') and isinstance(doc.metadata, dict):
-    #                     metadata = doc.metadata
-
-    #                 # source 정보 구성
-    #                 source_info = ""
-    #                 source_candidates = ['source_file', 'file_path', 'data_type']
-                    
-    #                 for candidate in source_candidates:
-    #                     if metadata.get(candidate):
-    #                         source_info = f"[출처: {metadata[candidate]}]"
-    #                         break
-                    
-    #                 if not source_info:
-    #                     source_info = "[출처: 알 수 없음]"
-
-    #                 # 컨텍스트에 추가
-    #                 formatted_content = f"참고자료 {i+1} {source_info}:\n{content}\n"
-    #                 knowledge_context.append(formatted_content)
-
-    #             except Exception as doc_error:
-    #                 print(f"문서 {i} 처리 중 오류 발생: {doc_error}")
-    #                 continue
-
-    #         # 최종 결과 반환
-    #         if not knowledge_context:
-    #             print("처리 가능한 검색 결과가 없습니다.")
-    #             return ""
-            
-    #         result = "\n".join(knowledge_context)
-    #         print(f"총 {len(knowledge_context)}개의 참고자료를 찾았습니다.")
-            
-    #         return result
-
-    #     except Exception as e:
-    #         print(f"지식 베이스 검색 중 예상치 못한 오류 발생: {e}")
-    #         import traceback
-    #         print(f"상세 오류 정보: {traceback.format_exc()}")
-    #         return ""
     @staticmethod
     def search_knowledge_base(query: str, k: int = 5, search_type: str = "hybrid") -> str:
         """

@@ -46,6 +46,15 @@ class VectorStoreService:
         Load existing Chroma store if present and healthy; otherwise create a new one.
         """
         logger.info("벡터 스토어 초기화 시작...")
+        logger.info(f"문서 경로: {self.documents_path}")
+        logger.info(f"벡터 DB 경로: {self.vector_db}")
+        
+        # 문서 경로 검증
+        if not self.documents_path.exists():
+            logger.error(f"문서 경로가 존재하지 않습니다: {self.documents_path}")
+            logger.info("벡터 DB를 생성하지 않고 None을 반환합니다.")
+            return None
+        
         try:
             # ensure vector_db exists
             if not self.vector_db.exists():
