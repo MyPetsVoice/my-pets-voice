@@ -20,6 +20,9 @@ class Config:
     COLLECTION_NAME = os.getenv('COLLECTION_NAME', 'mypetsvoice_docs')
     DOCUMENTS_PATH = os.getenv('DOCUMENTS_PATH', './data')
 
+    # 파일 저장 경로
+    STORAGE_PATH=os.getenv('STORAGE_PATH', os.path.join(os.path.dirname(__file__), 'app', 'static', 'uploads'))
+
     # OpenAI API 설정
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
     

@@ -1,19 +1,14 @@
+import os
+from datetime import datetime
+from werkzeug.utils import secure_filename
 from flask import Blueprint, request, jsonify, session
 from app.models import db
 from app.models.diary import Diary, DiaryPhoto
 from app.models.pet_persona import PetPersona
-from app.services import DiaryService
-import os
-from werkzeug.utils import secure_filename
-from datetime import datetime
+from app.services import DiaryService, file_uploader
 
 diary_api_bp = Blueprint("diary_api", __name__)
 
-# 파일 업로드 설정
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # 전체 일기 목록 조회 
 @diary_api_bp.route("/list")
@@ -154,28 +149,24 @@ def create_diary():
     
     # 사진 처리
     photos = request.files.getlist('photos')
+
     if photos:
-        upload_folder = os.path.join('app', 'static', 'uploads', 'diary')
-        os.makedirs(upload_folder, exist_ok=True)
-        
         for i, photo in enumerate(photos):
-            if photo and photo.filename != '' and allowed_file(photo.filename):
-                # 파일명 생성
-                filename = secure_filename(photo.filename)
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                filename = f"{timestamp}_{i}_{filename}"
+            # 파일명 생성
+            filename = secure_filename(photo.filename)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"{timestamp}_{i}_{filename}"
+
+            file_url = file_uploader.save_file(photo, 'diary', filename)
                 
-                # 파일 저장
-                file_path = os.path.join(upload_folder, filename)
-                photo.save(file_path)
                 
-                # 데이터베이스에 사진 정보 저장
-                diary_photo = DiaryPhoto.create_photo(
-                    diary_id=new_diary.diary_id,
-                    photo_url=f"/static/uploads/diary/{filename}",
-                    original_filename=photo.filename,
-                    display_order=i
-                )
+            # 데이터베이스에 사진 정보 저장
+            diary_photo = DiaryPhoto.create_photo(
+                diary_id=new_diary.diary_id,
+                photo_url=file_url,
+                original_filename=photo.filename,
+                display_order=i
+            )
     
     return jsonify({
         "success": True,

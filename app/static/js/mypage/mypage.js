@@ -154,37 +154,29 @@ document.addEventListener('DOMContentLoaded', function() {
     addPetForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
-        const trimedFormData = {}
 
-        for (let [key, value] of formData.entries()) {
-            if (key === 'is_neutered') {
-                trimedFormData[key] = true;
-            }
-            else if (value.trim() !== '') {
-                trimedFormData[key] = value;
-            }
-        }
-    
+        // 
+
         if (!formData.has('is_neutered')) {
-            trimedFormData['is_neutered'] = false;
+            formData.append('is_neutered', 'false');
+        } else {
+            formData.set('is_neutered', 'true')
         }
 
-        console.log('보낼 데이터:', trimedFormData);
+        console.log('보낼 데이터:', formData);
 
         const saveBtn = document.getElementById('save-pet-btn')
         let response;
-        if (saveBtn.dataset.mode === 'add') {
 
+        if (saveBtn.dataset.mode === 'add') {
             response = await fetch('/api/add-pet/', {
                 method: 'POST',
-                body: JSON.stringify(trimedFormData),
-                headers: {'Content-Type': 'application/json'}
+                body: formData
             })
         } else {
             response = await fetch(`/api/update-pet/${saveBtn.dataset.petId}`, {
                 method: 'PUT',
-                body: JSON.stringify(trimedFormData),
-                headers: {'Content-Type': 'application/json'}
+                body: formData
             })
         }
         const data = await response.json()

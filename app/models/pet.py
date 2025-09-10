@@ -85,6 +85,7 @@ class Pet(BaseModel):
             'adoption_date': self.adoption_date.isoformat() if self.adoption_date else None,
             'pet_gender': self.pet_gender,
             'is_neutered': self.is_neutered,
+            'profile_image_url': self.profile_image_url
         }
 
 class PetSpecies(BaseModel):

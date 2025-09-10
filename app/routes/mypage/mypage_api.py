@@ -1,8 +1,10 @@
-from flask import Blueprint, jsonify, request, session
-from app.models import Pet, PetSpecies, PetBreed, PetPersona, SpeechStyle, PersonalityTrait, PersonaTrait
-from app.services import PetService, PersonaService
-from datetime import datetime
 import logging
+import os
+from datetime import datetime
+from flask import Blueprint, jsonify, request, session
+from werkzeug.utils import secure_filename
+from app.models import Pet, PetSpecies, PetBreed, PetPersona, SpeechStyle, PersonalityTrait, PersonaTrait
+from app.services import PetService, PersonaService, file_uploader
 
 logger = logging.getLogger(__name__)
 # logger.propagate = False
@@ -25,6 +27,7 @@ def get_species():
 
     return jsonify({'data' : species})
 
+
 @mypage_api_bp.route('/breeds/<species_id>')
 def get_breeds_by_species(species_id):
     pet_breeds = PetService.get_breeds_by_species(species_id)
@@ -32,21 +35,39 @@ def get_breeds_by_species(species_id):
     logger.debug(f'선택된 speices id : {species_id}')
     return jsonify({'data': breeds})
 
+
+
 @mypage_api_bp.route('/add-pet/', methods=['POST'])
 def add_pet():
-    pet_info = request.get_json()
-    logger.debug(f'요청받은 json 데이터 : {pet_info}')
+    pet_info = request.form
+    imgfile = request.files['profile_img_url']
+    logger.debug(f'요청받은 form 데이터 : {pet_info}')
+    logger.debug(f'요청받은 pet profile image : {imgfile}')
+
+    # 이미지 저장
+    file_url = file_uploader.save_file(imgfile, 'pet')
+
+    # 이미지 저장경로를 db에 저장
 
     date_fields = {'birthdate', 'adoption_date'}
-    pet_data = {k: datetime.strptime(v, '%Y-%m-%d') if k in date_fields else v for k, v in pet_info.items() if v != ''}
-
+    boolean_fields = {'is_neutered'}
+    
+    pet_data = {}
+    for k, v in pet_info.items():
+        if v != '':
+            if k in date_fields:
+                pet_data[k] = datetime.strptime(v, '%Y-%m-%d')
+            elif k in boolean_fields:
+                pet_data[k] = v.lower() == 'true'
+            else:
+                pet_data[k] = v
+    pet_data['profile_image_url'] = file_url
     user_id = session.get('user_id')
     logger.debug(f'세션에 저장된 사용자 아이디 : {user_id}')
 
     new_pet = Pet.create_pet(user_id, **pet_data)  # 모델의 classmethod 사용
 
     logger.debug(f'새로 등록된 반려동물 : {new_pet}')
-
 
     return jsonify({'success': '반려동물이 성공적으로 등록되었습니다.'})
 
@@ -60,7 +81,10 @@ def get_pets_info():
 
     logger.debug(pets_info)
 
+    # 이미지 파일 보내는 로직 필요
+
     return jsonify(pets_info)
+
 
 @mypage_api_bp.route('/pet-profile/<pet_id>')
 def get_pet_profile(pet_id):
@@ -73,6 +97,7 @@ def get_pet_profile(pet_id):
     else:
         return jsonify({'error': 'Pet not found'}), 404
 
+
 @mypage_api_bp.route('/delete-pet/<pet_id>', methods=['DELETE'])
 def delete_pet(pet_id):
     pet = Pet.delete_pet_by_pet_id(pet_id)  # 모델의 classmethod 사용
@@ -80,12 +105,29 @@ def delete_pet(pet_id):
     
     return jsonify({'message':'삭제 완료'})
 
+
 @mypage_api_bp.route('/update-pet/<pet_id>', methods=['PUT'])
 def update_pet(pet_id):
-    pet_info = request.get_json()
+    pet_info = request.form
+    imgfile = request.files.get('profile_img_url')
 
     date_fields = {'birthdate', 'adoption_date'}
-    pet_data = {k: datetime.strptime(v, '%Y-%m-%d') if k in date_fields else v for k, v in pet_info.items() if v != ''}
+    boolean_fields = {'is_neutered'}
+    
+    pet_data = {}
+    for k, v in pet_info.items():
+        if v != '':
+            if k in date_fields:
+                pet_data[k] = datetime.strptime(v, '%Y-%m-%d')
+            elif k in boolean_fields:
+                pet_data[k] = v.lower() == 'true'
+            else:
+                pet_data[k] = v
+    
+    # 이미지가 업로드된 경우 처리
+    if imgfile and imgfile.filename:
+        file_url = file_uploader.save_file(imgfile, 'pet')
+        pet_data['profile_image_url'] = file_url
     
     pet = Pet.update_pet_by_pet_id(pet_id, pet_data)  # 모델의 classmethod 사용
     logger.debug(f'수정된 펫 : {pet}')
@@ -101,8 +143,6 @@ def update_pet(pet_id):
 @mypage_api_bp.route('/speech-styles/')
 def get_speech_styles():
     speech_styles = PersonaService.get_speech_styles()
-    
-
     speech_styles = [style.to_dict() for style in speech_styles]
     
     return jsonify(speech_styles)
@@ -111,12 +151,10 @@ def get_speech_styles():
 def get_personality_traits():
     personality_traits = PersonaService.get_traits_by_category()
     
-
     # 각 카테고리의 trait 객체들을 to_dict()로 변환
     for category in personality_traits:
         personality_traits[category] = [trait.to_dict() for trait in personality_traits[category]]
     
-
     return jsonify(personality_traits)
 
 
@@ -159,8 +197,6 @@ def update_persona(pet_id):
     logger.debug(updated_traits)
     
     return jsonify({'success': '수정 완료'})
-
-
 
 
 @mypage_api_bp.route('/get-persona/<pet_id>')
