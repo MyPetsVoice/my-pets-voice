@@ -214,6 +214,13 @@ function openAIChat() {
         alert("먼저 반려동물을 선택해주세요.");
         return;
     }
+    
+    // 플로팅 버튼 숨기기
+    const floatingBtn = document.querySelector('.floating-chat-btn');
+    if (floatingBtn) {
+        floatingBtn.style.display = 'none';
+    }
+    
     // AI 상담 모달 열기 - modal.js의 openModal 함수 사용
     if (typeof openModal === 'function') {
         openModal('care_chatbot', current_pet_id);
@@ -233,13 +240,33 @@ function openAIChat() {
                 // 닫기 버튼 이벤트
                 const closeBtn = document.getElementById("modal-close-btn");
                 if (closeBtn) {
-                    closeBtn.onclick = () => modal.classList.add("hidden");
+                    closeBtn.onclick = () => {
+                        modal.classList.add("hidden");
+                        showFloatingButton();
+                    };
                 }
+                
+                // 모달 바깥 클릭 시 닫기
+                modal.onclick = (e) => {
+                    if (e.target === modal) {
+                        modal.classList.add("hidden");
+                        showFloatingButton();
+                    }
+                };
             })
             .catch((err) => {
                 console.error("AI 상담 모달 불러오기 실패:", err);
                 alert("AI 상담을 불러오지 못했습니다.");
+                showFloatingButton(); // 오류 시 플로팅 버튼 다시 보이기
             });
+    }
+}
+
+// 플로팅 버튼 다시 보이기 함수
+function showFloatingButton() {
+    const floatingBtn = document.querySelector('.floating-chat-btn');
+    if (floatingBtn) {
+        floatingBtn.style.display = 'flex';
     }
 }
 </script>
