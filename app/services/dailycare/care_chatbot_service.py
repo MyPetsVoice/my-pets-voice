@@ -179,8 +179,11 @@ class CareChatbotService:
     #         print(f"상세 오류 정보: {traceback.format_exc()}")
     #         return ""
     @staticmethod
-    def search_knowledge_base(query: str, k: int = 5) -> str:
-        """벡터 스토어에서 관련 문서 검색 (출처 포함, 안전 처리)"""
+    def search_knowledge_base(query: str, k: int = 5, search_type: str = "hybrid") -> str:
+        """
+        지식 베이스에서 관련 문서 검색
+        search_type: "vector", "keyword", "hybrid"
+        """
         try:
             if not query or not query.strip():
                 print("검색어가 비어있습니다.")
@@ -195,11 +198,53 @@ class CareChatbotService:
                 print("벡터 스토어가 초기화되지 않았습니다.")
                 return ""
 
+            # 검색 타입에 따라 다른 검색 방법 사용
             try:
-                search_results = vector_store.store.similarity_search(query, k=k)
+                print(f"실행할 검색 타입: {search_type}")
+                
+                if search_type == "vector":
+                    search_results = vector_store.store.similarity_search(query, k=k)
+                    print(f"벡터 검색 완료")
+                elif search_type == "keyword":
+                    keyword_results = vector_store.keyword_search(query, k=k)
+                    search_results = [doc for doc, _ in keyword_results]
+                    print(f"키워드 검색 완료")
+                    # 키워드 검색 점수 출력
+                    for i, (doc, score) in enumerate(keyword_results[:5]):
+                        print(f"키워드 점수 {i+1}: {score:.2f} - {doc.page_content[:100]}...")
+                elif search_type == "hybrid":
+                    search_results = vector_store.hybrid_search(query, k=k)
+                    print(f"하이브리드 검색 완료")
+                else:
+                    print(f"지원하지 않는 검색 타입: {search_type}")
+                    search_results = vector_store.store.similarity_search(query, k=k)
+                    
+                print(f"최종 검색 결과 수: {len(search_results) if search_results else 0}")
+                
+                # 검색된 문서들의 메타데이터 출력
+                if search_results:
+                    print("\n검색된 문서들:")
+                    for i, doc in enumerate(search_results[:5]):  # 상위 5개만 출력
+                        source = "알 수 없음"
+                        if hasattr(doc, 'metadata') and doc.metadata:
+                            for key in ["source_file", "file_path", "data_type"]:
+                                if key in doc.metadata and doc.metadata[key]:
+                                    source = doc.metadata[key]
+                                    break
+                        print(f"{i+1}. 출처: {source}")
+                        print(f"   내용: {doc.page_content[:150]}...")
+                        print()
+                
             except Exception as search_error:
                 print(f"검색 실행 중 오류 발생: {search_error}")
-                return ""
+                import traceback
+                print(f"상세 오류: {traceback.format_exc()}")
+                # 실패 시 기본 벡터 검색으로 폴백
+                try:
+                    search_results = vector_store.store.similarity_search(query, k=k)
+                    print("기본 벡터 검색으로 폴백 완료")
+                except:
+                    return ""
 
             if not search_results or not isinstance(search_results, list):
                 print("검색 결과가 없습니다 또는 예상치 못한 타입입니다.")
@@ -235,7 +280,7 @@ class CareChatbotService:
 
                 formatted_content = f"참고자료 {i+1} {source_info}:\n{content}\n"
                 knowledge_context.append(formatted_content)
-                print(f"content {i+1}: {content[:100]}...")  # 미리보기
+                # 더 자세한 미리보기 제거 (위에서 이미 출력함)
 
             if not knowledge_context:
                 print("처리 가능한 검색 결과가 없습니다.")
@@ -312,14 +357,42 @@ class CareChatbotService:
         """
 
     @staticmethod
-    def chatbot_with_records(user_input: str, pet_id: int, user_id: int, use_vector_search: bool = True) -> str:
+    def chatbot_with_records(user_input: str, pet_id: int, user_id: int, 
+                           use_vector_search: bool = True, search_type: str = "hybrid") -> str:
+        """
+        반려동물 기록과 지식 베이스를 활용한 챗봇 응답
+        search_type: "vector", "keyword", "hybrid" 중 선택
+        """
         with app.app_context():
             records = CareChatbotService.get_pet_records(pet_id)
             records_summary = CareChatbotService.summarize_pet_records(records)
 
             if use_vector_search:
-                knowledge_context = CareChatbotService.search_knowledge_base(user_input, k=3)
+                print(f"\n=== 검색 시작 ===")
+                print(f"검색어: {user_input}")
+                print(f"검색 타입: {search_type}")
+                print(f"검색할 문서 수: 10")
+                
+                knowledge_context = CareChatbotService.search_knowledge_base(
+                    user_input, k=10, search_type=search_type
+                )
+                
+                print(f"\n=== 검색 결과 ===")
+                if knowledge_context:
+                    print(f"검색된 문서 내용 길이: {len(knowledge_context)} 글자")
+                    print("검색된 내용 미리보기:")
+                    print(knowledge_context[:500] + "..." if len(knowledge_context) > 500 else knowledge_context)
+                else:
+                    print("검색된 문서가 없습니다.")
+                
                 prompt = CareChatbotService.build_enhanced_prompt(user_input, records_summary, knowledge_context)
+                
+                print(f"\n=== 최종 프롬프트 ===")
+                print("프롬프트 길이:", len(prompt), "글자")
+                print("프롬프트 내용:")
+                print(prompt)
+                print("=" * 50)
+                
             else:
                 prompt = f"사용자 질문: {user_input}\n\n반려동물 기록:\n{records_summary}"
 
@@ -353,7 +426,8 @@ if __name__ == "__main__":
             user_input=user_input,
             pet_id=pet_id,
             user_id=user_id,
-            use_vector_search=True
+            use_vector_search=True,
+            search_type="hybrid"  # 하이브리드 검색 사용
         )
 
         print("\n=== 챗봇 응답 ===\n")

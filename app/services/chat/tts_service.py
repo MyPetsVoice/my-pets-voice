@@ -10,7 +10,8 @@ logger = logging.getLogger(__name__)
 class OpenAITTS:
     def __init__(self):
         self.client = AsyncOpenAI(api_key=Config.OPENAI_API_KEY)
-        self.voices = ['alloy', 'ash', 'ballad', 'coral', 'echo', 'fable', 'nova', 'onyx', 'sage', 'shimmer']
+        self.voices = ['alloy', 'ash', 'ballad', 'coral', 'echo', 
+                       'fable', 'nova', 'onyx', 'sage', 'shimmer']
 
     async def generate_speech_stream(self, voice, text):
         async with self.client.audio.speech.with_streaming_response.create(

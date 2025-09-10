@@ -252,7 +252,7 @@ function createPersonaModal() {
                         </h3>
                         <div class="form-group">
                             <label for="user_call" class="block text-sm font-medium text-gray-700 mb-2">
-                                사용자를 부르는 호칭 *
+                                사용자를 부르는 호칭 <span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="user_call" id="user_call" required
                                    class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
@@ -269,7 +269,7 @@ function createPersonaModal() {
                         
                         <!-- 존댓말/반말 -->
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-3">존댓말/반말</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">존댓말/반말 <span class="text-red-500">*</span></label>
                             <div class="flex gap-3">
                                 <label class="politeness-tag">
                                     <input type="radio" name="politeness" value="formal" class="hidden">
@@ -284,7 +284,7 @@ function createPersonaModal() {
 
                         <!-- 말투 스타일 -->
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-3">말투 스타일 (한 개 선택)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">말투 스타일 <span class="text-red-500">*</span> (한 개 선택)</label>
                             <div id="speech-styles-container" class="flex flex-wrap gap-2">
                                 <!-- 말투 스타일들이 동적으로 렌더링됩니다 -->
                             </div>
@@ -304,7 +304,7 @@ function createPersonaModal() {
                     <div class="bg-gray-50 p-6 rounded-xl">
                         <h3 class="text-lg font-semibold text-gray-800 mb-4">
                             <i class="fas fa-heart text-primary-500 mr-2"></i>
-                            성격 및 특징(여러 개 선택 가능)
+                            성격 및 특징 <span class="text-red-500">*</span> (여러 개 선택 가능)
                         </h3>
                         
                         <div id="personality-traits-container">
