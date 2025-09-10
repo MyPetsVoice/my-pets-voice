@@ -39,24 +39,10 @@ async function getPetInfo(pet_id){
       
       result.innerHTML = ` 
          <!-- Pet Tags -->
-                <div class="flex flex-wrap justify-center gap-3 mb-8">
-                    <span class="pet-tag px-4 py-2 rounded-full text-white text-sm">${
-                      i.pet_name
-                    }</span>
+                <div class="flex flex-wrap justify-center gap-3 mb-4">
+                    <span class="pet-tag px-12 py-5 rounded-full text-white text-sm">${i.pet_name}</span>
                 </div>
-                
-                <!-- Current Pet Info -->
-                <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl p-6 max-w-md mx-auto">
-                    <h3 class="text-white font-semibold mb-2">${i.pet_name} (${
-        i.species_name
-      })</h3>
-                    <div class="text-white text-sm space-y-1">
-                        <p>종: ${i.breed_name}</p>
-                        <p>나이: ${i.pet_age}</p>
-                        <p>성별:  ${i.pet_gender}</p>
-                        <p>중성화 여부: ${i.is_neutered ? "Yes" : "No"}</p>
-                    </div>
-                </div>`;
+                `;
       pet_info_div.appendChild(result);
     });
   
@@ -107,19 +93,19 @@ async function getAllHealthcareLog(pet_id) {
                                 <!-- Record Details -->
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4" id="">
                                     <div class="text-center">
-                                        <div class="text-2xl font-bold text-gray-800">${i.weight_kg}kg</div>
+                                        <div class="text-2xl font-bold text-gray-800">${i.weight_kg || '정보없음 '}kg</div>
                                         <div class="text-sm text-gray-600">체중</div>
                                     </div>
                                     <div class="text-center">
-                                        <div class="text-2xl font-bold text-gray-800">${i.water}ml</div>
+                                        <div class="text-2xl font-bold text-gray-800">${i.water || '정보없음 '}ml</div>
                                         <div class="text-sm text-gray-600">수분 섭취</div>
                                     </div>
                                     <div class="text-center">
-                                        <div class="text-2xl font-bold text-gray-800">${i.food}g</div>
+                                        <div class="text-2xl font-bold text-gray-800">${i.food || '정보없음 '}g</div>
                                         <div class="text-sm text-gray-600">사료량</div>
                                     </div>
                                     <div class="text-center">
-                                        <div class="text-2xl font-bold text-gray-800">${i.walk_time_minutes}분</div>
+                                        <div class="text-2xl font-bold text-gray-800">${i.walk_time_minutes || '정보없음 '}분</div>
                                         <div class="text-sm text-gray-600">산책 시간</div>
                                     </div>
                                 </div>
@@ -128,7 +114,7 @@ async function getAllHealthcareLog(pet_id) {
                                     <div class="flex justify-between items-center mb-2">
                                         <span class="text-sm text-gray-500">배변 상태</span>
                                         <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                                            <i class="fas fa-check-circle mr-1"></i>${i.excrement_status}
+                                            <i class="fas fa-check-circle mr-1"></i>${i.excrement_status || '정보없음 '}
                                         </span>
                                     </div>
                                     <div class="flex justify-between items-center">

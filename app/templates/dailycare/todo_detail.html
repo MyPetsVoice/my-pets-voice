@@ -2,9 +2,9 @@
 {% block title %}Todo 상세보기{% endblock %}
 
 {% block content %}
-<div class="bg-gray-50 min-h-screen py-10">
+<div class="bg-gray-50  py-10">
 <div class="todo" data-todo-id="{{todo.todo_id}}"></div>
-  <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+  <div class=" mx-auto bg-white  p-8 border border-gray-200">
 
     <!-- 제목 & 날짜 -->
     <div class="flex justify-between items-center mb-6">
@@ -34,8 +34,8 @@
     </div>
 
     <!-- 버튼 -->
-    <div class="flex justify-end space-x-4" id="editBtn">
-      <a
+    <div class="flex justify-end space-x-4">
+      <a id="editBtn"
         class="bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition"
       >
         수정
@@ -46,7 +46,7 @@
       >
         <button
           id="delete_btn"
-          type="submit"
+          type="button"
           class="bg-red-500 text-white px-4 py-2 rounded-xl hover:bg-red-600 transition"
         >
           삭제

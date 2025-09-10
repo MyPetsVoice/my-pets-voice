@@ -26,48 +26,63 @@ async function allTodoLog() {
 
 function renderTodos(todos) {
   const todoListDiv = document.getElementById("todoList");
-  if (!todoListDiv) return;
+  todoListDiv.innerHTML = "";
 
-  todoListDiv.innerHTML = ""; // 초기화
+  if (!todos || todos.length === 0) {
+    todoListDiv.innerHTML = `
+      <div class="text-center py-10 text-gray-500">
+        <i class="fas fa-inbox text-4xl mb-3"></i>
+        <p class="text-lg font-medium">등록된 할 일이 없습니다.</p>
+      </div>
+    `;
+    return;
+  }
 
   todos.forEach((todo) => {
     const card = document.createElement("div");
-    card.className = "bg-white rounded-xl p-6 shadow-md border border-gray-200";
+    card.className =
+      "bg-white rounded-xl shadow p-5 hover:shadow-md transition cursor-pointer";
 
-    const createdAt = new Date(todo.created_at).toLocaleString();
-    const updatedAt = new Date(todo.updated_at).toLocaleString();
     const todoDate = new Date(todo.todo_date).toLocaleDateString();
 
     card.innerHTML = `
       <div class="flex justify-between items-center mb-2">
-        <h3 class="font-semibold text-gray-800 text-lg">${todo.title}</h3>
+        <h3 class="font-semibold text-lg text-gray-800">${todo.title}</h3>
         <span class="text-sm text-gray-500">${todoDate}</span>
       </div>
-      <p class="text-gray-600 mb-4">${todo.description || ""}</p>
-      <div class="flex space-x-4 mb-4">
-        <div class="text-sm">
-          <span class="font-medium text-gray-700">우선순위:</span> ${
-            todo.priority
-          }
-        </div>
-        <div class="text-sm">
-          <span class="font-medium text-gray-700">상태:</span> ${todo.status}
-        </div>
-      </div>
-      <div class="flex justify-between text-sm text-gray-500 border-t pt-2">
-        <span>생성: ${createdAt}</span>
-        <span>수정: ${updatedAt}</span>
+      <p class="text-gray-600 text-sm mb-3">${
+        todo.description || "상세내용 없음"
+      }</p>
+      <div class="flex justify-between text-sm">
+        <span class="px-2 py-1 rounded-full ${
+          todo.status === "완료"
+            ? "bg-green-100 text-green-700"
+            : "bg-yellow-100 text-yellow-700"
+        }">
+          <i class="fas fa-${
+            todo.status === "완료" ? "check-circle" : "clock"
+          } mr-1"></i>${todo.status}
+        </span>
+        <span class="px-2 py-1 rounded-full ${
+          todo.priority === "높음"
+            ? "bg-red-100 text-red-700"
+            : todo.priority === "보통"
+            ? "bg-yellow-100 text-yellow-700"
+            : "bg-green-100 text-green-700"
+        }">
+          <i class="fas fa-flag mr-1"></i>${todo.priority}
+        </span>
       </div>
     `;
 
-    card.addEventListener('click', ()=>{
-      window.location.href = `/dailycare/todo?todo_id=${todo.todo_id}`
-    })
+    card.addEventListener("click", () => {
+      window.location.href = `/dailycare/todo?todo_id=${todo.todo_id}`;
+    });
 
     todoListDiv.appendChild(card);
-
   });
 }
+
 
 // 필터 적용 함수
 function filterTodos(filter) {
