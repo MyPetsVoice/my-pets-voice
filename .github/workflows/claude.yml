@@ -51,4 +51,5 @@ jobs:
         with:
           base_branch: main
           use_bedrock: "true"
+          bedrock_model_id: "anthropic.claude-3-5-sonnet-20241022-v2:0"
           claude_args: ${{ github.event.comment.body }}
