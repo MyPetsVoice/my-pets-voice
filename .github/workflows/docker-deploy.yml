@@ -27,7 +27,7 @@ jobs:
         DATABASE_URL: sqlite:///test.db
         FLASK_ENV: testing
       run: |
-        python -m pytest test/ -v || echo "No tests found - continuing deployment"
+        python -m pytest tests/ -v || echo "No tests found - continuing deployment"
 
   build-and-push:
     needs: test
