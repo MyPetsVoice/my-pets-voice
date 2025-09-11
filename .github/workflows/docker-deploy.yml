@@ -125,7 +125,7 @@ jobs:
           sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mypetsvoice:latest
           
           echo "🛑 Stopping current containers..."
-          sudo docker compose -f deploy/docker/docker-compose.prod.yml down || echo "No containers to stop"
+          sudo DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} docker compose -f deploy/docker/docker-compose.prod.yml down || echo "No containers to stop"
           
           echo "🗄️ Running database migrations..."
           sudo docker run --rm \
@@ -136,7 +136,7 @@ jobs:
             python app/models/init_db_with_check.py || echo "Database migration completed"
           
           echo "🚀 Starting new containers..."
-          sudo docker compose -f deploy/docker/docker-compose.prod.yml up -d
+          sudo DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} docker compose -f deploy/docker/docker-compose.prod.yml up -d
           
           echo "🧹 Cleaning up unused Docker resources..."
           sudo docker system prune -f
@@ -161,11 +161,11 @@ jobs:
           if [ $attempt -gt $max_attempts ]; then
             echo "❌ Health check failed after $max_attempts attempts"
             echo "🔍 Container logs:"
-            sudo docker compose -f deploy/docker/docker-compose.prod.yml logs --tail=50 web
+            sudo DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} docker compose -f deploy/docker/docker-compose.prod.yml logs --tail=50 web
           fi
           
           echo "📊 Final container status:"
-          sudo docker compose -f deploy/docker/docker-compose.prod.yml ps
+          sudo DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} docker compose -f deploy/docker/docker-compose.prod.yml ps
           
           echo "✅ Deployment completed!"
           echo "🌐 URL: http://$(curl -s http://checkip.amazonaws.com/)"
