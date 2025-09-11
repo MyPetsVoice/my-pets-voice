@@ -62,6 +62,9 @@ function displayDiary(diary) {
   // 사진 표시
   if (diary.photos && diary.photos.length > 0) {
     displayPhotoGallery(diary.photos);
+  } else {
+    // 사진이 없으면 갤러리 섹션 숨기기
+    document.getElementById("photoGallery").classList.add("hidden");
   }
 
   // 일기 내용 표시
@@ -77,9 +80,7 @@ function displayPhotoGallery(photoList) {
     .map(
       (photo, index) => `
         <div class="photo-item" onclick="openImageModal(${index})">
-            <img src="${photo.photo_url}" alt="일기 사진 ${
-        index + 1
-      }" loading="lazy">
+            <img src="${photo.photo_url}" alt="" loading="lazy" onerror="this.parentElement.style.display='none'">
         </div>
     `
     )

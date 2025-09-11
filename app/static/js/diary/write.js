@@ -232,7 +232,7 @@ function handleFileSelect(event) {
         const div = document.createElement("div");
         div.className = "photo-preview-item";
         div.innerHTML = `
-                    <img src="${e.target.result}" class="w-full h-24 object-cover rounded-lg border border-gray-200">
+                    <img src="${e.target.result}" alt="" class="w-full h-24 object-cover rounded-lg border border-gray-200" onerror="this.parentElement.style.display='none'">
                     <button type="button" class="photo-remove-btn" onclick="removePhoto(this)">×</button>
                     <div class="text-xs text-gray-500 mt-1 truncate">${file.name}</div>
                 `;
