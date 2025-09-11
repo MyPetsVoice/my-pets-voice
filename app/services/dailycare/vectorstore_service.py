@@ -29,8 +29,19 @@ class VectorStoreService:
         self.documents_path = Path(Config.DOCUMENTS_PATH)
         self.vector_db = Path(Config.VECTOR_DB)
         self.persist_directory = persist_directory
-        self.collection_name = Config.COLLECTION_NAME
-        self.store: Optional[Chroma] = None
+        
+        # 멀티 콜렉션 설정
+        self.collections = {
+            'general_guides': 'mypetsvoice_general_guides',    # 일반 가이드
+            'medications': 'mypetsvoice_medications'           # 의약품 정보
+        }
+        
+        # 각 콜렉션별 스토어
+        self.stores: Dict[str, Optional[Chroma]] = {
+            'general_guides': None,
+            'medications': None
+        }
+        
         self.embedding = OpenAIEmbeddings(api_key=Config.OPENAI_API_KEY)
 
         self.cache_dir = os.path.join(os.path.dirname(str(self.vector_db)), "embedding_cache")
@@ -41,55 +52,193 @@ class VectorStoreService:
     # -------------------------
     # Public: initialize DB
     # -------------------------
-    def initialize_vector_db(self) -> Optional[Chroma]:
+    def initialize_vector_db(self) -> Dict[str, Optional[Chroma]]:
         """
-        Load existing Chroma store if present and healthy; otherwise create a new one.
+        멀티 콜렉션 벡터 DB 초기화
         """
-        logger.info("벡터 스토어 초기화 시작...")
+        logger.info("멀티 콜렉션 벡터 스토어 초기화 시작...")
         logger.info(f"문서 경로: {self.documents_path}")
         logger.info(f"벡터 DB 경로: {self.vector_db}")
         
         # 문서 경로 검증
         if not self.documents_path.exists():
             logger.error(f"문서 경로가 존재하지 않습니다: {self.documents_path}")
-            logger.info("벡터 DB를 생성하지 않고 None을 반환합니다.")
-            return None
+            return self.stores
         
         try:
             # ensure vector_db exists
             if not self.vector_db.exists():
                 self.vector_db.mkdir(parents=True, exist_ok=True)
-                logger.info("벡터 DB 디렉토리가 없어서 새로 생성합니다.")
-                return self.create_vector_db()
-
-            # Try to load existing collection (do NOT pass embedding here)
-            try:
-                self.store = Chroma(
-                    collection_name=self.collection_name,
-                    embedding_function=self.embedding,
-                    persist_directory=str(self.vector_db),
-                )
-                # quick health check
+                logger.info("벡터 DB 디렉토리 생성")
+            
+            # 각 콜렉션별 초기화
+            for collection_type, collection_name in self.collections.items():
+                logger.info(f"{collection_type} 콜렉션 초기화 중...")
+                
                 try:
-                    count = self.store._collection.count()
+                    # 기존 콜렉션 로드 시도
+                    store = Chroma(
+                        collection_name=collection_name,
+                        embedding_function=self.embedding,
+                        persist_directory=str(self.vector_db),
+                    )
+                    
+                    # 건강 체크
+                    count = store._collection.count()
                     if count == 0:
-                        logger.info("기존 벡터 DB가 비어있어서 새로 생성합니다.")
-                        return self.create_vector_db()
-                    logger.info(f"기존 벡터 DB 로딩 성공 (문서 수: {count})")
-                    return self.store
+                        logger.info(f"{collection_type} 콜렉션이 비어있어서 새로 생성합니다.")
+                        store = self.create_collection_vector_db(collection_type)
+                    else:
+                        logger.info(f"{collection_type} 콜렉션 로딩 성공 (문서 수: {count})")
+                    
+                    self.stores[collection_type] = store
+                    
                 except Exception as e:
-                    logger.warning(f"기존 벡터 DB 로딩 후 검증 실패: {e}")
-                    return self.create_vector_db()
+                    logger.warning(f"{collection_type} 콜렉션 로딩 실패: {e}")
+                    logger.info(f"{collection_type} 콜렉션을 새로 생성합니다.")
+                    self.stores[collection_type] = self.create_collection_vector_db(collection_type)
 
-            except Exception as e:
-                logger.warning(f"기존 벡터 DB 로딩 중 오류 발생: {e}")
-                logger.info("새로운 벡터 DB를 생성합니다.")
-                return self.create_vector_db()
+            return self.stores
 
         except Exception as e:
-            logger.error(f"벡터 DB 초기화 중 치명적 오류: {e}", exc_info=True)
-            return None
+            logger.error(f"멀티 콜렉션 초기화 중 치명적 오류: {e}", exc_info=True)
+            return self.stores
 
+    def create_collection_vector_db(self, collection_type: str) -> Optional[Chroma]:
+        """
+        특정 타입의 콜렉션을 생성
+        """
+        logger.info(f"{collection_type} 콜렉션 생성 시작...")
+        
+        if collection_type == 'general_guides':
+            documents = self.load_general_guide_documents()
+        elif collection_type == 'medications':
+            documents = self.load_medication_documents()
+        else:
+            logger.error(f"알 수 없는 콜렉션 타입: {collection_type}")
+            return None
+        
+        if not documents:
+            logger.error(f"{collection_type}에 해당하는 문서가 없습니다.")
+            return None
+        
+        return self._create_chroma_store(documents, self.collections[collection_type])
+
+    def load_general_guide_documents(self) -> List[Document]:
+        """일반 가이드 문서들만 로드 (.md 파일)"""
+        documents: List[Document] = []
+        
+        md_files = list(self.documents_path.glob("**/*.md"))
+        logger.info(f"일반 가이드 Markdown 파일 수: {len(md_files)}")
+        
+        for md_file in md_files:
+            try:
+                docs = self.load_markdown(md_file)
+                # 메타데이터에 컬렉션 타입 추가
+                for doc in docs:
+                    doc.metadata['collection_type'] = 'general_guide'
+                documents.extend(docs)
+            except Exception as e:
+                logger.warning(f"일반 가이드 파일 처리 실패 ({md_file}): {e}")
+        
+        logger.info(f"일반 가이드 총 {len(documents)}개 문서 청크 로딩 완료")
+        return documents
+
+    def load_medication_documents(self) -> List[Document]:
+        """의약품 문서들만 로드 (.json 파일)"""
+        documents: List[Document] = []
+        
+        json_files = list(self.documents_path.glob("**/*.json"))
+        logger.info(f"의약품 JSON 파일 수: {len(json_files)}")
+        
+        for json_file in json_files:
+            try:
+                docs = self.load_json(json_file)
+                # 메타데이터에 컬렉션 타입 추가
+                for doc in docs:
+                    doc.metadata['collection_type'] = 'medication'
+                documents.extend(docs)
+            except Exception as e:
+                logger.warning(f"의약품 파일 처리 실패 ({json_file}): {e}")
+        
+        logger.info(f"의약품 총 {len(documents)}개 문서 청크 로딩 완료")
+        return documents
+
+    def _create_chroma_store(self, documents: List[Document], collection_name: str) -> Optional[Chroma]:
+        """공통 Chroma 스토어 생성 함수"""
+        texts = [doc.page_content for doc in documents]
+        metadatas = [doc.metadata for doc in documents]
+
+        BATCH_SIZE = 200
+        MAX_TOKENS_PER_BATCH = 200_000
+        encoder = tiktoken.get_encoding("cl100k_base")
+
+        store = None
+        batch_texts, batch_metadatas = [], []
+        token_count = 0
+
+        for i, (text, metadata) in enumerate(zip(texts, metadatas)):
+            text_tokens = len(encoder.encode(text))
+            
+            if token_count + text_tokens > MAX_TOKENS_PER_BATCH or len(batch_texts) >= BATCH_SIZE:
+                try:
+                    if store is None:
+                        logger.info(f"{collection_name} 첫 배치({i-len(batch_texts)}~{i})로 생성")
+                        store = Chroma.from_texts(
+                            texts=batch_texts,
+                            embedding=self.embedding,
+                            metadatas=batch_metadatas,
+                            persist_directory=str(self.vector_db),
+                            collection_name=collection_name
+                        )
+                    else:
+                        logger.info(f"{collection_name} 추가 배치({i-len(batch_texts)}~{i}) 저장")
+                        store.add_texts(
+                            texts=batch_texts,
+                            metadatas=batch_metadatas,
+                        )
+                    
+                    batch_texts, batch_metadatas = [], []
+                    token_count = 0
+                    
+                except Exception as e:
+                    logger.error(f"{collection_name} 배치 {i//BATCH_SIZE} 임베딩 실패: {e}")
+                    batch_texts, batch_metadatas = [], []
+                    token_count = 0
+                    continue
+
+            batch_texts.append(text)
+            batch_metadatas.append(metadata)
+            token_count += text_tokens
+
+        # 남은 배치 처리
+        if batch_texts:
+            try:
+                if store is None:
+                    logger.info(f"{collection_name} 마지막 배치로 생성")
+                    store = Chroma.from_texts(
+                        texts=batch_texts,
+                        embedding=self.embedding,
+                        metadatas=batch_metadatas,
+                        persist_directory=str(self.vector_db),
+                        collection_name=collection_name
+                    )
+                else:
+                    logger.info(f"{collection_name} 마지막 배치 저장")
+                    store.add_texts(
+                        texts=batch_texts,
+                        metadatas=batch_metadatas,
+                    )
+                    
+            except Exception as e:
+                logger.error(f"{collection_name} 마지막 배치 임베딩 실패: {e}")
+
+        if store:
+            logger.info(f"{collection_name} 콜렉션 생성 완료 (총 {len(documents)}개 문서)")
+        else:
+            logger.error(f"{collection_name} 콜렉션 생성 실패")
+
+        return store
 
     def create_vector_db(self):
         all_documents = self.load_documents()
@@ -173,6 +322,76 @@ class VectorStoreService:
             logger.error("벡터 DB 생성 실패")
 
         return self.store
+
+    # -------------------------
+    # Multi-Collection Search Methods
+    # -------------------------
+    def search_multi_collections(self, query: str, collection_types: List[str], k: int = 5) -> List[Document]:
+        """
+        여러 콜렉션에서 검색하여 결과 통합
+        """
+        all_results = []
+        
+        for collection_type in collection_types:
+            if collection_type not in self.stores or not self.stores[collection_type]:
+                logger.warning(f"{collection_type} 콜렉션이 초기화되지 않았습니다.")
+                continue
+                
+            try:
+                # 각 콜렉션에서 검색
+                results = self.stores[collection_type].similarity_search_with_score(query, k=k)
+                
+                # 점수와 함께 결과 저장 (콜렉션 정보 포함)
+                for doc, score in results:
+                    doc.metadata['search_score'] = score
+                    doc.metadata['source_collection'] = collection_type
+                    all_results.append((doc, score))
+                    
+                logger.info(f"{collection_type} 콜렉션에서 {len(results)}개 결과 검색")
+                
+            except Exception as e:
+                logger.error(f"{collection_type} 콜렉션 검색 실패: {e}")
+        
+        # 점수순 정렬 후 상위 k개 반환
+        all_results.sort(key=lambda x: x[1])  # 거리가 작을수록 유사도 높음
+        return [doc for doc, _ in all_results[:k]]
+
+    def get_collection_by_query_type(self, query: str, pet_records: dict = None) -> List[str]:
+        """
+        질문 유형에 따라 검색할 콜렉션 결정
+        """
+        query_lower = query.lower()
+        collections_to_search = []
+        
+        # 의약품 관련 키워드
+        medication_keywords = ['약', '치료', '병', '질병', '아파', '증상', '부작용', 'medication', 'treatment', '처방']
+        
+        # 일반 관리 관련 키워드  
+        general_keywords = ['건강관리', '사료', '운동', '산책', '관리', '키우기', '예방접종', '백신', '목욕', '훈련']
+        
+        # 질문 내용 분석
+        has_medication_intent = any(keyword in query_lower for keyword in medication_keywords)
+        has_general_intent = any(keyword in query_lower for keyword in general_keywords)
+        
+        # 반려동물의 질병/알러지 정보 확인
+        has_medical_history = False
+        if pet_records:
+            diseases = pet_records.get("disease", [])
+            medications = pet_records.get("medication", [])
+            if diseases or medications:
+                has_medical_history = True
+        
+        # 콜렉션 선택 로직
+        if has_medication_intent or (has_medical_history and not has_general_intent):
+            # 의약품 관련 질문이면 의약품 우선, 일반 가이드 보조
+            collections_to_search = ['medications', 'general_guides']
+            logger.info("의약품 관련 질문으로 판단 - 의약품 콜렉션 우선 검색")
+        else:
+            # 일반 관리 질문이면 일반 가이드 우선
+            collections_to_search = ['general_guides']
+            logger.info("일반 관리 질문으로 판단 - 일반 가이드 콜렉션만 검색")
+            
+        return collections_to_search
 
     # -------------------------
     # Load documents (md + json)
@@ -401,15 +620,17 @@ class VectorStoreService:
     # -------------------------
     # Keyword Search Methods
     # -------------------------
-    def keyword_search(self, query: str, k: int = 5) -> List[Tuple[Document, float]]:
+    def keyword_search(self, query: str, k: int = 5, collection_type: str = 'general_guides') -> List[Tuple[Document, float]]:
         """키워드 기반 검색 (TF-IDF 스코어링)"""
-        if not self.store:
-            logger.warning("Vector store가 초기화되지 않았습니다.")
+        if collection_type not in self.stores or not self.stores[collection_type]:
+            logger.warning(f"{collection_type} 콜렉션이 초기화되지 않았습니다.")
             return []
         
+        store = self.stores[collection_type]
+        
         try:
-            # 모든 문서 가져오기
-            all_docs = self._get_all_documents()
+            # 해당 콜렉션의 모든 문서 가져오기
+            all_docs = self._get_all_documents_from_store(store)
             if not all_docs:
                 return []
             
@@ -434,10 +655,18 @@ class VectorStoreService:
             return []
 
     def _get_all_documents(self) -> List[Document]:
-        """벡터 스토어에서 모든 문서 가져오기"""
+        """벡터 스토어에서 모든 문서 가져오기 (하위 호환성)"""
+        # 첫 번째 사용 가능한 스토어에서 문서 가져오기
+        for store in self.stores.values():
+            if store:
+                return self._get_all_documents_from_store(store)
+        return []
+
+    def _get_all_documents_from_store(self, store) -> List[Document]:
+        """특정 스토어에서 모든 문서 가져오기"""
         try:
             # Chroma에서 모든 문서 ID 가져오기
-            collection = self.store._collection
+            collection = store._collection
             all_data = collection.get()
             
             documents = []
@@ -485,29 +714,34 @@ class VectorStoreService:
     # -------------------------
     # Hybrid Search Methods
     # -------------------------
-    def hybrid_search(self, query: str, k: int = 5, vector_weight: float = 0.7, keyword_weight: float = 0.3) -> List[Document]:
-        """하이브리드 검색 (벡터 + 키워드)"""
+    def hybrid_search(self, query: str, k: int = 5, vector_weight: float = 0.5, keyword_weight: float = 0.5, collection_type: str = 'general_guides') -> List[Document]:
+        """하이브리드 검색 (벡터 + 키워드) - 단일 콜렉션"""
+        if collection_type not in self.stores or not self.stores[collection_type]:
+            logger.warning(f"{collection_type} 콜렉션이 초기화되지 않았습니다.")
+            return []
+            
+        store = self.stores[collection_type]
+        
         try:
             # 벡터 검색 결과
             vector_results = []
-            if self.store:
-                try:
-                    vector_docs = self.store.similarity_search_with_score(query, k=k*2)
-                    # 점수 정규화 (유사도를 0-1 범위로)
-                    if vector_docs:
-                        max_score = max(score for _, score in vector_docs)
-                        min_score = min(score for _, score in vector_docs)
-                        score_range = max_score - min_score if max_score > min_score else 1
-                        
-                        for doc, score in vector_docs:
-                            # 거리를 유사도로 변환 (거리가 작을수록 유사도가 높음)
-                            normalized_score = 1 - ((score - min_score) / score_range)
-                            vector_results.append((doc, normalized_score))
-                except Exception as e:
-                    logger.warning(f"벡터 검색 실패: {e}")
+            try:
+                vector_docs = store.similarity_search_with_score(query, k=k*2)
+                # 점수 정규화 (유사도를 0-1 범위로)
+                if vector_docs:
+                    max_score = max(score for _, score in vector_docs)
+                    min_score = min(score for _, score in vector_docs)
+                    score_range = max_score - min_score if max_score > min_score else 1
+                    
+                    for doc, score in vector_docs:
+                        # 거리를 유사도로 변환 (거리가 작을수록 유사도가 높음)
+                        normalized_score = 1 - ((score - min_score) / score_range)
+                        vector_results.append((doc, normalized_score))
+            except Exception as e:
+                logger.warning(f"벡터 검색 실패: {e}")
             
             # 키워드 검색 결과
-            keyword_results = self.keyword_search(query, k=k*2)
+            keyword_results = self.keyword_search(query, k=k*2, collection_type=collection_type)
             
             # 키워드 검색 점수 정규화
             if keyword_results:
@@ -554,8 +788,8 @@ class VectorStoreService:
             logger.error(f"하이브리드 검색 중 오류 발생: {e}")
             # 실패 시 벡터 검색만 사용
             try:
-                if self.store:
-                    return self.store.similarity_search(query, k=k)
+                if store:
+                    return store.similarity_search(query, k=k)
             except:
                 pass
             return []

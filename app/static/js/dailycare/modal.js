@@ -91,6 +91,15 @@ document.addEventListener('DOMContentLoaded', function() {
 // 모달 열기 함수
 function openModal(name, pet_id) {
   console.log(`##### name ${name}, pet_id ${pet_id}`);
+  
+  // care_chatbot 모달인 경우 플로팅 버튼 숨기기
+  if (name === 'care_chatbot') {
+    const floatingBtn = document.querySelector('.floating-chat-btn');
+    if (floatingBtn) {
+      floatingBtn.style.display = 'none';
+    }
+  }
+  
   fetch(`/api/dailycares/modal/${name}?pet_id=${pet_id}`)
     .then((res) => {
       if (!res.ok) throw new Error("네트워크 오류");
@@ -107,7 +116,22 @@ function openModal(name, pet_id) {
 
       // 닫기 버튼 이벤트
       const closeBtn = document.getElementById("modal-close-btn");
-      closeBtn.onclick = () => modal.classList.add("hidden");
+      closeBtn.onclick = () => {
+        modal.classList.add("hidden");
+        if (name === 'care_chatbot' && typeof showFloatingButton === 'function') {
+          showFloatingButton();
+        }
+      };
+
+      // 모달 바깥 클릭 시 닫기
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          modal.classList.add("hidden");
+          if (name === 'care_chatbot' && typeof showFloatingButton === 'function') {
+            showFloatingButton();
+          }
+        }
+      };
 
       // ---- 여기서 모달 내부 요소 접근 ----
       const hiddenInput = document.getElementById("modal-pet-id");
@@ -119,12 +143,19 @@ function openModal(name, pet_id) {
     .catch((err) => {
       console.error("모달 불러오기 실패:", err);
       alert("모달을 불러오지 못했습니다.");
+      if (name === 'care_chatbot' && typeof showFloatingButton === 'function') {
+        showFloatingButton();
+      }
     });
 }
 
 // 모달 닫기 함수
 function closeModal() {
   document.getElementById("common-modal").classList.add("hidden");
+  // care_chatbot 모달이었다면 플로팅 버튼 다시 보이기
+  if (typeof showFloatingButton === 'function') {
+    showFloatingButton();
+  }
   // location.reload();
 }
 
