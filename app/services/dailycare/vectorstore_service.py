@@ -13,6 +13,7 @@ from typing import List, Dict, Any, Optional, Tuple
 
 from langchain_text_splitters import MarkdownHeaderTextSplitter
 from langchain_openai import OpenAIEmbeddings
+from langchain_core.embeddings import Embeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 import tiktoken
@@ -23,6 +24,76 @@ from config import Config
 
 
 logger = logging.getLogger(__name__)
+
+class CachedOpenAIEmbeddings(Embeddings):
+    """캐시를 지원하는 OpenAI 임베딩 래퍼"""
+    
+    def __init__(self, openai_embeddings: OpenAIEmbeddings, cache_dir: str):
+        self.openai_embeddings = openai_embeddings
+        self.cache_dir = cache_dir
+        os.makedirs(cache_dir, exist_ok=True)
+    
+    def get_cache_key(self, text: str) -> str:
+        return hashlib.md5(text.encode("utf-8")).hexdigest()
+    
+    def load_cache(self, text: str) -> Optional[List[float]]:
+        cache_file = os.path.join(self.cache_dir, f"{self.get_cache_key(text)}.pkl")
+        if os.path.exists(cache_file):
+            try:
+                with open(cache_file, "rb") as f:
+                    return pickle.load(f)
+            except Exception as e:
+                logger.warning(f"임베딩 캐시 로드 실패: {e}")
+        return None
+    
+    def save_cache(self, text: str, embedding: List[float]):
+        cache_file = os.path.join(self.cache_dir, f"{self.get_cache_key(text)}.pkl")
+        try:
+            with open(cache_file, "wb") as f:
+                pickle.dump(embedding, f)
+        except Exception as e:
+            logger.warning(f"임베딩 캐시 저장 실패: {e}")
+    
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        """문서들을 임베딩 (캐시 활용)"""
+        embeddings = []
+        uncached_texts = []
+        uncached_indices = []
+        
+        # 캐시에서 로드 시도
+        for i, text in enumerate(texts):
+            cached_embedding = self.load_cache(text)
+            if cached_embedding is not None:
+                embeddings.append(cached_embedding)
+                logger.debug(f"캐시에서 임베딩 로드: {text[:50]}...")
+            else:
+                embeddings.append(None)  # 플레이스홀더
+                uncached_texts.append(text)
+                uncached_indices.append(i)
+        
+        # 캐시에 없는 텍스트들만 OpenAI API 호출
+        if uncached_texts:
+            logger.info(f"새로운 임베딩 생성: {len(uncached_texts)}개 텍스트")
+            new_embeddings = self.openai_embeddings.embed_documents(uncached_texts)
+            
+            # 새 임베딩을 결과에 삽입하고 캐시에 저장
+            for idx, new_embedding in zip(uncached_indices, new_embeddings):
+                embeddings[idx] = new_embedding
+                self.save_cache(texts[idx], new_embedding)
+        
+        return embeddings
+    
+    def embed_query(self, text: str) -> List[float]:
+        """쿼리를 임베딩 (캐시 활용)"""
+        cached_embedding = self.load_cache(text)
+        if cached_embedding is not None:
+            logger.debug(f"캐시에서 쿼리 임베딩 로드: {text[:50]}...")
+            return cached_embedding
+        
+        logger.debug(f"새 쿼리 임베딩 생성: {text[:50]}...")
+        embedding = self.openai_embeddings.embed_query(text)
+        self.save_cache(text, embedding)
+        return embedding
 
 class VectorStoreService:
     def __init__(self, persist_directory: str = "./vector_db"):
@@ -42,10 +113,10 @@ class VectorStoreService:
             'medications': None
         }
         
-        self.embedding = OpenAIEmbeddings(api_key=Config.OPENAI_API_KEY)
-
+        # 캐시를 지원하는 임베딩 래퍼 생성
+        openai_embeddings = OpenAIEmbeddings(api_key=Config.OPENAI_API_KEY)
         self.cache_dir = os.path.join(os.path.dirname(str(self.vector_db)), "embedding_cache")
-        os.makedirs(self.cache_dir, exist_ok=True)
+        self.embedding = CachedOpenAIEmbeddings(openai_embeddings, self.cache_dir)
 
         logger.info(f"VectorStoreService initialized. documents_path={self.documents_path}, vector_db={self.vector_db}")
 
@@ -809,26 +880,4 @@ class VectorStoreService:
         metadata_hash = hashlib.md5(metadata_str.encode('utf-8')).hexdigest()
         return f"{content_hash}_{metadata_hash}"
 
-    # -------------------------
-    # Embedding cache helpers
-    # -------------------------
-    def get_cache_key(self, text: str) -> str:
-        return hashlib.md5(text.encode("utf-8")).hexdigest()
-
-    def save_embedding_cache(self, text: str, embedding: List[float]):
-        cache_file = os.path.join(self.cache_dir, f"{self.get_cache_key(text)}.pkl")
-        try:
-            with open(cache_file, "wb") as f:
-                pickle.dump(embedding, f)
-        except Exception as e:
-            logger.warning(f"임베딩 캐시 저장 실패: {e}")
-
-    def load_embedding_cache(self, text: str) -> Optional[List[float]]:
-        cache_file = os.path.join(self.cache_dir, f"{self.get_cache_key(text)}.pkl")
-        if os.path.exists(cache_file):
-            try:
-                with open(cache_file, "rb") as f:
-                    return pickle.load(f)
-            except Exception as e:
-                logger.warning(f"임베딩 캐시 로드 실패: {e}")
-        return None
+    # 캐시 기능은 CachedOpenAIEmbeddings 클래스로 이동됨
