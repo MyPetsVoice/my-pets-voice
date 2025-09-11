@@ -75,6 +75,12 @@ jobs:
         script: |
           cd ~/my-pets-voice
           
+          echo "📥 Updating code from repository..."
+          git reset --hard HEAD
+          git clean -fd
+          git fetch origin
+          git reset --hard origin/main
+          
           echo "🔄 Updating deployment configuration..."
           
           # Create environment file from GitHub Secrets

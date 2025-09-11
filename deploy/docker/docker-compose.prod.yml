@@ -11,8 +11,8 @@ services:
       - ../../uploads:/app/app/static/uploads
       # 벡터 DB 저장 (영구 저장)
       - ../../vector_db:/app/vector_db
-      # RAG 데이터 (읽기 전용)
-      - ../../data:/app/data:ro
+      # RAG 데이터 (읽기 전용) - storage/documents를 /app/data로 마운트
+      - ../../storage/documents:/app/data:ro
       # 로그 저장
       - ../../logs:/app/logs
     logging:
