@@ -43,8 +43,8 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        timeout: 300s
-        command_timeout: 20m
+        timeout: 600s
+        command_timeout: 30m
         script: |
           cd ~/my-pets-voice
           echo "📥 Fetching latest code..."
@@ -61,7 +61,8 @@ jobs:
           sudo docker compose -f docker-compose.aws.yml build --no-cache
           echo "🗄️ Running database migrations..."
           sudo docker compose -f docker-compose.aws.yml run --rm web python app/models/init_db_with_check.py || echo "Database already initialized"
-          sudo docker compose -f docker-compose.aws.yml up -d
+          echo "🚀 Starting containers with fast boot (skipping vector DB init)..."
+          sudo SKIP_VECTOR_INIT=true docker compose -f docker-compose.aws.yml up -d
           echo "🧹 Cleaning up unused Docker resources..."
           sudo docker system prune -f
           echo "📊 Checking container status..."
@@ -73,7 +74,7 @@ jobs:
           echo "📊 Checking container status after startup..."
           sudo docker compose -f docker-compose.aws.yml ps
           echo "🏥 Running health check..."
-          if curl -f http://localhost/ > /dev/null 2>&1; then
+          if curl -f http://localhost/health > /dev/null 2>&1; then
             echo "✅ Health check passed - Application is running"
           else
             echo "❌ Health check failed - Detailed diagnosis:"
@@ -105,7 +106,8 @@ jobs:
       with:
         key: ${{ secrets.EC2_SSH_KEY }}
         name: id_rsa
-        known_hosts: ${{ secrets.EC2_HOST }}
+        known_hosts: unnecessary
+        if_key_exists: replace
         
     - name: Execute deployment commands via fallback
       if: steps.primary-deploy.outcome == 'failure'

@@ -6,6 +6,8 @@ services:
       - "5000:5000"
     env_file:
       - .env.production
+    environment:
+      - SKIP_VECTOR_INIT=${SKIP_VECTOR_INIT:-false}
     volumes:
       - ./app:/app/app
       - ./run.py:/app/run.py
