@@ -81,7 +81,8 @@ def create_app(config_name=None):
         try:
             # 데이터베이스 연결 확인
             from app.models import db
-            db.session.execute('SELECT 1')
+            from sqlalchemy import text
+            db.session.execute(text('SELECT 1'))
             return {'status': 'healthy', 'database': 'connected'}, 200
         except Exception as e:
             app.logger.error(f'헬스체크 실패: {e}')
