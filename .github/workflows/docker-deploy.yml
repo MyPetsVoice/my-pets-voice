@@ -115,7 +115,7 @@ jobs:
           
           # Vector DB and Documents
           VECTOR_DB=/app/vector_db
-          DOCUMENTS_PATH=/app/data
+          DOCUMENTS_PATH=/app/storage/documents
           
           # Storage
           STORAGE_PATH=/app/app/static/uploads
