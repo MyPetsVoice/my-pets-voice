@@ -32,6 +32,10 @@ class FileUploadService:
 
         if not filename:
             safe_filename = secure_filename(file.filename)
+            # secure_filename이 빈 문자열을 반환하는 경우 기본 확장자 사용
+            if not safe_filename:
+                file_ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else 'jpg'
+                safe_filename = f'upload.{file_ext}'
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_')
             filename = timestamp + safe_filename
 
