@@ -169,8 +169,9 @@ class VectorStoreService:
         texts = [doc.page_content for doc in documents]
         metadatas = [doc.metadata for doc in documents]
 
-        BATCH_SIZE = 200
-        MAX_TOKENS_PER_BATCH = 200_000
+        BATCH_SIZE = 50   # 배치 크기 감소 (rate limiting 대응)
+        MAX_TOKENS_PER_BATCH = 50_000  # 토큰 수 감소
+        DELAY_BETWEEN_BATCHES = 2  # 배치 간 2초 대기
         encoder = tiktoken.get_encoding("cl100k_base")
 
         store = None
@@ -200,6 +201,9 @@ class VectorStoreService:
                     
                     batch_texts, batch_metadatas = [], []
                     token_count = 0
+                    
+                    # Rate limiting 대응을 위한 대기
+                    time.sleep(DELAY_BETWEEN_BATCHES)
                     
                 except Exception as e:
                     logger.error(f"{collection_name} 배치 {i//BATCH_SIZE} 임베딩 실패: {e}")
@@ -249,8 +253,9 @@ class VectorStoreService:
         texts = [doc.page_content for doc in all_documents]
         metadatas = [doc.metadata for doc in all_documents]
 
-        BATCH_SIZE = 200  # 입력 배열 길이 제한
-        MAX_TOKENS_PER_BATCH = 200_000  # 안전 마진 적용
+        BATCH_SIZE = 50   # 배치 크기 감소 (rate limiting 대응)
+        MAX_TOKENS_PER_BATCH = 50_000  # 토큰 수 감소
+        DELAY_BETWEEN_BATCHES = 2  # 배치 간 2초 대기
         encoder = tiktoken.get_encoding("cl100k_base")
 
         self.store = None
@@ -282,6 +287,9 @@ class VectorStoreService:
                     # 배치 초기화
                     batch_texts, batch_metadatas = [], []
                     token_count = 0
+                    
+                    # Rate limiting 대응을 위한 대기
+                    time.sleep(DELAY_BETWEEN_BATCHES)
                 except Exception as e:
                     logger.error(f"배치 {i//BATCH_SIZE} Embedding 실패: {e}")
                     batch_texts, batch_metadatas = [], []
