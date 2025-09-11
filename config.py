@@ -17,8 +17,7 @@ class Config:
 
     # 벡터DB 설정
     VECTOR_DB = os.getenv('VECTOR_DB', './vector_db')
-    COLLECTION_NAME = os.getenv('COLLECTION_NAME', 'mypetsvoice_docs')
-    DOCUMENTS_PATH = os.getenv('DOCUMENTS_PATH', './data')
+    DOCUMENTS_PATH = os.getenv('DOCUMENTS_PATH')
 
     # 파일 저장 경로
     STORAGE_PATH=os.getenv('STORAGE_PATH', os.path.join(os.path.dirname(__file__), 'app', 'static', 'uploads'))
