@@ -3,7 +3,6 @@
 
 .claude/
 nul
-storage/
 
 # 루트 + 하위 폴더 db 파일 무시
 db
@@ -23,8 +22,10 @@ instance/
 db생성요청사항.txt
 insert_data.py
 
-# Storage 디렉토리 (벡터DB, 문서, 캐시 등)
-storage/
+# Storage 디렉토리 (벡터DB, 캐시 제외, 문서는 포함)
+storage/chroma_db/
+storage/embedding_cache/
+# storage/documents/ - RAG 문서들은 Git에 포함
 
 # 로그파일
 logs/
