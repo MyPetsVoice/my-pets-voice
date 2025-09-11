@@ -15,6 +15,8 @@ services:
       - ../../storage:/app/storage:ro
       # 로그 저장
       - ../../logs:/app/logs
+      # Static 파일 공유
+      - static_files:/app/app/static
     logging:
       driver: "json-file"
       options:
@@ -40,6 +42,7 @@ services:
       - ../nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
       - ../../ssl:/etc/nginx/ssl:ro
       - ../../uploads:/app/app/static/uploads:ro
+      - static_files:/app/app/static:ro
     depends_on:
       web:
         condition: service_healthy
@@ -63,4 +66,6 @@ volumes:
   uploads:
     driver: local
   logs:
+    driver: local
+  static_files:
     driver: local
