@@ -50,6 +50,9 @@ jobs:
           echo "📥 Fetching latest code..."
           git fetch origin
           echo "🔄 Resetting to latest main branch..."
+          echo "🔧 Fixing file permissions for uploaded files..."
+          sudo chown -R $USER:$USER app/static/uploads/ || echo "No uploads directory or permission fix failed"
+          sudo chmod -R 755 app/static/uploads/ || echo "No uploads directory or chmod failed"
           git reset --hard origin/main
           echo "🧹 Cleaning any untracked files..."
           git clean -fd
