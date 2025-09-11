@@ -1,0 +1,22 @@
+# 벡터 DB 초기화용 별도 Compose 파일
+# 메인 앱과 분리하여 실행
+
+services:
+  vector-init:
+    image: ${DOCKERHUB_USERNAME}/mypetsvoice:latest
+    container_name: mypetsvoice-vector-init
+    env_file:
+      - .env.production
+    volumes:
+      # 벡터 DB 저장 (영구 저장)
+      - ./vector_db:/app/vector_db
+      # RAG 데이터 (읽기 전용)
+      - ./data:/app/data:ro
+      # 로그 저장
+      - ./logs:/app/logs
+    command: python scripts/init_vector_db.py
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
