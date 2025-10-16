@@ -220,8 +220,8 @@ conversation_chain = RunnableWithMessageHistory(
 | 👨‍💻 **김태민** | 🎨 **신준형** | 🤖 **현지윤** |
 |:---:|:---:|:---:|
 | **Project Lead & Backend** | **Product & Frontend** | **AI/ML Engineer** |
-| Flask, PostgreSQL, DevOps | UI/UX Design, JavaScript | OpenAI, LangChain, Vector DB |
-| "기술로 감정을 연결하다" | "사용자의 마음을 읽다" | "AI에 생명을 불어넣다" |
+| 반려동물 페르소나 대화, RAG  | 반려동물 페르소나 일기 생성 | 반려동물 건강 및 일정관리, RAG |
+
 
 </div>
 
@@ -263,19 +263,13 @@ conversation_chain = RunnableWithMessageHistory(
 
 ---
 
-## 📞 연락처 및 추가 정보
-
-<div align="center">
-
 ### **🌐 프로젝트 링크**
 
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/MyPetsVoice/my-pets-voice)
 [![Demo Site](https://img.shields.io/badge/Demo_Site-Live-brightgreen?style=for-the-badge&logo=vercel)](http://your-demo-site.com)
 [![Documentation](https://img.shields.io/badge/Docs-Read-blue?style=for-the-badge&logo=gitbook)](https://docs.mypetsvoice.com)
 
-### **📧 연락처**
-**Email**: contact@mypetsvoice.com  
-**개발팀 GitHub**: [@MyPetsVoice](https://github.com/MyPetsVoice)
+
 
 ---
 
