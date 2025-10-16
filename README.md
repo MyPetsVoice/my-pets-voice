@@ -219,7 +219,7 @@ conversation_chain = RunnableWithMessageHistory(
 
 | 👨‍💻 **김태민** | 🎨 **신준형** | 🤖 **현지윤** |
 |:---:|:---:|:---:|
-| **Project Lead & Backend** | **Product & Frontend** | **AI/ML Engineer** |
+| **Project Lead** | **Project demo** | **Project Logo design** |
 | 반려동물 페르소나 대화, RAG  | 반려동물 페르소나 일기 생성 | 반려동물 건강 및 일정관리, RAG |
 
 
