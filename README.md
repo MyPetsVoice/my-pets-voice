@@ -3,11 +3,7 @@
 
 <div align="center">
 
-![MyPet's Voice Logo](https://github.com/MyPetsVoice/my-pets-voice/blob/main/app/static/img/my_pet_voice.PNG)
-
-[![Demo](https://img.shields.io/badge/🌐_Live_Demo-Available-brightgreen?style=for-the-badge)](http://your-demo-url.com)
-[![Presentation](https://img.shields.io/badge/📊_Presentation-View-blue?style=for-the-badge)](https://www.canva.com/your-presentation-link)
-[![Video Demo](https://img.shields.io/badge/🎥_Video-Watch-red?style=for-the-badge)](https://youtube.com/your-demo-video)
+<img src="https://raw.githubusercontent.com/MyPetsVoice/my-pets-voice/main/app/static/img/my_pet_voice.PNG" alt="MyPet's Voice Logo" width="400"/>
 
 </div>
 
@@ -16,7 +12,9 @@
 > **"만약 우리의 반려동물이 말할 수 있다면, 어떤 이야기를 들려줄까요?"**
 
 **MyPet's Voice**는 최신 AI 기술을 활용하여 반려동물과의 소통 방식을 완전히 바꾸는 혁신적인 플랫폼입니다. 단순한 펫케어 앱을 넘어서, 반려동물의 고유한 성격을 AI로 구현하여 진짜 대화하는 듯한 경험을 제공합니다.
-![image.png](attachment:ae02a19b-918c-4702-9f42-aac7f95eace0:image.png)
+
+<img src="https://raw.githubusercontent.com/MyPetsVoice/my-pets-voice/main/app/static/img/mypetsvoice_langdingpage.PNG" alt="MyPet's Voice Landing page" width="800">
+
 ### 🌟 핵심 가치
 - **진정한 소통**: 반려동물의 성격과 특성이 반영된 개성 있는 AI 페르소나
 - **전문성**: 수의학 전문 지식 기반의 건강 관리 시스템  

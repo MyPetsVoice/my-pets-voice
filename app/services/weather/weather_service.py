@@ -7,6 +7,8 @@ class WeatherService:
     def __init__(self):
         # 공공데이터포털에서 발급받은 API 키
         self.api_key = os.getenv('WEATHER_API_KEY')
+        if not self.api_key:
+            print("경고: WEATHER_API_KEY가 설정되지 않았습니다.")
         # 기상청 단기예보 API 기본 URL
         self.base_url = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0'
         
@@ -37,10 +39,32 @@ class WeatherService:
             'ny': ny                             # 예보지점 Y 좌표
         }
         
-        # 현재 날씨 호출 (초단기)
-        response = requests.get(f"{self.base_url}/getUltraSrtNcst", params=params)
+        # API 키가 없으면 기본값 반환
+        if not self.api_key:
+            return {
+                'temperature': 20,
+                'weather_text': '맑음',
+                'weather_emoji': '☀️',
+                'location': location
+            }
         
-        if response.status_code != 200:
+        try:
+            # 현재 날씨 호출 (초단기)
+            response = requests.get(f"{self.base_url}/getUltraSrtNcst", params=params, timeout=10)
+            
+            if response.status_code != 200:
+                print(f"날씨 API 오류: {response.status_code}")
+                if response.status_code == 401:
+                    print("API 키 인증 실패 - 기본값 반환")
+                    return {
+                        'temperature': 20,
+                        'weather_text': '맑음',
+                        'weather_emoji': '☀️',
+                        'location': location
+                    }
+                return None
+        except requests.exceptions.RequestException as e:
+            print(f"날씨 API 요청 실패: {e}")
             return None
             
         # XML 응답 파싱
