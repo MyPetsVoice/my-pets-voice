@@ -3,7 +3,7 @@
 
 <div align="center">
 
-![MyPet's Voice Logo](https://via.placeholder.com/200x100/4A90E2/FFFFFF?text=MyPet%27s+Voice)
+![MyPet's Voice Logo](app\static\img\my_pet_voice_logo.PNG)
 
 [![Demo](https://img.shields.io/badge/🌐_Live_Demo-Available-brightgreen?style=for-the-badge)](http://your-demo-url.com)
 [![Presentation](https://img.shields.io/badge/📊_Presentation-View-blue?style=for-the-badge)](https://www.canva.com/your-presentation-link)
