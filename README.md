@@ -192,22 +192,6 @@ conversation_chain = RunnableWithMessageHistory(
 - 🗣 **자연스러운 대화**: 사용자 만족도 4.5/5.0
 - 📖 **일기 변환**: 95% 이상의 사용자가 변환 결과에 만족
 
-### **🚀 향후 발전 방향**
-
-#### **단기 계획 (3개월)**
-- 🎵 **음성 인식**: 사용자 음성 입력 기능 추가
-- 📱 **모바일 최적화**: 반응형 웹 → 네이티브 앱 전환
-- 🔔 **알림 시스템**: 건강 체크 및 일기 작성 리마인더
-
-#### **중기 계획 (6개월)**
-- 🤖 **멀티모달 AI**: 이미지 인식을 통한 건강 상태 분석
-- 👥 **커뮤니티**: 반려동물 소유자간 소통 플랫폼
-- 🩺 **병원 연동**: 실제 동물병원과의 진료 예약 연결
-
-#### **장기 계획 (1년)**
-- 🌐 **글로벌 확장**: 다국어 지원 및 해외 시장 진출
-- 🔬 **AI 고도화**: 개별 펫의 행동 패턴 학습 및 예측
-- 📊 **빅데이터**: 펫 헬스케어 트렌드 분석 및 인사이트 제공
 
 ---
 
@@ -236,7 +220,7 @@ conversation_chain = RunnableWithMessageHistory(
 ### **📺 Live Demo**
 <div align="center">
 
-[![Demo Video](https://img.shields.io/badge/🎬_Watch_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtube.com/your-demo)
+[![Demo Video](https://img.shields.io/badge/🎬_Watch_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://www.canva.com/design/DAGypn9KnQ0/4ulQMflkM-46E5poHdOb_g/watch?utm_content=DAGypn9KnQ0&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hd7ba2c6170)
 
 **주요 데모 시나리오:**
 1. 🐕 반려동물 프로필 생성 및 AI 페르소나 설정
@@ -249,7 +233,7 @@ conversation_chain = RunnableWithMessageHistory(
 ### **📊 발표 자료**
 <div align="center">
 
-[![Presentation](https://img.shields.io/badge/📊_View_Slides-Canva-00C4CC?style=for-the-badge&logo=canva)](https://canva.com/your-presentation)
+[![Presentation](https://img.shields.io/badge/📊_View_Slides-Canva-00C4CC?style=for-the-badge&logo=canva)](https://www.canva.com/design/DAGyoXUG6Cs/A28iqe4f_JJJi76iSSWYrw/view?utm_content=DAGyoXUG6Cs&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h3835f036a9)
 
 **발표 구성:**
 - 🎯 프로젝트 배경 및 목표
@@ -261,20 +245,8 @@ conversation_chain = RunnableWithMessageHistory(
 
 ---
 
-### **🌐 프로젝트 링크**
+### **🤝 프로젝트 협업 과정**
 
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/MyPetsVoice/my-pets-voice)
-[![Demo Site](https://img.shields.io/badge/Demo_Site-Live-brightgreen?style=for-the-badge&logo=vercel)](http://your-demo-site.com)
-[![Documentation](https://img.shields.io/badge/Docs-Read-blue?style=for-the-badge&logo=gitbook)](https://docs.mypetsvoice.com)
+[![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)](https://www.notion.so/lovehyun/3-Triple-T-2456ebae57e1809f87f9ced037113a66)
 
-
-
----
-
-### **🏅 프로젝트 의의**
-
-> **"MyPet's Voice는 단순한 개발 프로젝트를 넘어서, 기술과 감정을 연결하는 새로운 가능성을 제시합니다. AI가 만들어내는 따뜻한 소통의 경험을 통해 반려동물과의 관계를 더욱 특별하게 만들고자 합니다."**
-
-**🐾 반려동물과의 새로운 소통, MyPet's Voice와 함께 시작하세요! 🐾**
-
-</div>
+> **팀원 간의 협업 규칙, 회의록, 그리고 개발 로그를 확인하실 수 있습니다.**
