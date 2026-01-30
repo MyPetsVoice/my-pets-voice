@@ -110,12 +110,14 @@
 
 #### **Challenge 1: 다양한 문서의 표준화 및 컨텍스트 보존**
 **문제**: 웹 크롤링, PDF 등 다양한 소스에서 수집된 방대한 문서(품종별 정보, 의약품 정보 등)를 벡터 DB화 할 때, 단순 텍스트 분할 시 문맥이 끊기거나 정보가 손실되는 문제 발생.
+
 **해결**:
 - **Markdown 일괄 변환**: 모든 문서를 Markdown 형식으로 변환하여 문서 구조를 통일. JSON 대비 헤더 기반의 논리적 분할이 유리.
 - **헤더 기반 청킹 전략**: `MarkdownHeaderTextSplitter`를 도입하여 `##`, `###` 등 헤더 단위로 의미 있게 문서를 분할하고, 상위 헤더 정보를 메타데이터로 포함시켜 검색 시 컨텍스트 유지.
 
 #### **Challenge 2: 검색 정확도 저하 및 환각 현상 개선**
 **문제**: 3만 건이 넘는 의약품 데이터로 인해, 일반적인 건강 질문에도 관련 없는 의약품 문서가 상위로 검색되어 엉뚱한 답변을 생성.
+
 **해결**:
 - **데이터베이스 구조 개선**: 성격이 다른 문서(일반 수의학 지식 vs 의약품 정보)의 컬렉션(Collection)을 물리적으로 분리.
 - **하이브리드 서치(Hybrid Search)**: 의미 기반의 벡터 검색과 정확한 키워드 매칭을 결합하여 검색 품질 강화.
@@ -138,18 +140,13 @@
 
 ---
 
-## 🎥 데모 및 프레젠테이션
+## 🎥 프로젝트 결과물
 
-### **📺 Live Demo**
+### **📺 서비스 시연 영상**
 <div align="center">
 
-[![Demo Video](https://img.shields.io/badge/🎬_Watch_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://www.canva.com/design/DAGypn9KnQ0/4ulQMflkM-46E5poHdOb_g/watch?utm_content=DAGypn9KnQ0&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hd7ba2c6170)
+[![Demo Video](https://img.shields.io/badge/📊_View_Slides-Canva-00C4CC?style=for-the-badge&logo=canva)](https://www.canva.com/design/DAGypn9KnQ0/4ulQMflkM-46E5poHdOb_g/watch?utm_content=DAGypn9KnQ0&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hd7ba2c6170)
 
-**주요 데모 시나리오:**
-1. 🐕 반려동물 프로필 생성 및 AI 페르소나 설정
-2. 💬 실시간 AI 채팅 및 음성 기능 체험
-3. 📖 일기 작성 및 AI 변환 결과 확인
-4. 🏥 건강 상담 및 전문 조언 시연
 
 </div>
 
@@ -158,17 +155,14 @@
 
 [![Presentation](https://img.shields.io/badge/📊_View_Slides-Canva-00C4CC?style=for-the-badge&logo=canva)](https://www.canva.com/design/DAGyoXUG6Cs/A28iqe4f_JJJi76iSSWYrw/view?utm_content=DAGyoXUG6Cs&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h3835f036a9)
 
-**발표 구성:**
-- 🎯 프로젝트 배경 및 목표
-- 💡 핵심 기능 및 차별점
-- 🛠 기술적 구현 방법
-- 📈 성과 및 향후 계획
+
 
 </div>
 
----
+
 
 ### **🤝 프로젝트 협업 과정**
+<div align="center">
 
 [![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)](https://www.notion.so/lovehyun/3-Triple-T-2456ebae57e1809f87f9ced037113a66)
 
