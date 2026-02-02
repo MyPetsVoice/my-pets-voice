@@ -57,7 +57,7 @@
 
 ### 3️⃣ **전문 헬스케어 AI 상담**
 <div align="center">
-<img src="https://via.placeholder.com/600x300/FFF0F0/2C3E50?text=AI+Healthcare+System" alt="Healthcare AI" width="600"/>
+<img src="app/static/img/healthcare_chatbot.png" alt="Healthcare AI" width="600"/>
 </div>
 
 **🏥 RAG 기반 전문 의료 상담**
@@ -145,7 +145,7 @@
 ### **📺 서비스 시연 영상**
 <div align="center">
 
-[![Demo Video](https://img.shields.io/badge/📊_View_Slides-Canva-00C4CC?style=for-the-badge&logo=canva)](https://www.canva.com/design/DAGypn9KnQ0/4ulQMflkM-46E5poHdOb_g/watch?utm_content=DAGypn9KnQ0&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hd7ba2c6170)
+[![Demo Video](https://img.shields.io/badge/📊_View_Video-Canva-00C4CC?style=for-the-badge&logo=canva)](https://www.canva.com/design/DAGypn9KnQ0/4ulQMflkM-46E5poHdOb_g/watch?utm_content=DAGypn9KnQ0&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hd7ba2c6170)
 
 
 </div>
@@ -162,8 +162,8 @@
 
 
 ### **🤝 프로젝트 협업 과정**
+> **팀원 간의 협업 규칙, 회의록, 그리고 개발 로그를 확인하실 수 있습니다.**
 <div align="center">
 
 [![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)](https://www.notion.so/lovehyun/3-Triple-T-2456ebae57e1809f87f9ced037113a66)
 
-> **팀원 간의 협업 규칙, 회의록, 그리고 개발 로그를 확인하실 수 있습니다.**
